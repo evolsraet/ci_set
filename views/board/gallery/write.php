@@ -1,1 +1,0 @@
-<? include(__DIR__.'/../basic/write.php') ?>
