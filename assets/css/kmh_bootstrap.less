@@ -1,0 +1,95 @@
+/*
+
+	kmh bootstrap 추가 스타일
+
+	base : bootstrap 3.3.7
+
+*/
+
+// LESS 기본 로드
+@import url('/assets/css/less_load.less');
+
+// 스윗얼렛 fix
+
+	//  배경 스크롤바 유지 / 스크롤 방지
+	body.stop-scrolling {
+		overflow-y: scroll;
+		// position: fixed;	// fixed 적용시 화면 상단으로 이동됨
+	}
+
+// 흰 배경 버튼
+.btn-white {
+	color: #fff;
+	&:focus, &:hover {
+		background: transparent;
+		color: #fff;
+	}
+}
+
+// 흰 아웃선 버튼
+.btn-outline {
+	background: transparent;
+	color: #fff !important;
+	border: 1px solid #fff;
+	&:focus, &:hover {
+		border-color: @brand-primary;
+		background: @brand-primary;
+	}
+}
+
+.card {
+	border: 0;
+    margin-bottom: 30px;
+    margin-top: 30px;
+    border-radius: 6px;
+    color: #333;
+    background: #fff;
+    width: 100%;
+	box-shadow: 0 1px 4px 0 rgba(0,0,0,.14);
+	position: relative;
+	display: inline-block;
+	vertical-align: top;
+	zoom: 1; /* Fix for IE7 */
+	*display: inline; /* Fix for IE7 */
+
+	&>.header {
+		margin: -20px 20px 0 20px;
+	    z-index: 3 !important;
+		overflow: hidden;
+
+		&.header-full {
+			.header-bar, .header-info {
+				display: block;
+				text-align: center;
+				float: initial;
+			}
+		}
+
+	    & > .header-bar {
+			background: @brand-primary;
+			padding: 20px 30px;
+			border-radius: 3px;
+			float: left;
+
+			* {
+				color: #fff;
+			}
+	    }
+		& > .header-info {
+			float: right;
+			margin-top: 25px;
+
+			// font-weight: bold;
+			font-size: 2rem;
+		}
+	}
+
+	&>.body {
+		padding: 20px;
+	}
+
+	&>.footer {
+		padding: 20px;
+		// border-top: 1px solid #e1e1e1;
+	}
+}

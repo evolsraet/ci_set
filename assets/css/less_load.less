@@ -1,0 +1,19 @@
+// Bootstrap 컬러
+@import url('/assets/lib/bootstrap-3.3.7/less/variables.less');
+
+// media 변수
+	@phone: ~"only screen and (max-width: 767px)";
+
+// 유틸리티 클래스
+	.text_cut( @width: 100%; ) {
+		width: @width;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+	}
+
+	.animation(@duration: .2s, @style: linear) {
+		-webkit-transition: all @duration @style;
+		-o-transition: all @duration @style;
+		transition: all @duration @style;
+	}

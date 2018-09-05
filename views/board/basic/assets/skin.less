@@ -1,0 +1,53 @@
+// basic SKIN
+
+// LESS 기본 로드
+@import url('/assets/css/less_load.less');
+
+// 보드 스킨
+.skin_basic {
+	.board_search_warp {
+		margin-bottom: 20px;
+	}
+
+	.button_wrap {
+		margin: 20px 0;
+		text-align: right;
+	}
+
+	// 리스트
+	&.board_list {
+		.list_table {
+			th {
+				text-align: center;
+			}
+
+			td {
+				a {
+					color: darken(@text-color, 10%);
+					@media @phone {
+						white-space: initial;
+					}
+				}
+			}
+
+			// @media @phone {
+			// 	tr {
+			// 		border: 1px solid @gray;
+			// 	}
+			// 	td {
+			// 		display: block;
+			// 		border: 0 none;
+
+			// 		&.no {
+			// 			display: none !important;
+			// 		}
+			// 	}
+			// }
+		}
+
+		.pagination_wrap {
+			text-align: center;
+		}
+	}
+}
+
