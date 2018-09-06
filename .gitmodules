@@ -1,12 +1,12 @@
 [submodule "assets/lib/noto-sans-korean"]
 	path = assets/lib/noto-sans-korean
 	url = https://github.com/bswkr/noto-sans-korean-webfont.git
-[submodule "assets/lib/cleaver.js"]
-	path = assets/lib/cleaver.js
-	url = https://github.com/nosir/cleave.js.git
 [submodule "assets/lib/less"]
 	path = assets/lib/less
 	url = https://github.com/less/less.js.git
 [submodule "assets/lib/sweetalert-1"]
 	path = assets/lib/sweetalert-1
 	url = https://github.com/errakeshpd/sweetalert-1.git
+[submodule "assets/lib/cleave.js"]
+	path = assets/lib/cleave.js
+	url = https://github.com/nosir/cleave.js.git
