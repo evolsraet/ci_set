@@ -1,0 +1,18 @@
+{
+	"description" : "KMH_CI_SET",
+	"name" : "evolsraet/ci_set",
+    "require": {
+    	"php": ">=5.4.0",
+		"codeigniter/framework": "^3.0.4",
+	    "evolsraet/phpform":"dev-master",
+	    "fzaninotto/faker": "^1.7",
+	    "oyejorge/less.php": "v1.7.0.14",
+	    "tajawal/lodash-php": "^1.0",
+	    "nesbot/carbon": "^1.31",
+	    "lyhiving/snoopy": "^2.0",
+	    "sunra/php-simple-html-dom-parser": "^1.5",
+        "chriskacerguis/codeigniter-restserver": "^3.0",
+		"samdark/sitemap": "^2.2",
+		"hashids/hashids": "1.0.6"
+    }
+}

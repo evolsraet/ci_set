@@ -1,0 +1,22 @@
+// LESS 기본 로드
+@import url('/assets/css/less_load.less');
+
+.well {
+	// background: @brand-success;
+	background: red;
+}
+
+img {
+	max-width: 100%;
+}
+
+
+// VUE
+
+	// 트랜지션
+		.fade-enter-active, .fade-leave-active {
+		  transition: opacity .5s;
+		}
+		.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+		  opacity: 0;
+		}

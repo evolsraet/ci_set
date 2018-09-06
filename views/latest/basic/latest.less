@@ -1,0 +1,30 @@
+// LESS 기본 로드
+@import url('/assets/css/less_load.less');
+
+.latest_basic {
+	ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		.title {
+			.text_cut();
+		}
+		.desc {
+			overflow: hidden;
+			.writer {
+				float: left;
+				max-width: 60%;
+				.text_cut();
+				a, strong {
+					color: @gray !important;
+				}
+			}
+			.date {
+				float: right;
+				max-width: 40%;
+				text-align: right;
+				.text_cut();
+			}
+		} //desc
+	} //ul
+} //latest basic
