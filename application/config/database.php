@@ -82,8 +82,6 @@ $db['default'] = array(
 	'dbdriver' => 'mysqli',
 	'dbprefix' => 'kmh_',
 	'pconnect' => FALSE,
-	// 'db_debug' => (ENVIRONMENT !== 'production'),
-	'db_debug' => TRUE,
 	'db_debug' => (ENVIRONMENT !== 'production'),
 	// 'db_debug' => TRUE,
 	'cache_on' => FALSE,
