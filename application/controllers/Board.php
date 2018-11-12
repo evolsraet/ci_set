@@ -241,7 +241,7 @@ class Board extends MY_Controller {
 						'response' => $this->input->post('g-recaptcha-response')
 					);
 					$captcha_success = get_api_json($url, $capacha_data);
-					if( $captcha_success->success === false )
+					if( $captcha_success->success !== true )
 						throw new Exception("'로봇이 아닙니다'를 체크해 주세요.", 1);
 
 				}

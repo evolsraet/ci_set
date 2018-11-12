@@ -6,9 +6,6 @@ class Admin extends MY_Controller {
 
 	public function __construct() {
 		parent::__construct();
-
-		if( !$this->members->is_admin() )
-			redirect( "/member/login?redirect=".urlencode_path("/admin") );
 	}
 
 	public function index() {

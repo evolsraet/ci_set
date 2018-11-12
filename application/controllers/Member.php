@@ -20,7 +20,7 @@ class Member extends MY_Controller {
         $load_js = "/views/".$this->member_skin_path."js/member.js";
         $this->javascript[] = $load_js;
 
-        $this->title = '회원 ' . $this->title;
+        $this->title = '회원 - ' . $this->title;
 	}
 
 	/*----------  공용 / 기타  ----------*/

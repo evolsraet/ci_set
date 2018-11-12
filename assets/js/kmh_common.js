@@ -59,11 +59,6 @@ function pjax_href( url ) {
 		location.href = url;
 }
 
-function download(id) {
-	var ajax_url = '/file/download/'+id;
-	kmh_hidden_frame.location.href = ajax_url;
-}
-
 function is_json(str) {
     try {
         JSON.parse(str);
@@ -120,4 +115,9 @@ function is_json(str) {
 
 	function remove_file( me ) {
 		$(me).closest('.file_add_wrap').remove();
+	}
+
+	function download(id) {
+		var ajax_url = '/file/download/'+id;
+		kmh_hidden_frame.location.href = ajax_url;
 	}

@@ -36,8 +36,13 @@ class MY_Controller extends CI_Controller{
 
 		$this->template = $this->config->item('base_template');
 
-		if( $this->uri->segment(1)==='admin' )
+		// 관리자
+		if( $this->uri->segment(1)==='admin' ) {
 			$this->template = $this->config->item('admin_template');
+			if( !$this->members->is_admin() ) {
+				redirect( "/member/login?redirect=".urlencode_path("/admin") );
+			}
+		}
 
 		// 상수
 		define( 'VIEWFOLDER', 	'/'.str_replace(FCPATH, '', VIEWPATH) );	// 루트기준 뷰 폴더

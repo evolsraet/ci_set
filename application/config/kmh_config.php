@@ -8,9 +8,9 @@
 
 // 사이트 정보
 	$config['site_title']		= '와토시스';
-	$config['site_description']	= '와토시스';
+	$config['site_description']	= 'site_description';
 	$config['site_author']		= 'WATOSYS';
-	$config['site_keywords']	= '와토시스';
+	$config['site_keywords']	= 'site_keywords';
 
 // 기본 템플릿
 	// $config['base_template'] = "vue_boiler";
