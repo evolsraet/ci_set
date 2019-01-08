@@ -18,10 +18,9 @@
 */
 
 // selectors 태그가 원본과 다를경우 풀 리로드
-// $(function () {
-
-
-	if ( typeof(Pjax) != 'undefined' && Pjax.isSupported()) {
+$(function () {
+	// if ( typeof(Pjax) != 'undefined' && Pjax.isSupported()) {
+	if ( typeof(Pjax) != 'undefined' && typeof(Pjax.isSupported) != 'undefined' ) {
 		console.log('pjax active');
 
 		// .pjax 로 변환 요소 일괄처리할지
@@ -35,7 +34,7 @@
 		// X :: 페이지별 추가 css, js 파일 로드
 		// O :: 페이지 갱신 후, 애널리틱스 업데이트 ---- 메뉴얼 참고
 
-		console.log( 'PJAX TIME : ' + moment().format('YYYY-MM-DD HH:mm:ss') );
+		console.log( 'PJAX SET TIME : ' + moment().format('YYYY-MM-DD HH:mm:ss') );
 
 		var pjax = new Pjax({
 			// debug: true,
@@ -43,13 +42,20 @@
 			// timeout: 50, // ajax 요청 시간제한
 			elements: "a:not(.non_pjax)", // default is "a[href], form[action]"
 			cacheBust: false, // 캐시 but &t=....
-			selectors: [ CI.pjax_meta, 'title', '#csrf_token', '#main', '#codeigniter_profiler']
+			selectors: [ CI.pjax_meta, '#pjax_body_class', 'title', '#csrf_token', '#main', '#codeigniter_profiler']
 		});
+
+		document.addEventListener('pjax:complete', function(e){
+			console.log('pjax:complete : ' + e.request.responseURL);	// IE NOT
+			// 바디 클래스 적용
+			var pjax_body_class = $("#pjax_body_class").attr('content');
+			$('body').attr('class', pjax_body_class);
+		});
+
 	} else{
 		console.log('pjax unable');
 	}
-
-// });
+});
 
 // PJAX 대응 주소이동
 function pjax_href( url ) {
@@ -59,20 +65,36 @@ function pjax_href( url ) {
 		location.href = url;
 }
 
-function is_json(str) {
-    try {
-        JSON.parse(str);
-    } catch (e) {
-        return false;
-    }
-    return true;
-}
+/*----------  체크  ----------*/
+	function is_json(str) {
+	    try {
+	        JSON.parse(str);
+	    } catch (e) {
+	        return false;
+	    }
+	    return true;
+	}
 
 /*----------  UI  ----------*/
 
 	function go_element( el, time ) {
 		if( typeof time == 'undefined' )	time = 400;
 		$('html, body').animate( { scrollTop : $(el).offset().top }, time );
+	}
+
+	function ajax_loading() {
+		return $("#kmh_ajax_loading").html();
+	}
+
+	function bs3_modal(title, body, footer) {
+		$("#kmh_modal h4").html(title);
+		$("#kmh_modal .modal-body").html(body);
+		$("#kmh_modal .modal-footer").html(footer);
+		$("#kmh_modal").modal();
+	}
+
+	function bs3_modal_close() {
+		$("#kmh_modal").modal('hide');
 	}
 
 
@@ -102,6 +124,10 @@ function is_json(str) {
 
 /*----------  FILE  ----------*/
 
+	// 파일 추가 (BS2-3 기준)
+	// - 현재 처럼 직접 태그 쓰는 방식은 지양
+	// - 다만, ajax 파일로드는 분량에 비해 비효율적이므로 우선 처리한다.
+	// - 모듈화 진행시 버전 별로 불러오는 방향으로 수정 필요
 	function add_file( file_post_name, append_div ) {
 		var tag = '';
 		tag += '<div class="file_add_wrap">';

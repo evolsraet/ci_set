@@ -59,7 +59,10 @@
 					<? if ( $this->members->is_login() ) : // 로그인 여부 ?>
 
 						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?=$this->logined->mb_display?> <span class="caret"></span></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+								<?=$this->files->member_image($this->logined->mb_id, 23)?>
+								<?=$this->logined->mb_display?> <span class="caret"></span>
+							</a>
 							<ul class="dropdown-menu">
 								<li><a href="/member/update">정보수정</a></li>
 								<? if( $this->members->is_admin() ) : ?>

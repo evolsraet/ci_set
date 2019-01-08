@@ -2,7 +2,7 @@
     // 보드카테고리 (카테고리 반환 기본)
     //
     // 기본값 배열로 반환
-    // 두번째 인자 추가시 카테고리 명 반환
+    // 두번째 인자 추가시 선택된 카테고리 명 반환
     function get_category(&$board_info, $selected = null, $total_text=null) {
         $tmp_array = array();
         // 카테고리 양식
@@ -49,6 +49,10 @@
         $result .= "</ul>".PHP_EOL;
 
         return $result;
+    }
+
+    function is_notice(&$row) {
+        return $row->post_is_notice ? true : false;
     }
 
     // 공지사항 또는 숫자 출력
@@ -139,6 +143,23 @@
         endif;
     }
 
+    // 게시판 관리자 권한이 있는지 (최고 관리자 또는 게시판 관리자)
+    function is_board_admin() {
+        $CI =& get_instance();
+
+        // 최고관리자 여부
+        if( $CI->members->is_admin() ) :
+            return true;
+        else :
+            $admins = array();
+            foreach( (array) explode(',', $CI->board_info->board_admin) as $key => $row ) :
+                $admins[] = $row;
+            endforeach;
+            if( in_array( $CI->logined->mb_id, $admins) ) return true;
+        endif;
+
+        return false;
+    }
 
     // 검색 include
     function module_search( $search_array=null, $file = 'module_search' ) {

@@ -14,6 +14,12 @@
 		$form_action = base_url().'member/join_act';
 		$redirect_url = base_url().'member/login';
 	endif;	// join or update
+
+	if( !empty($social_join->mb_social_id) ) :
+		// kmh_print($social_join);
+		$is_social_join = true;
+		$view = $social_join;
+	endif;
 ?>
 
 	<div class="row">
@@ -23,7 +29,7 @@
 					// 'class'=>'form-horizontal',
 					'ajax_before'=>'join_before',
 					'ajax_after'=>'join_success',
-					'data-send'=>'not',	// phpform ㄴ둥
+					'data-send'=>'not',	// phpform
 				);
 				// 폼 오픈
 				$form->open('join_form', $form_action, $form_config );
@@ -32,34 +38,24 @@
 				<div class="header header-full">
 					<div class="header-bar">
 						<h4><?=$page_text?></h4>
-						<?
-							$social_login = [];
-
-							// $social_login[] = (object)array(
-							// 	'link' => '#',
-							// 	'title' => '페이스북',
-							// 	'icon' => 'fa-facebook-official'
-							// 	);
-							// $social_login[] = (object)array(
-							// 	'link' => '#',
-							// 	'title' => '구글+',
-							// 	'icon' => 'fa-google-plus-square'
-							// 	);
-						?>
-						<? if ( $social_login ) : // 소셜로그인 ?>
-							<ul class="social_login list-unstyled list-inline">
-								<? foreach ( $social_login as $key => $row ) : ?>
-								<li>
-									<a href="<?=$row->link?>" class="non_pjax btn btn-link btn-white" title="<?=$row->title?>">
-										<i class="fa <?=$row->icon?>"></i>
-									</a>
-								</li>
-								<? endforeach; ?>
-							</ul>
-						<? endif; // 소셜로그인 ?>
+						<? if( !$is_update && !$is_social_join ) : ?>
+							<? include(VIEWPATH.'member/module_social.php'); ?>
+						<? elseif( $view->mb_social_type != 'web' ) : ?>
+							<small><?=$view->mb_social_type?> 계정 로그인</small>
+						<? endif; ?>
 					</div>
 				</div>
 				<div class="body">
+
+					<?
+						// 소셜 가입 시
+						if( $is_social_join ) :
+							foreach( fe($social_join) as $key => $row ) :
+								if( !empty($row) )
+									$form->input('','hidden',$key,$row);
+							endforeach;
+						endif;
+					?>
 
 					<?
 						$form->input('이메일','text', 'mb_email', $view->mb_email,
@@ -72,16 +68,22 @@
 								'placeholder'=>'닉네임'
 							)
 						);
-						$form->input('비밀번호','password', 'mb_password', $view->mb_password,
-							array(
-								'placeholder'=>'비밀번호'
-							)
-						);
-						$form->input('비밀번호 확인','password', 'chk_password', $view->mb_password,
-							array(
-								'placeholder'=>'비밀번호 확인'
-							)
-						);
+
+						// 비밀번호 설정 - 웹 회원만 (소셜은 사용안함)
+						if( $view->mb_social_type == 'web' ||
+							( !$is_update && !$is_social_join )
+						) :
+							$form->input('비밀번호','password', 'mb_password', $view->mb_password,
+								array(
+									'placeholder'=>'비밀번호'
+								)
+							);
+							$form->input('비밀번호 확인','password', 'chk_password', $view->mb_password,
+								array(
+									'placeholder'=>'비밀번호 확인'
+								)
+							);
+						endif;
 					?>
 
 					<!-- 회원 사진 - 업데이트 전용 -->

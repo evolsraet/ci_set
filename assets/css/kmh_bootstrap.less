@@ -1,13 +1,17 @@
 /*
-
 	kmh bootstrap 추가 스타일
 
 	base : bootstrap 3.3.7
-
 */
+
 
 // LESS 기본 로드
 @import url('/assets/css/less_load.less');
+
+// 모바일 네비 햄버거 색상
+.navbar-inverse .navbar-toggle .icon-bar {
+	background-color: #fff;
+}
 
 // 스윗얼렛 fix
 
@@ -61,7 +65,7 @@
 			.header-bar, .header-info {
 				display: block;
 				text-align: center;
-				float: initial;
+				float: none;
 			}
 		}
 
@@ -91,5 +95,12 @@
 	&>.footer {
 		padding: 20px;
 		// border-top: 1px solid #e1e1e1;
+	}
+}
+
+.table {
+	border-top: 1px solid @table-border-color;
+	th {
+		color: darken(@text-color, 10%);
 	}
 }

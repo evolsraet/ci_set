@@ -53,6 +53,10 @@ $route['default_controller'] = 'home';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
+// page 컨트롤러
+$route['page/.+']  = 'page/index';
+$route['vue/.+']  = 'page/index';
+
 // match - board
 $route['board/.+']  = 'board/index';
 $route['notice/.+'] = 'board/index';
@@ -65,7 +69,8 @@ $route['location/.+']  = 'page/index';
 
 // 관리자
 // $route['admin/dashboard/.+'] 		= 'page/index';
-$route['admin/etc/.+'] 		= 'page/index';
+$route['admin/etc/.+']     = 'page/index';
+$route['admin/board/.+'] = 'board/index';
 
 
 // board method

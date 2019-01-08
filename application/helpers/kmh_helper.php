@@ -1,5 +1,5 @@
 <?
-	// 글로벌 헬퍼
+// 글로벌 헬퍼
 
 	// 클래스의 프로텍트 개체 조회
 	function get_protected_member(&$class_object,$protected_member) {
@@ -29,6 +29,30 @@
 			$response = file_get_contents($url, false, $context);
 
 			return json_decode($response);
+		}
+
+		function email_send($from_email, $from_name, $to, $subject, $body) {
+			$CI =& get_instance();
+
+			if( empty($from_email) )	$from_email = $CI->config->item('site_email');
+			if( empty($from_name) )		$from_email = $CI->config->item('site_title');
+
+			$data = array();
+			$data['site_title'] = $CI->config->item('site_title');
+			$data['body'] = $body;
+
+			$CI->load->library('email');
+			$CI->email->from($from_email, $from_name);
+			$CI->email->to($to);
+			$CI->email->subject($data['site_title'] . ' - ' . $subject);
+			$CI->email->message(
+				$CI->load->view('email_template', $data, true)
+			);
+
+			if( !$CI->email->send() )
+				return strip_tags( $CI->email->print_debugger(false) );
+			else
+				return true;
 		}
 
 	/*=====  End of 통신  ======*/
@@ -68,18 +92,15 @@
 		define('DATETIME', "Y-m-d H:i:s");
 		define('DATE', "Y-m-d");
 
-		// 날짜 스트링 자르기
+		// 날짜시간 스트링 자르기
 		function get_datetime($str = null, $type = null) {
 			if( $str===null ) $str = date(DATETIME);
-			switch ($type) {
-				case 'full':
-					return substr($str, 0, 16);
-					break;
-
-				default:
-					return substr($str, 0, 10);
-					break;
-			}
+			return substr($str, 0, 16);
+		}
+		// 날짜 스트링 자르기
+		function get_date($str = null, $type = null) {
+			if( $str===null ) $str = date(DATE);
+			return substr($str, 0, 10);
 		}
 	/*=====  End of 날짜  ======*/
 
@@ -144,6 +165,89 @@
 	=            출력부            =
 	===========================*/
 
+		// $nav_sub 페이지명
+		function page_title( $array ) {
+			$CI =& get_instance();
+			if( $CI->uri->total_rsegments() >= 2 ) {
+				return $array[$CI->uri->rsegment(1)][$CI->uri->rsegment(2)];
+			} elseif( $CI->uri->total_rsegments() >= 1 ) {
+				return $array[$CI->uri->rsegment(1)];
+			} else {
+				return '페이지 타이틀이 없습니다.';
+			}
+		}
+
+		// vue 템플릿 가져오기
+		// 따옴표 등 문자열을 변환 처리
+		// 배열 data 를 변수로 extract
+		function vue_template( $file, $data = null ) {
+			if(is_array($data)) extract($data);
+			ob_start();
+			include($file);
+			$buffer = ob_get_contents();
+			@ob_end_clean();
+			// return addslashes($buffer);
+			return trim(addslashes($buffer));
+		}
+
+		function vue_component( $file, $data = null ) {
+			if(is_array($data)) extract($data);
+			ob_start();
+			include($file);
+			$buffer = ob_get_contents();
+			@ob_end_clean();
+			// return addslashes($buffer);
+			return $buffer;
+		}
+
+		/**
+		 * Ratchet Websocket Library: helper file
+		 * @author Romain GALLIEN <romaingallien.rg@gmail.com>
+		 */
+		if (!function_exists('valid_json')) {
+
+		    /**
+		     * Check JSON validity
+		     * @method valid_json
+		     * @author Romain GALLIEN <romaingallien.rg@gmail.com>
+		     * @param  mixed  $var  Variable to check
+		     * @return bool
+		     */
+		    function valid_json($var) {
+		        return (is_string($var)) && (is_array(json_decode($var, true))) && (json_last_error() == JSON_ERROR_NONE) ? true : false;
+		    }
+		}
+
+
+		/**
+		 * Ratchet Websocket Library: helper file
+		 * @author Romain GALLIEN <romaingallien.rg@gmail.com>
+		 */
+		if (!function_exists('output')) {
+
+		    /**
+		     * Output valid or invalid logs
+		     * @method output
+		     * @author Romain GALLIEN <romaingallien.rg@gmail.com>
+		     * @param  string  $type  Log type
+		     * @param  string  $var   String
+		     * @return string
+		     */
+		    function output($type = 'success', $output = null) {
+		        if ($type == 'success') {
+		            echo "\033[32m".$output."\033[0m".PHP_EOL;
+		        } elseif($type == 'error') {
+		            echo "\033[31m".$output."\033[0m".PHP_EOL;
+		        } elseif($type == 'fatal') {
+		            echo "\033[31m".$output."\033[0m".PHP_EOL;
+		            exit(EXIT_ERROR);
+		        } else {
+		            echo $output.PHP_EOL;
+		        }
+		    }
+		}
+
+
 		if (! function_exists('dump')) {
 			/**
 			 * Output the given variables with formatting and location.
@@ -183,6 +287,7 @@
 			}
 		}
 
+		// 에코 대용 : XSS 필터링
 		if (! function_exists('e')) {
 			/**
 			 *
@@ -203,6 +308,7 @@
 			}
 		}
 
+		// 구글 리캡챠
 		function reCAPTCHA( $sitekey ) {
 			$result = '';
 			$result .= PHP_EOL.'<!-- reCAPTCHA -->';
@@ -319,48 +425,48 @@
 
 		if (!function_exists('json_encode'))
 		{
-		  function json_encode($a=false)
-		  {
-		    if (is_null($a)) return 'null';
-		    if ($a === false) return 'false';
-		    if ($a === true) return 'true';
-		    if (is_scalar($a))
-		    {
-		      if (is_float($a))
-		      {
-		        // Always use "." for floats.
-		        return floatval(str_replace(",", ".", strval($a)));
-		      }
+			function json_encode($a=false)
+			{
+				if (is_null($a)) return 'null';
+				if ($a === false) return 'false';
+				if ($a === true) return 'true';
+				if (is_scalar($a))
+				{
+					if (is_float($a))
+					{
+						// Always use "." for floats.
+						return floatval(str_replace(",", ".", strval($a)));
+					}
 
-		      if (is_string($a))
-		      {
-		        static $jsonReplaces = array(array("\\", "/", "\n", "\t", "\r", "\b", "\f", '"'), array('\\\\', '\\/', '\\n', '\\t', '\\r', '\\b', '\\f', '\"'));
-		        return '"' . str_replace($jsonReplaces[0], $jsonReplaces[1], $a) . '"';
-		      }
-		      else
-		        return $a;
-		    }
-		    $isList = true;
-		    for ($i = 0, reset($a); $i < count($a); $i++, next($a))
-		    {
-		      if (key($a) !== $i)
-		      {
-		        $isList = false;
-		        break;
-		      }
-		    }
-		    $result = array();
-		    if ($isList)
-		    {
-		      foreach ($a as $v) $result[] = json_encode($v);
-		      return '[' . join(',', $result) . ']';
-		    }
-		    else
-		    {
-		      foreach ($a as $k => $v) $result[] = json_encode($k).':'.json_encode($v);
-		      return '{' . join(',', $result) . '}';
-		    }
-		  }
+					if (is_string($a))
+					{
+						static $jsonReplaces = array(array("\\", "/", "\n", "\t", "\r", "\b", "\f", '"'), array('\\\\', '\\/', '\\n', '\\t', '\\r', '\\b', '\\f', '\"'));
+						return '"' . str_replace($jsonReplaces[0], $jsonReplaces[1], $a) . '"';
+					}
+					else
+						return $a;
+				}
+				$isList = true;
+				for ($i = 0, reset($a); $i < count($a); $i++, next($a))
+				{
+					if (key($a) !== $i)
+					{
+						$isList = false;
+						break;
+					}
+				}
+				$result = array();
+				if ($isList)
+				{
+					foreach ($a as $v) $result[] = json_encode($v);
+					return '[' . join(',', $result) . ']';
+				}
+				else
+				{
+					foreach ($a as $k => $v) $result[] = json_encode($k).':'.json_encode($v);
+					return '{' . join(',', $result) . '}';
+				}
+			}
 		}
 
 
@@ -370,6 +476,15 @@
 	/*===========================
 	=            데이터            =
 	===========================*/
+		// CI Flashdata 추가 (배열)
+		function add_flashdata( $name, $msg, $class=null ) {
+			$CI =& get_instance();
+			$flashdata = $CI->session->flashdata($name);
+			if( $flashdata == '' )
+				$flashdata = array();
+			$flashdata[] = array( 'msg' => $msg, 'class' => $class );
+			$CI->session->set_flashdata($name, $flashdata);
+		}
 
 		function get_ip()
 		{
@@ -427,11 +542,36 @@
 	=            실행            =
 	==========================*/
 
-		function mkdir_sub( $path ) {
-			$latest_folder = '';
+		// 경로내 폴더 만들
+		//
+		// latest_folder 는 마지막 확인된 폴더. 해당폴더까지는 검사하지않으므로, 효율상 좋음. 무시해도 무관
+		//
+		// $path = 'thumb/';
+		// $latest_folder = $this->CI->config->item('file_path_php');
 
-			// kmh_print( explode('/',$path ) );
+		function mkdir_path( $path, $latest_folder = null ) {
+			// file_path_php 가 path 에 포함되 있을 경우, lastest_folder 를 file_path_php 로 변경
+			if( $latest_folder == null ) {
+				$CI =& get_instance();
+				if( strpos($path, $CI->config->item('file_path_php')) !== false ) {
+					$path = str_replace($CI->config->item('file_path_php'), '', $path);
+					$latest_folder = $CI->config->item('file_path_php');
+				}
+			}
 
+			// 경로 생성
+			foreach ( explode('/',$path) as $key => $row) :
+				if( trim($row)!='' ) :
+					$current_folder = $latest_folder.'/'.$row;
+					if (!is_dir($current_folder) )
+						mkdir($current_folder, DIR_WRITE_MODE);
+
+					chmod($current_folder, DIR_WRITE_MODE);
+					$latest_folder = $current_folder;
+				endif;
+			endforeach;
+
+			/*
 			// FCPATH
 			foreach ( explode('/',$path) as $key => $row) :
 				if( !empty($latest_folder) ) $current_folder = $latest_folder.'/'.$row;
@@ -454,6 +594,7 @@
 
 				$latest_folder = $current_folder;
 			endforeach;
+			*/
 		}
 
 

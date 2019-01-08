@@ -16,6 +16,7 @@ class Files {
 	public $file = false;
 	public $allowed_types = '*';
 	public $max_size = '*'; // KB
+	public $duplicate_replace = false; // 중복 비허용 : file_rel_type, file_rel_id, file_rel_desc 같은 지난 파일 삭제
 
 	public $tmpcode_prefix = "tmpcode_";
 
@@ -66,6 +67,11 @@ class Files {
 
 		public function set_type($type='*') {
 			$this->allowed_types = $type;
+			return $this;
+		}
+
+		public function set_duplicate_replace( $val = true ) {
+			$this->duplicate_replace = $val;
 			return $this;
 		}
 
@@ -143,19 +149,10 @@ class Files {
 
 						// $thumb_folder = 'thumb/'.date('Ym').'/';
 						$thumb_folder = 'thumb/';
-						$latest_folder = $this->CI->config->item('file_path_php');
+						$file_path_php = $this->CI->config->item('file_path_php');
 
 						// 폴더 생성
-						foreach ( explode('/',$thumb_folder) as $key => $row) :
-							if( trim($row)!='' ) :
-								$current_folder = $latest_folder.'/'.$row;
-								if (!is_dir($current_folder) )
-									mkdir($current_folder, DIR_WRITE_MODE);
-
-								chmod($current_folder, DIR_WRITE_MODE);
-								$latest_folder = $current_folder;
-							endif;
-						endforeach;
+						mkdir_path( $file_path_php . $thumb_folder );
 
 						// $new_image_path =
 						// 		$file_info['dirname']
@@ -169,7 +166,7 @@ class Files {
 
 
 						$new_image_path =
-								$this->CI->config->item('file_path_php').$thumb_folder
+								$file_path_php . $thumb_folder
 								. 'thumb_' . $file_info['basename']
 								. '_' . $width
 								. 'x'
@@ -302,6 +299,7 @@ class Files {
 			// End of 이미지 리사이즈
 		}
 
+		// 게시글 대표이미지
 		public function post_image($post_id, $width = 0, $height = 0, $no_resize = false) {
 			$this->CI->load->model('file_model');
 
@@ -320,6 +318,7 @@ class Files {
 			}
 		}
 
+		// 회원 프로필사진
 		public function member_image( $mb_id, $size=50 ) {
 			$this->CI->load->model('file_model');
 			$image_file = $this->CI->file_model->member_image($mb_id);
@@ -329,11 +328,20 @@ class Files {
 				return
 					'<img src="'
 					.$this->image_resize( $image_file->web_path, $size, $size )
-					.'" class="member_image img-circle" alt="member photo">';
+					.'" class="member_image img-circle" alt="member photo" width="'.$size.'">';
 			else :
 				$this->CI->load->helper('kmh');
 				$this->CI->load->model('member_model');
 				$db = $this->CI->member_model->get($mb_id);
+
+				// 소셜 이미지 있을 경우
+				if( $db->mb_social_image )
+					return
+						'<img src="'
+						.$db->mb_social_image
+						.'" class="member_image img-circle" alt="member photo" width="'.$size.'">';
+
+				// 없을경우, 텍스트
 				switch ($db->mb_level) {
 					case '100':
 						$bg_class = " bg-primary";
@@ -366,17 +374,17 @@ class Files {
 			$ext = explode('.', $file_data->file_save);
 			$ext = array_pop($ext);
 
-			$data['fa4']['file']       = 'fa fa-file-o';
-			$data['fa4']['archive']    = 'fa fa-file-archive-o';
-			$data['fa4']['audio']      = 'fa fa-file-audio-o';
-			$data['fa4']['code']       = 'fa fa-file-code-o';
-			$data['fa4']['excel']      = 'fa fa-file-excel-o';
-			$data['fa4']['image']      = 'fa fa-file-image-o';
-			$data['fa4']['pdf']        = 'fa fa-file-pdf-o';
-			$data['fa4']['powerpoint'] = 'fa fa-file-powerpoint-o';
-			$data['fa4']['text']       = 'fa fa-file-text-o';
-			$data['fa4']['video']      = 'fa fa-file-video-o';
-			$data['fa4']['word']       = 'fa fa-file-word-o';
+			$data['fa4']['file']       = 'fa fa-fw fa-file-o';
+			$data['fa4']['archive']    = 'fa fa-fw fa-file-archive-o';
+			$data['fa4']['audio']      = 'fa fa-fw fa-file-audio-o';
+			$data['fa4']['code']       = 'fa fa-fw fa-file-code-o';
+			$data['fa4']['excel']      = 'fa fa-fw fa-file-excel-o';
+			$data['fa4']['image']      = 'fa fa-fw fa-file-image-o';
+			$data['fa4']['pdf']        = 'fa fa-fw fa-file-pdf-o';
+			$data['fa4']['powerpoint'] = 'fa fa-fw fa-file-powerpoint-o';
+			$data['fa4']['text']       = 'fa fa-fw fa-file-text-o';
+			$data['fa4']['video']      = 'fa fa-fw fa-file-video-o';
+			$data['fa4']['word']       = 'fa fa-fw fa-file-word-o';
 
 			$ext_type = "zip|alz|gz|tar|z|rar|ace|bz|bz2";
 			if( preg_match("/($ext_type)/i",$ext) )
@@ -423,8 +431,7 @@ class Files {
 			$total_result = array();
 			$total_result['count'] = 0;
 			$total_result['count_fail'] = 0;
-			$folder_each = explode('/', $folder);
-			$latest_folder = $this->CI->config->item('file_path_php');
+			$file_path_php = $this->CI->config->item('file_path_php');
 
 			// 업로드 전에 임시파일들 삭제
 			$this->delete_old_tmp_files();
@@ -434,7 +441,7 @@ class Files {
 
 			try {
 				$config['max_size']      = $this->max_size;
-				$config['upload_path']   = $this->CI->config->item('file_path_php') . $folder;
+				$config['upload_path']   = $file_path_php . $folder;
 				$config['allowed_types'] = $this->allowed_types;
 				$config['encrypt_name']  = true;
 
@@ -442,23 +449,13 @@ class Files {
 				if( !is_array($_FILES[$file_post_name]) ) :
 					throw new Exception("업로드할 파일이 없습니다.", EXIT_SUCCESS);
 				endif;
-						$latest_folder = $this->CI->config->item('file_path_php');
 
 				// 폴더 생성
-				foreach ($folder_each as $key => $row) :
-					if( trim($row)!='' ) :
-						$current_folder = $latest_folder.'/'.$row;
-						if (!is_dir($current_folder) )
-							mkdir($current_folder, DIR_WRITE_MODE);
-
-						chmod($current_folder, DIR_WRITE_MODE);
-						$latest_folder = $current_folder;
-					endif;
-				endforeach;
+				mkdir_path( $config['upload_path'] );
 
 				$this->CI->load->library('upload', $config);
 
-				// 파일이 배열아니면 배열로 만들어보기
+				// 파일이 배열아니면 배열로 만들기
 				if( !is_array($_FILES[$file_post_name]['name']) ) :
 					$_FILES['tmp'] = $_FILES[$file_post_name];
 					$vars = array( 'name','type','tmp_name','error','size' );
@@ -494,6 +491,18 @@ class Files {
 								$this->CI->config->item('file_path').$folder.$file_result['upload_data']['file_name'];
 
 							// $this->CI->kmh->log( $file_result );
+
+							// 중복 비허용	(기존 파일 삭제)
+							if( $this->duplicate_replace ) :
+								$duplicate_replace_result = $this->CI->file_model
+									->where('file_rel_type', $rel_type)
+									->where('file_rel_id', $rel_id)
+									->where('file_rel_desc', $rel_desc)
+									->delete();
+
+								// $duplicate_replace_result = "{$rel_type} - {$rel_id} - {$rel_desc} : result ({$duplicate_replace_result})";
+								// $this->CI->kmh->log( $duplicate_replace_result, 'duplicate_replace result' );
+							endif;
 
 							// 파일 디비에 추가
 							if( $rel_type !== null || $rel_id !== null ) {

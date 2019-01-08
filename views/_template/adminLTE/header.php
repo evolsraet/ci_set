@@ -6,7 +6,7 @@
 			<!-- mini logo for sidebar mini 50x50 pixels -->
 			<span class="logo-mini"><b>A</b></span>
 			<!-- logo for regular state and mobile devices -->
-			<span class="logo-lg"><b><?=$this->config->item('site_title')?></b></span>
+			<span class="logo-lg"><b>ADMIN</b></span>
 		</a>
 
 		<!-- Header Navbar -->
@@ -34,7 +34,7 @@
 										<a href="#">
 											<div class="pull-left">
 												<?=$this->files->member_image($this->logined->mb_id, 15)?>
-												<!-- <img src="<?=TPATH?>dist/img/user2-160x160.jpg" class="img-circle" alt="User Image"> -->
+												<!-- <img src="<?=TDIR?>dist/img/user2-160x160.jpg" class="img-circle" alt="User Image"> -->
 											</div>
 											<!-- Message title and timestamp -->
 											<h4>
@@ -120,7 +120,7 @@
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 							<!-- The user image in the navbar-->
 							<?=$this->files->member_image( $this->logined->mb_id, 15 )?>
-							<!-- <img src="<?=TPATH?>dist/img/user2-160x160.jpg" class="user-image" alt="User Image"> -->
+							<!-- <img src="<?=TDIR?>dist/img/user2-160x160.jpg" class="user-image" alt="User Image"> -->
 							<!-- hidden-xs hides the username on small devices so only the image appears. -->
 							<span class="hidden-xs"><?=$this->logined->mb_display?></span>
 						</a>
@@ -128,7 +128,7 @@
 							<!-- The user image in the menu -->
 							<li class="user-header">
 								<?=$this->files->member_image( $this->logined->mb_id, 90 )?>
-								<!-- <img src="<?=TPATH?>dist/img/user2-160x160.jpg" class="img-circle" alt="User Image"> -->
+								<!-- <img src="<?=TDIR?>dist/img/user2-160x160.jpg" class="img-circle" alt="User Image"> -->
 
 								<p>
 									<?=$this->logined->mb_display?>
@@ -181,7 +181,7 @@
 			<div class="user-panel">
 				<div class="pull-left image">
 					<?=$this->files->member_image( $this->logined->mb_id )?>
-					<!-- <img src="<?=TPATH?>dist/img/user2-160x160.jpg" class="img-circle" alt="User Image"> -->
+					<!-- <img src="<?=TDIR?>dist/img/user2-160x160.jpg" class="img-circle" alt="User Image"> -->
 				</div>
 				<div class="pull-left info">
 					<p><?=$this->logined->mb_display?></p>

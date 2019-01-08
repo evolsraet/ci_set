@@ -1,5 +1,8 @@
 <?
 use Hashids\Hashids;
+use Phpform\Phpform;
+
+$form = new Phpform();
 
 $hashids = new Hashids();
 
@@ -25,6 +28,16 @@ page name : home
 		<?=$this->boards->latest($latest)?>
 	</div>
 </div>
+
+
+
+<?
+	$form_config =
+	$form->open('post_write_form', $form_action, $form_config );
+?>
+	<input type="text" name="test" value="<?=$_POST['test']?>">
+	<button type="submit">sm</button>
+<? $form->close(); ?>
 
 <?
 

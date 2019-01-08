@@ -98,7 +98,7 @@
 	<a href="#" class="scrollToTop"></a>
 
 	<!-- 컨텐츠 -->
-	<? $this->load->view(TVIEW."header.php"); ?>
+	<? $this->load->view(TPATH."header.php"); ?>
 
 	<div id="main" role="main">
 			<? if ( $this->uri->segment(2)=='' ) : 	// main ?>
@@ -150,7 +150,7 @@
 		</div>
 	</div>
 
-	<? $this->load->view(TVIEW."footer.php"); ?>
+	<? $this->load->view(TPATH."footer.php"); ?>
 	<!-- // 컨텐츠 -->
 
 	<script src="<?=base_url(JS."bootstrap.min.js");?>"></script>

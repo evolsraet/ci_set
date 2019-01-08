@@ -76,6 +76,16 @@ class Post_model extends MY_Model {
 	public function board_list_condition( &$board_info ) {
 		// $this->console->log( $this );
 		// 게시판
+
+		// 댓글을 위한 셀렉트 (댓글갯수 사용안할 경우 불필요)
+		$table_comment = $this->_database->dbprefix('comment');
+		$table_post = $this->_database->dbprefix('post');
+		$select = "(SELECT COUNT(*) from {$table_comment} where {$table_comment}.cm_post_id = {$table_post}.post_id) as cm_cnt,
+					member.*,
+					post.*";
+		$this->select( $select );
+		// 댓글을 위한 셀렉트 (댓글갯수 사용안할 경우 불필요)
+
 		$this->join('member', "mb_id = post_mb_id", 'left');
 		$this->where('post_board_id', $board_info->board_id);
 

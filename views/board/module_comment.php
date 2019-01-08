@@ -4,7 +4,7 @@
 ?>
 
 <section id="comments">
-	<h3>Comments</h3>
+	<h3><i class="fa fa-comments"></i> Comments</h3>
 	<div id="comment_list"></div>
 
 	<? if( $CI->members->is_login() ) : ?>
@@ -61,6 +61,8 @@
 	}
 
 	function reload_comment() {
+		$("#comment_list").html( ajax_loading() );
+
 		$.post( $('#board_base').val() + 'comment_list/<?=$CI->post_id?>',function(data, textStatus, xhr) {
 			reset_comment_form();
 			// 목록 갱신
@@ -124,12 +126,12 @@
 		var url = $("#board_base").val() + 'comment_update/' + cm_id;
 
 		// 원본 보관
-		var original_content = $.trim( $('#comment_'+cm_id+' .content').html().replace(/\<br\>/g, "\r") );
+		var original_content = $.trim( $('#comment_'+cm_id+' .desc').html().replace(/\<br\>/g, "\r") );
 
 		var edit_form = $('.comment_edit_form_wrap').html();
 
-		$('#comment_'+cm_id+' .content').html( edit_form );
-		$('#comment_'+cm_id+' .content form')
+		$('#comment_'+cm_id+' .desc').html( edit_form );
+		$('#comment_'+cm_id+' .desc form')
 			.attr('action', url )
 			.attr('name','comment_edit_form_'+cm_id)
 			.attr('id','comment_edit_form_'+cm_id);

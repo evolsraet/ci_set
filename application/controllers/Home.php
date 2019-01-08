@@ -16,7 +16,6 @@
  */
 
 use Faker\Factory;
-
 // $parser = new Less_Parser();
 
 class Home extends MY_Controller {
@@ -33,11 +32,15 @@ class Home extends MY_Controller {
 		$this->_render('pages/home',$renderData);
 	}
 
-	function info() {
+	public function info() {
 		phpinfo();
 	}
 
-	function make_dummy() {
+	public function table_row_test() {
+		$this->load->view('pages/table_row_test');
+	}
+
+	public function make_dummy() {
 		$this->output->enable_profiler(TRUE);
 		// echo 'f';
 		// return false;
@@ -84,13 +87,13 @@ class Home extends MY_Controller {
 		// echo "nono";
 	}
 
-	function test($id) {
+	public function test($id) {
 		$this->load->model('file_model');
 		$file = $this->file_model->get($id);
 		$this->file_model->thumb_delete($file);
 	}
 
-	function check_header() {
+	public function check_header() {
 		kmh_print( apache_request_headers(), true );
 		// $response['status'] = 'ok';
 		// $response['header'] = apache_request_headers();

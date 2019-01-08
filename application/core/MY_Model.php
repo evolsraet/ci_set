@@ -14,18 +14,18 @@
  *   강민호 2018-08
  *
  * 	추가 할것
- *      force_delete
+ *      v force_delete
  *      리스토어 옵저버
  *
- *      after : update, soft_delete, delete  에는 적용된 로우 키값 또는 where 값을 돌려줘야한다 : 가능?
+ *      v after : update, soft_delete, delete  에는 적용된 로우 키값 또는 where 값을 돌려줘야한다 : 가능?
  *      before : update, create 에는 data 를 돌려준다
  *      before : get 에는 data
  *      before : soft_delete, delete 는 데이터 읽어서 보내줘야할것
  *
  *
  *	주의 사항
- *		직접 set, where 를 쓸 경우, 옵저버에 전달되지 않는다
- *		방법을 찾아야함!!! 옵저버용 데이터와 연계할 수 있는 방법이 필요함
+ *		v 직접 set, where 를 쓸 경우, 옵저버에 전달되지 않는다
+ *			방법을 찾아야함!!! 옵저버용 데이터와 연계할 수 있는 방법이 필요함
  *
  *
  *
@@ -83,6 +83,8 @@ class MY_Model extends CI_Model
 	protected $soft_delete = FALSE; // deleted_at 필드 사용
 	protected $_temporary_with_deleted = FALSE;
 	protected $_temporary_only_deleted = FALSE;
+
+	protected $force_delete = FALSE;	// 강제 삭제 (soft_delete 사용안함 - 사용후 돌릴것)
 
 	// 자동기입 설정
 	protected $created = FALSE;
@@ -525,10 +527,26 @@ class MY_Model extends CI_Model
 			return false;
 	}
 
+	public function force_delete() {
+		$this->force_delete = TRUE;
+		return $this;
+	}
+
 	public function delete($id = NULL)
 	{
 		$trace = debug_backtrace();
 		$trace = $trace[0];
+
+		$this->kmh->log($this->force_delete, 'force_delete 시작');
+		$this->kmh->log($this->soft_delete, 'soft_delete 시작');
+
+		// 강제삭제
+		if( $this->force_delete == TRUE ) :
+			$model_soft_delete = $this->soft_delete;
+			$this->soft_delete = FALSE;
+		endif;
+
+		$this->kmh->log($this->soft_delete, 'soft_delete 중간');
 
 		if( $id !== NULL )
 			$this->where($this->primary_key, $id);
@@ -578,6 +596,15 @@ class MY_Model extends CI_Model
 			else
 				$this->trigger('after_delete', $to_observer);
 		}
+
+		// 강제삭제
+		if( $this->force_delete == TRUE ) :
+			$this->force_delete = FALSE;
+			$this->soft_delete = $model_soft_delete;
+		endif;
+
+		$this->kmh->log($this->force_delete, 'force_delete 끝');
+		$this->kmh->log($this->soft_delete, 'soft_delete 끝');
 
 		return $result;
 	}

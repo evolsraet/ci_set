@@ -6,6 +6,7 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
 		<title>This page could not be found</title>
 
+		<link rel="stylesheet" href="/assets/lib/noto-sans-korean/css/noto-sans-korean.css">
 		<style>
 			.nuxt-progress {
 				position: fixed;
@@ -21,7 +22,8 @@
 				z-index: 999999;
 			}
 			html {
-				font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+				font-family: "Noto Sans Korean", Arial, sans-serif;
+				/*font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;*/
 				font-size: 16px;
 				word-spacing: 1px;
 				-ms-text-size-adjust: 100%;
@@ -80,7 +82,7 @@
 				-webkit-box-direction: normal;
 						-ms-flex-direction: column;
 								flex-direction: column;
-				font-family: sans-serif;
+				/*font-family: sans-serif;*/
 				font-weight: 100 !important;
 				-ms-text-size-adjust: 100%;
 				-webkit-text-size-adjust: 100%;

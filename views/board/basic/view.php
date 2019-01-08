@@ -8,7 +8,7 @@
 		</li>
 		<li>
 			<strong><i class="fa fa-calendar-check-o"></i> 작성일</strong>
-			<?=get_datetime($view->post_created_at)?>
+			<?=get_date($view->post_created_at)?>
 		</li>
 		<li>
 			<strong><i class="fa fa-check-circle-o"></i> 조회수</strong>
@@ -36,10 +36,10 @@
 
 <!-- 파일 -->
 <section class="board_file">
-	<ul class="list-unstyled">
+	<ul class="list-unstyled list-inline">
 	<? foreach( fe($view->file) as $key => $row ) : ?>
 		<li>
-			<a href="javascript:download(<?=$row->file_id?>)">
+			<a href="javascript:download(<?=$row->file_id?>)" class="btn btn-link">
 				<i class="<?=$this->files->get_file_type($row)?>"></i>
 				<?=$row->file_name?>
 			</a>

@@ -35,7 +35,7 @@ class Admin extends MY_Controller {
 			// JSON 용
 			foreach( fe( $activity_data ) as $date => $count ) :
 				$this->data['activity_count'][] = $count;
-				if( $date===get_datetime() )
+				if( $date===get_date() )
 					$this->data['activity_key'][] = '오늘';
 				else
 					$this->data['activity_key'][] = Carbon::parse($date)->diffForHumans();
@@ -53,8 +53,7 @@ class Admin extends MY_Controller {
 	}
 
 	// CRUD 세팅
-
-	function setting( $id ) {
+	public function setting( $id ) {
 		$this->load->library('grocery_CRUD');
 		$crud = new grocery_CRUD();
 		$table_full = 'kmh_'.$id;
@@ -95,11 +94,18 @@ class Admin extends MY_Controller {
 				unset($columns[array_search('board_use_editor', $columns)]);
 				unset($columns[array_search('board_use_secret', $columns)]);
 				unset($columns[array_search('board_category', $columns)]);
-				unset($columns[array_search('board_admin', $columns)]);
+				// unset($columns[array_search('board_admin', $columns)]);
 				unset($columns[array_search('board_extra_info', $columns)]);
+
+				$this->load->model( 'member_model' );
+
+				foreach( fe( $this->member_model->get_all() ) as $key => $row ) :
+					$admin_list[$row->mb_id] = $row->{ $this->members->auth_field } . " [{$row->mb_display}]";
+				endforeach;
 
 				$crud->columns($columns)
 					->set_field_upload('pu_file', $crud_file_path )
+					->field_type('board_admin','multiselect',$admin_list)
 					->required_fields('pu_type', 'pu_title', 'pu_start', 'pu_end','pu_file');
 				break;
 			case 'member':
@@ -128,20 +134,21 @@ class Admin extends MY_Controller {
 
 		$this->data['output'] = $crud->render();
 
-		$this->_render('_template/crud',$renderData);
+		$this->_render('admin/crud',$renderData);
 	}
 
 	// CRUD 함수
+		// 비밀번호 필드 생성
+		public function set_password_input_to_empty() {
+		    return "<input type='password' name='mb_password' value='' />";
+		}
 
-	function set_password_input_to_empty() {
-	    return "<input type='password' name='mb_password' value='' />";
-	}
+		// 비밀번호 암호화
+		public function encrypt_password_callback($post_array, $primary_key) {
+			$this->load->model('member_model');
 
-	function encrypt_password_callback($post_array, $primary_key) {
-		$this->load->model('member_model');
+			$post_array = $this->member_model->hash_password($post_array);
 
-		$post_array = $this->member_model->hash_password($post_array);
-
-		return $post_array;
-	}
+			return $post_array;
+		}
 }

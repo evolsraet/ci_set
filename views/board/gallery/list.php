@@ -62,7 +62,7 @@
 										<p class="writer"><?=writer_display($row)?></p>
 									</div>
 									<div class="col-xs-6 text-right">
-										<p class="date text-primary"><?=get_datetime( $row->post_created_at )?></p>
+										<p class="date"><?=get_date( $row->post_created_at )?></p>
 									</div>
 								</div>
 							</div>

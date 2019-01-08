@@ -11,13 +11,18 @@ class Board extends MY_Controller {
 	public $is_update  = false;	// 새글 작성인지 업데이트인지 여부
 
 	protected $auth       = false;	// 권한 변수
-	protected $board_info = false;	// 게시판 정보
+	public $board_info = false;	// 게시판 정보
 
 	public function __construct() {
 		parent::__construct();
 
+		// $this->benchmark->mark('board_construct_start');
+
 		// 게시판 아이디의 기준을 변경할 경우
 		$this->board_id_segment = 2;
+
+		if( $this->uri->segment(1)=='admin' )
+			$this->board_id_segment = 3;
 
 		// 변수 설정
 		$this->board_id = $this->uri->segment($this->board_id_segment);
@@ -66,21 +71,21 @@ class Board extends MY_Controller {
 
 		$this->data['auth'] =& $this->auth;
 
-		define('BOARDPATH', VIEWFOLDER."board/");
-		define('SKINPATH', BOARDPATH.$this->board_info->board_skin);
+		define('BOARDDIR', VIEWDIR."board/");
+		define('SKINDIR', BOARDDIR.$this->board_info->board_skin.'/');
 
         // 스타일 / 스크립트 로드
-        $this->css[] = BOARDPATH."board.less";
-        $this->css[] = SKINPATH."/assets/skin.less";
+        $this->css[] = BOARDDIR."board.less";
+        $this->css[] = SKINDIR."/assets/skin.less";
 
-        $this->javascript[] = BOARDPATH."board.js";
-        $this->javascript[] = SKINPATH."/assets/skin.js";
+        $this->javascript[] = BOARDDIR."board.js";
+        $this->javascript[] = SKINDIR."/assets/skin.js";
 
 		// 에디터
 		if( $this->board_info->board_use_editor ) :
 			$this->javascript[] = LIB.'summernote/dist/summernote.min.js';
 			$this->javascript[] = LIB.'summernote/dist/lang/summernote-ko-KR.js';
-			$this->javascript[] = BOARDPATH."board_editor.js";;
+			$this->javascript[] = BOARDDIR."board_editor.js";;
 			$this->css[] = LIB.'summernote/dist/summernote.css';
 
 			// $this->javascript[] = LIB.'summernote/dist/summernote-lite.js';
@@ -88,6 +93,8 @@ class Board extends MY_Controller {
 			// $this->css[] = LIB.'summernote/dist/summernote-lite.css';
 		endif;
 		// End of 에디터
+
+		// $this->benchmark->mark('board_construct_end');
 	}
 
 	public function index() {
@@ -276,7 +283,7 @@ class Board extends MY_Controller {
 			switch ( $this->method ) {
 				case 'view':
 					// 조회권한 확인
-					if( !$this->view->post_is_secret || $this->members->is_admin() ) :
+					if( !$this->view->post_is_secret || is_board_admin() ) :
 						// 비밀글아니거나 또는 관리자
 						$auth_to_view = true;
 					else :
@@ -312,7 +319,7 @@ class Board extends MY_Controller {
 				case 'update_act':
 				case 'delete':
 					// 본인확인
-					if( $this->members->is_admin()
+					if( is_board_admin()
 						||
 						( $this->view->post_mb_id && $this->members->is_me($this->view->post_mb_id) )
 						) :
@@ -375,10 +382,10 @@ class Board extends MY_Controller {
 
 			// 업뎃 권한 확인
 				// 비회원 글 일 경우
-				if( !$this->view->post_mb_id && !$this->members->is_admin() )
+				if( !$this->view->post_mb_id && !is_board_admin() )
 					$this->auth->need_password = true;
 				// 내가 쓴 경우나 관리자
-		        elseif( $this->members->is_me($this->view->post_mb_id) || $this->members->is_admin() )
+		        elseif( $this->members->is_me($this->view->post_mb_id) || is_board_admin() )
 		            $this->auth->update  = true;
 
 	        // 첨부파일 로드
@@ -698,7 +705,7 @@ class Board extends MY_Controller {
 						throw new Exception("해당 댓글이 존재하지 않습니다.", 1);
 
 					// 본인확인
-					if( $this->members->is_admin()
+					if( is_board_admin()
 						||
 						( $this->view->cm_mb_id && $this->members->is_me($this->view->cm_mb_id) )
 						) :
@@ -760,7 +767,7 @@ class Board extends MY_Controller {
 			// 답변글일 경우
 				else :
 					// 부모글 조회
-					$parent_comment = $this->comment_model->get( $data->cm_parent );
+					$parent_comment = $this->comment_model->with_deleted()->get( $data->cm_parent );
 
 					// 부모글의 패밀리 상속 - 카테고리 포함
 					$data->cm_family     = $parent_comment->cm_family;
@@ -798,6 +805,7 @@ class Board extends MY_Controller {
 		$data = array();
 		$data['auth'] = $this->auth;
 		$data['comments'] = $this->comment_model
+					->with_deleted()
 					->join('member', 'mb_id = cm_mb_id', 'left')
 					->where('cm_type', $type)
 					->where('cm_post_id', $post_id)

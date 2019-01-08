@@ -122,9 +122,14 @@ class Console {
 			return false;
 		}
 
+		$trace = debug_backtrace()[0];
+		$trace['file'] = str_replace(FCPATH, '', $trace['file']);
+
 		$log_item = array(
+			'file' => $trace['file'],
+			'line' => $trace['line'],
 			'data' => $data,
-			'type' => 'log'
+			'type' => 'log',
 		);
 
 		self::add_to_console('log_count', $log_item);
@@ -153,7 +158,12 @@ class Console {
 			$memory = strlen(serialize($object));
 		}
 
+		$trace = debug_backtrace()[0];
+		$trace['file'] = str_replace(FCPATH, '', $trace['file']);
+
 		$log_item = array(
+			'file' => $trace['file'],
+			'line' => $trace['line'],
 			'data' => $memory,
 			'type' => 'memory',
 			'name' => $name,

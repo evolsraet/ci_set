@@ -1,4 +1,4 @@
-<? $this->assets->load_css(VIEWFOLDER."latest/{$skin}/latest.less"); ?>
+<? $this->assets->load_css(VIEWDIR."latest/{$skin}/latest.less"); ?>
 
 <div class="panel panel-default latest latest_basic">
 	<div class="panel-heading"><?=$title?></div>
@@ -13,7 +13,7 @@
 					</a>
 					<div class="desc">
 						<p class="date">
-							<?=get_datetime($row->post_created_at)?>
+							<?=get_date($row->post_created_at)?>
 						</p>
 						<p class="writer">
 							<?=writer_display($row)?>
@@ -25,4 +25,4 @@
 	</div>
 </div>
 
-<? $this->assets->load_js(VIEWFOLDER."latest/{$skin}/latest.js"); ?>
+<? $this->assets->load_js(VIEWDIR."latest/{$skin}/latest.js"); ?>

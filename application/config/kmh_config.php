@@ -11,6 +11,7 @@
 	$config['site_description']	= 'site_description';
 	$config['site_author']		= 'WATOSYS';
 	$config['site_keywords']	= 'site_keywords';
+	$config['site_email']		= 'admin@watosys.co.kr';
 
 // 기본 템플릿
 	// $config['base_template'] = "vue_boiler";
@@ -27,7 +28,47 @@
 	$config['deny_mb_id'][] = $config['site_title'];
 	$config['deny_mb_nick'][] = $config['site_title'];
 
-// 모바일 전용 컨트롤러 사용
+// 회원 기본 아이디 필드 (미 적용시 members library 설정 값 사용)
+	// $config['auth_field'] = 'mb_tid';
+
+
+// 소셜 로그인 Hybridauth 2~
+	$config['hybridauth'] = array(
+		'base_url' => "{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['HTTP_HOST']}/member/social_endpoint",
+
+		'providers' => [
+			'Twitter' => [
+				'enabled' => true,
+				'keys' => [
+					'key'    => 'gYkw6AZtkabcetdQENwk35cGF',
+					'secret' => 'dmmKBdAuonCe7wOM5Wrn3VCXNI3xuu0UyTnQaVSLpIkkcnSdPH'
+				]
+			],
+			'Google'   => [
+				'enabled' => true,
+				'keys' => [
+					'id'  => '34891859812-thnacq02166kodplgitnsipphrharh6e.apps.googleusercontent.com',
+					'secret' => 'xYLVF8U6IfbDbWfN-GeCekHC'
+				]
+			],
+			'Facebook' => [
+				'enabled' => false,
+				'keys' => [
+					'id'  => '273286656096845',
+					'secret' => '273286656096845|N0BYJldf0wXrXLYRNsZJgiQ1tWg'
+				]
+			],
+			'Kakao' => [
+				'enabled' => true,
+				'keys' => [
+					'id'  => '1042e8835c8218348b36930857dae298',
+					'secret' => 'fg5OHIDTlqoDxyonGAB8iFsfxNTslwas'
+				]
+			]
+		]
+	);
+
+// 모바일 전용 모드 사용 (컨트롤러 혹은 레이아웃)
 	$config['mobile']     = false;
 
 // 파일 저장위치 (스마트에디터는 해당 파일에서 추가로 수정)
@@ -74,6 +115,7 @@
 	$config['nav_sub']['member']['join']   = '회원가입';
 	$config['nav_sub']['member']['update']   = '회원정보 수정';
 	$config['nav_sub']['member']['login']   = '로그인';
+	$config['nav_sub']['member']['find']   = '계정찾기';
 
 // 관리자 메뉴
 	$config['admin_nav'] = array();
@@ -81,25 +123,30 @@
 
 	$config['admin_nav']['dashboard'] = array(
 		'text'=>'대시보드',
-		'icon'=>'fa fa-dashboard',
+		'icon'=>'fa fa-fw fa-dashboard',
 	);
 	$config['admin_nav']['setting'] = array(
 		'text'=>'설정',
-		'icon'=>'fa fa-gears',
+		'icon'=>'fa fa-fw fa-gears',
 	);
 	$config['admin_nav']['member'] = array(
 		'text'=>'회원관리',
-		'icon'=>'fa fa-users',
+		'icon'=>'fa fa-fw fa-users',
+	);
+	$config['admin_nav']['board'] = array(
+		'text'=>'게시글 관리',
+		'icon'=>'fa fa-fw fa-users',
 	);
 	$config['admin_nav']['etc'] = array(
 		'text'=>'기타 설정',
-		'icon'=>'fa fa-toggle-off',
+		'icon'=>'fa fa-fw fa-toggle-off',
 	);
 
 	$config['admin_nav_sub']['dashboard']['dashboard'] = '대시보드';
 	$config['admin_nav_sub']['setting']['popup'] = '팝업';
 	$config['admin_nav_sub']['setting']['board'] = '게시판';
 	$config['admin_nav_sub']['member']['member'] = '회원';
+	$config['admin_nav_sub']['board']['notice'] = '공지사항';
 	$config['admin_nav_sub']['etc']['etc'] = '기타';
 
 

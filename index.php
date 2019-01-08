@@ -2,6 +2,7 @@
 /**
  * CodeIgniter
  *
+ *
  * An open source application development framework for PHP
  *
  * This content is released under the MIT License (MIT)
@@ -271,6 +272,16 @@ switch (ENVIRONMENT)
 	}
 
 	define('APPPATH', $application_folder.DIRECTORY_SEPARATOR);
+
+	// Classes 폴더 오토로드
+	define('CLASSPATH', APPPATH.'classes/');
+	set_include_path(get_include_path() . PATH_SEPARATOR . CLASSPATH );
+	spl_autoload_extensions('.php,.class.php,.interface.php,.abstract.php');
+	spl_autoload_register(
+		function ($class) {
+			spl_autoload( str_replace("\\", "/", $class) );
+		}
+	);
 
 	// The path to the "views" directory
 	if ( ! isset($view_folder[0]) && is_dir(APPPATH.'views'.DIRECTORY_SEPARATOR))

@@ -1,0 +1,48 @@
+// LESS 기본 로드
+@import (reference) url('/assets/css/less_load.less');
+
+// @import url('/assets/css/kmh_card.less');
+
+body {
+	overflow-y: scroll;
+}
+
+#header {
+	a {
+		font-weight: bold;
+	}
+
+}
+
+.well {
+	// background: @brand-success;
+	// background: red;
+}
+
+img {
+	max-width: 100%;
+}
+
+#footer {
+	margin-top: 40px;
+	background: #ccc;
+	padding: 40px 0;
+}
+
+
+// 화면전환 Pace.js
+	#main {
+		opacity: 0;
+	}
+	.pace-running #main {
+		opacity: 1;
+		transition: opacity .5s ease;
+	}
+
+	.pace-done #main {
+		opacity: 1 !important;
+	}
+
+	.no-js #main {
+		opacity: 1 !important;
+	}

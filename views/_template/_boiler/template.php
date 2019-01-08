@@ -11,9 +11,11 @@
 
 	<? // $this->assets->bundle_reset(); // 번들 리셋 필요시 ?>
 
-	<!-- 헤드 CSS -->
+	<!-- 상단 CSS -->
 		<!-- Bootstrap _ Common Style -->
 		<? $this->assets->add_css( LIB."noto-sans-korean/css/noto-sans-korean.css" ); ?>
+		<? $this->assets->add_css( "https://cdn.rawgit.com/hiun/NanumSquare/master/nanumsquare.css" ); ?>
+
 		<? $this->assets->add_css( LIB."bootstrap-3.3.7/less/bootstrap.less" ); ?>
 		<? $this->assets->add_css( LIB."bootstrap-3.3.7/less/theme.less" ); ?>
 
@@ -32,25 +34,25 @@
 		<? endforeach; ?>
 
 		<!-- Bundle Style -->
-		<? $this->assets->bundle_css(); ?>
+		<? $this->assets->bundle_css( $this->template ); ?>
 
-
-	<!-- JS Library -->
+	<!-- 상단 Script -->
 		<? $this->assets->add_js( LIB."jquery-1.12.4.min.js" ); ?>
 		<? $this->assets->add_js( LIB."modernizr-2.8.3.min.js" ); ?>
 		<? $this->assets->add_js( LIB."bootstrap-3.3.7/dist/js/bootstrap.min.js" ); ?>
 		<!-- Bundle Script-->
-		<? $this->assets->bundle_js('bundle', ''); ?>
+		<? $this->assets->bundle_js( $this->template , false); ?>
+
 	<!-- JS IE9 미만 Compatible -->
 		<!--[if lt IE 9]>
 			<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
 			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 		<![endif]-->
 
+	<!-- 베이직 Script -->
+		<?=$basejs?>
 
-	<?=$basejs?>
-
-	<!-- 하단 JS 번들 -->
+	<!-- 하단 Script -->
 		<? $this->assets->add_js( LIB."jquery.form.min.js" ); ?>
 		<? $this->assets->add_js( LIB."lodash.min.js" ); ?>
 		<? $this->assets->add_js( LIB."moment-2.22.2/moment.min.js" ); ?>
@@ -68,32 +70,32 @@
 		<? $this->assets->add_js( JS."kmh_common.js" ); ?>
 		<? $this->assets->add_js( TJS."template.js" ); ?>
 
-		<? $this->assets->bundle_js('bundle_footer'); ?>
-	<!-- 하단 JS 번들 -->
-
+		<? $this->assets->bundle_js( "{$this->template}_footer"); ?>
 
 </head>
-<body class="page-container section_<?=$this->uri->segment(1)?> page_<?=$this->uri->segment(2)?>">
+<body class="<?=$body_class?>">
+	<div class="wrapper">
+		<? if( $this->has_nav ) include_once (TPATH.'header.php'); ?>
 
-	<? if( $this->hasNav ) include_once (TVIEW.'header.php'); ?>
-
-	<main id="main">
-		<div class="container">
-			<div id="content_wrap">
-				<?=$content_body?>
+		<main id="main">
+			<div class="container">
+				<div id="content_wrap">
+					<? include_once(TPATH.'page_notice.php'); ?>
+					<!-- <h1><?=page_title($nav_sub)?></h1> -->
+					<?=$content_body?>
+				</div>
 			</div>
-		</div>
-		<div class="pjax_js">
-			<!-- pjax js : <?=count($javascript)?> -->
-			<? foreach ( $javascript as $key => $row ) : ?>
-				<? $this->assets->load_js($row); ?>
-			<? endforeach; ?>
-		</div>
-	</main> <!-- main -->
+			<div class="pjax_js">
+				<!-- pjax js : <?=count($javascript)?> -->
+				<? foreach ( $javascript as $key => $row ) : ?>
+					<? $this->assets->load_js($row); ?>
+				<? endforeach; ?>
+			</div>
+		</main> <!-- main -->
 
-	<? if( $this->hasNav ) include_once TVIEW.'footer.php'; ?>
-	<? if( $this->hasNav ) include_once( VIEWPATH."/_template/_common/common_element.php" ); ?>
-
+		<? if( $this->has_nav ) include_once TPATH.'footer.php'; ?>
+		<? if( $this->has_nav ) include_once( VIEWPATH."/_template/_common/common_element.php" ); ?>
+	</div>
 </body>
 </html>
 <? ob_end_flush(); ?>

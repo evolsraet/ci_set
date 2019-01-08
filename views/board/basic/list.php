@@ -53,7 +53,7 @@
 						<?=notice_or_no($row, $start_no + $key)?>
 					</td>
 					<!-- 제목 -->
-					<td class="title">
+					<td class="title <?=is_notice($row)?"notice":""?>">
 						<span class="visible-xs">
 							<?=notice_or_no($row, null)?>
 						</span>
@@ -62,11 +62,14 @@
 							class="text_cut"
 							>
 								<?=view_link($row, 50)?>
+								<? if( $row->cm_cnt ) : ?>
+									<span class="text-muted">(<?=$row->cm_cnt?>)</span>
+								<? endif; ?>
 						</a>
 						<p class="visible-xs">
 							<i class="fa fa-user-circle-o"></i> <?=writer_display($row)?>
 							&nbsp;&nbsp;
-							<i class="fa fa-calendar-check-o"></i> <?=get_datetime( $row->post_created_at )?>
+							<i class="fa fa-calendar-check-o"></i> <?=get_date( $row->post_created_at )?>
 						</p>
 					</td>
 					<!-- 작성자 -->
@@ -75,7 +78,7 @@
 					</td>
 					<!-- 작성일 -->
 					<td class="text-center hidden-xs">
-						<?=get_datetime( $row->post_created_at )?>
+						<?=get_date( $row->post_created_at )?>
 						<? //=Carbon::parse( $row->post_created_at )->toDateString()?>
 						<? //=Carbon::parse( $row->post_created_at )->diffForHumans()?>
 					</td>

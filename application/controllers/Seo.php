@@ -20,7 +20,7 @@ class Seo extends MY_Controller {
 		$sitemap_path_php = $this->config->item('file_path_php') . 'sitemap';
 		$sitemap_path = $this->config->item('file_path') . 'sitemap';
 
-		mkdir_sub( $sitemap_path_php );
+		mkdir_path( $sitemap_path_php );
 
 		// create sitemap
 		$sitemap = new Sitemap($sitemap_path_php. '/sitemap.xml');

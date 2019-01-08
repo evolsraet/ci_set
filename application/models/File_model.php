@@ -53,6 +53,7 @@ class File_model extends MY_Model {
 		}
 	}
 
+	// 실제 파일을 삭제 - 썸네일 포함 ($param $file - db 1 row)
 	public function file_delete( $file ) {
 		$file = (object)$file;
 

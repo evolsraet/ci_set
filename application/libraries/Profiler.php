@@ -254,7 +254,8 @@ class CI_Profiler
                 $key = "'{$key}'";
             }
 
-            $output["&#36;_GET[{$key}]"] = is_array($val) ?
+            // $output["&#36;_GET[{$key}]"] = is_array($val) ?
+            $output["{$key}"] = is_array($val) ?
                  "<pre>" . htmlspecialchars(stripslashes(print_r($val, true))) . "</pre>"
                  : htmlspecialchars(stripslashes($val));
         }
@@ -279,7 +280,8 @@ class CI_Profiler
                 $key = "'{$key}'";
             }
 
-            $output["&#36;_POST[{$key}]"] = is_array($val) ?
+            // $output["&#36;_POST[{$key}]"] = is_array($val) ?
+            $output["{$key}"] = is_array($val) ?
                 '<pre>' . ( print_r($val, true) ) . '</pre>'
                 : ( print_r($val, true) );
         }
@@ -409,6 +411,8 @@ class CI_Profiler
                     $logs['console'][$key]['data'] = $this->get_file_size($log['data']);
                 } else {
                     $logs['console'][$key]['data'] = print_r($log['data'], true);
+                    $logs['console'][$key]['controller'] = $log['controller'];
+                    $logs['console'][$key]['method'] = $log['method'];
                 }
             }
         }

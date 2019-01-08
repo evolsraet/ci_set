@@ -28,6 +28,6 @@
 				value="<?=$CI->input->get('skey')?>"
 				>
 		</div>
-		<button type="submit" class="btn btn-default">검색</button>
+		<button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
 	</form>
 </div>

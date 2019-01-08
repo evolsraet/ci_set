@@ -15,7 +15,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 
 // use Faker\Factory;
-use Sunra\PhpSimple\HtmlDomParser;
+// use Sunra\PhpSimple\HtmlDomParser;
 
 class Welcome extends CI_Controller {
 

@@ -1,5 +1,6 @@
 // LESS 기본 로드
-@import url('/assets/css/less_load.less');
+@import (reference) url('/assets/css/less_load.less');
+// @import url('/assets/css/less_load.less');
 
 // @import url('/assets/css/kmh_card.less');
 
@@ -11,7 +12,6 @@ body {
 	a {
 		font-weight: bold;
 	}
-
 }
 
 .well {
@@ -21,6 +21,27 @@ body {
 
 img {
 	max-width: 100%;
+}
+
+// 푸터 고정
+.wrapper {
+	display: table;
+    width: 100%;
+	#header {
+		display: table-row;
+		height: 1px;
+	}
+	#main {
+		display: table-row;
+	}
+	#footer {
+		display: table-cell;
+		height: 1px;
+	}
+}
+
+#header, h1, h2, h3, h4, h5, .title, .btn, th {
+	font-family: 'Nanum Square';
 }
 
 #footer {

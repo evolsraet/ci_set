@@ -318,7 +318,11 @@
                         if ($log['type'] == 'log') :
                     ?>
                     <tr>
-                        <td><?php echo $log['type']; ?></td>
+                        <td>
+                            <?php echo $log['type']; ?><br>
+                            <?php echo $log['file']; ?><br>
+                            <?php echo $log['line']; ?>
+                        </td>
                         <td class="faded"><pre><?php echo $log['data']; ?></pre></td>
                         <td></td>
                     </tr>
@@ -475,7 +479,7 @@
                     <?php foreach ((array)$sections['userdata'] as $key => $val) : ?>
                     <tr>
                         <td class="hilight"><?php echo $key; ?></td>
-                        <td><?php e($val); ?></td>
+                        <td><pre><?php print_r($val); ?></pre></td>
                     </tr>
                     <?php endforeach; ?>
                 </table>
@@ -498,7 +502,7 @@
                     ?>
                     <tr>
                         <td class="hilight"><?php echo $key; ?></td>
-                        <td><?php e($val); ?></td>
+                        <td><pre><?php print_r($val); ?></pre></td>
                     </tr>
                     <?php
                             endforeach;

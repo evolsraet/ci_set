@@ -8,6 +8,8 @@ class Members {
 
     public function __construct() {
     	$this->CI =& get_instance();
+        if( $this->CI->config->item('auth_field')!='' )
+            $this->auth_field = $this->CI->config->item('auth_field');
     	// $this->CI->load->helper('file', 'kmh');
         // $ci_session = $this->CI->session->userdata('member');
     }

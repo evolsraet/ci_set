@@ -9,6 +9,10 @@ class Page extends MY_Controller {
 	public function index($renderData="") {
 		$this->load->helper('file');
 
+		// 테스트 페이지 IE9 미만 에러
+		if( $this->uri->segment(1)=='vue' )
+			$this->under_ie9_error = true;
+
 		// 직접 로드 할 수 없음
 		$this->data["uri_segment_1"] = $this->uri->segment(1);
 		$this->data["uri_segment_2"] = $this->uri->segment(2);
@@ -24,6 +28,7 @@ class Page extends MY_Controller {
 				break;
 			default:
 				if( empty($this->data["uri_segment_2"]) ) $file = 'pages/'.$this->data["uri_segment_1"]."/default";
+				else if( $this->uri->segment(1)=='page' ) $file = 'pages/'.$this->data["uri_segment_2"];
 				else $file = 'pages/'.$this->data["uri_segment_1"].'/'.$this->data["uri_segment_2"];
 				break;
 		}

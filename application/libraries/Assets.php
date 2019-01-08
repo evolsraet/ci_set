@@ -188,11 +188,37 @@ class Assets {
 					$folder_name = FCPATH.str_replace($file_name, '', $row);
 					$web_folder_name = str_replace(FCPATH, '', $folder_name);
 
+					// 상위 패스 찾기 (../ 리플레이스 용)
+					$web_folder_seperate = array_filter( explode('/', $web_folder_name) );
+					$web_folder_count = $web_folder_seperate;
+					$web_folder_parent = false;
+					if( $web_folder_count ) {
+						$web_folder_parent = str_replace( array_pop($web_folder_seperate).'/'  , '', $web_folder_name);
+					}
+
+					// $this->CI->console->log($web_folder_seperate);
+					// $this->CI->console->log($web_folder_count);
+
 					$row_contents = file_get_contents( $folder_name.$file_name );
 
 					// CSS 패스 수정 ( ./ -> path/ )
 					if( $type == 'css' ) {
+						if( $web_folder_parent ) {
+							$row_contents = str_replace('../', $web_folder_parent, $row_contents);
+						}
 						$row_contents = str_replace('./', $web_folder_name, $row_contents);
+
+						// 소스맵 지정 제거
+						$row_contents = str_replace('sourceMappingURL', 'ORIGINAL_MAP_URL', $row_contents);
+
+						// Remove comments also applicable in javascript
+						$row_contents= preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $row_contents);
+
+						// Remove space after colons
+						$row_contents= str_replace(': ', ':', $row_contents);
+
+						// Remove whitespace
+						$row_contents= str_replace(array("\n", "\t", '  ', '    ', '    '), '', $row_contents);
 					}
 
 					$file_contents = PHP_EOL.'/* '.$web_folder_name.$file_name.' */'.PHP_EOL.$row_contents.PHP_EOL;
@@ -260,12 +286,16 @@ class Assets {
 		$file_name = substr(strrchr($url,"/"),1);
 		$folder_name = FCPATH.str_replace($file_name, '', $url);
 
-		if( !file_exists($folder_name.$file_name) ) return false;
+		$external = ( strpos($url, 'http')===false ) ? false : true;
+
+		if( !$external && !file_exists($folder_name.$file_name) )
+			return false;
 
 		$version = $this->get_asset_version($folder_name.$file_name); 		// 최종 수정시간
 
 		$return = '<script '.$option.' src="';
-		$return .= $url.'?v='.$version;
+		$return .= $url;
+		if( !$external ) $return .= '?v='.$version;
 		$return .= '" ';
 		// $return .= $pjax ? 'class="pjax_element"' : '';
 		$return .= '></script>';
@@ -322,6 +352,7 @@ class Assets {
 					$options['compress'] = true;
 
 					if( ENVIRONMENT == 'development' ) :
+						// $options['sourceMap']         = false;  // output .map file?
 						$options['sourceMap']         = true;  // output .map file?
 						$options['sourceMapWriteTo']  = FCPATH . $folder_name_web . $file_name . ".map";
 						$options['sourceMapURL']      = $folder_name_web . $file_name . ".map";

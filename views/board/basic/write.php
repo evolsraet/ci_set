@@ -38,7 +38,7 @@
 	if( $board_info->board_use_secret == 1 )
 		$form->checkbox('비밀글', $update->post_is_secret, 'post_is_secret', true, array('without_label'=>true) );
 
-	if( $this->members->is_admin() )
+	if( is_board_admin() )
 		$form->checkbox('공지사항', $update->post_is_notice, 'post_is_notice', true, array('without_label'=>true) );
 
 	// 답글 작성시거나 이미 답글일때

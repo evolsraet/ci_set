@@ -13,6 +13,10 @@
 	    "sunra/php-simple-html-dom-parser": "^1.5",
         "chriskacerguis/codeigniter-restserver": "^3.0",
 		"samdark/sitemap": "^2.2",
-		"hashids/hashids": "1.0.6"
+		"hashids/hashids": "1.0.6",
+		"romainrg/ratchet_client": "^1.0",
+		"react/zmq": "^0.4.0",
+		"textalk/websocket": "^1.2",
+		"hybridauth/hybridauth": "2.*"
     }
 }

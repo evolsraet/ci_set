@@ -60,7 +60,7 @@
 <body>
 	<div id="app_wrapper">
 
-		<? // include_once TVIEW.'header.php'; ?>
+		<? // include_once TPATH.'header.php'; ?>
 		<gnb-bar></gnb-bar>
 
 		<div class="container">
