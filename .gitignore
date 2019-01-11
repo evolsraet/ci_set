@@ -21,3 +21,4 @@ application/logs/*
 !.keep
 
 /vendor/
+assets/lib/sweetalert-1
