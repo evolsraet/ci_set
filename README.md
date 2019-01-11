@@ -1,5 +1,6 @@
 # ci_set
-Codeigniter Kmh Set
+Codeigniter Kmh Set Private.
+DO NOT USE THIS.
 
 # install
 
