@@ -794,6 +794,9 @@ class Board extends MY_Controller {
 
 			$result['status'] = 'ok';
 			$result['msg'] = '정상 처리되었습니다.';
+
+			// 액티비티
+			$this->kmh->activity($insert_id, "댓글작성 by {$this->logined->mb_display}({$this->logined->mb_id})", 'board', $this->method);
 		} else {
 			$result['msg'] = '등록에 실패했습니다.';
 		}
@@ -833,7 +836,7 @@ class Board extends MY_Controller {
 			// $result['id'] = $insert_id;
 
 			// 액티비티
-			// $this->kmh->activity($insert_id, "새글작성 by {$this->logined->mb_display}({$this->logined->mb_id})", 'board', $this->method);
+			$this->kmh->activity($comment_id, "댓글삭제 by {$this->logined->mb_display}({$this->logined->mb_id})", 'board', $this->method);
 
 		} catch (Exception $e) {
 			$result['status'] = 'fail';
@@ -852,6 +855,9 @@ class Board extends MY_Controller {
 
 			$this->_comment_check(true);
 
+			if( $this->comment_model->where('cm_parent', $comment_id)->count_by() )
+				throw new Exception("댓글이 있는 댓글은 수정이 불가능 합니다.", 1);
+
 			$this->comment_model
 				->set('cm_content', $this->input->post('cm_content') )
 				->where('cm_id', $comment_id)
@@ -859,6 +865,9 @@ class Board extends MY_Controller {
 
 			$result['status'] = 'ok';
 			$result['msg'] = '정상 처리되었습니다.';
+
+			// 액티비티
+			$this->kmh->activity($comment_id, "댓글수정 by {$this->logined->mb_display}({$this->logined->mb_id})", 'board', $this->method);
 		} catch (Exception $e) {
 			$result['status'] = 'fail';
 			$result['msg'] = $e->getMessage();

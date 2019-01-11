@@ -143,8 +143,8 @@
 				return false;
 		}
 
-		function is_active($a, $b) {
-			if( $a==$b ) return 'active';
+		function is_active($a, $b, $class="active") {
+			if( $a==$b ) return $class;
 		}
 
 		// 현 도메인일 경우 이전 주소, 아닐 경우 루트

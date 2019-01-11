@@ -13,7 +13,7 @@
 
 	<!-- 상단 CSS -->
 		<!-- Bootstrap _ Common Style -->
-		<? $this->assets->add_css( LIB."noto-sans-korean/css/noto-sans-korean.css" ); ?>
+		<? $this->assets->add_css( CSS."noto-sans-korean.css" ); ?>
 		<? $this->assets->add_css( "https://cdn.rawgit.com/hiun/NanumSquare/master/nanumsquare.css" ); ?>
 
 		<? $this->assets->add_css( LIB."bootstrap-3.3.7/less/bootstrap.less" ); ?>
@@ -28,6 +28,7 @@
 		<? $this->assets->add_css( CSS."kmh_bootstrap.less" ); ?>
 		<? $this->assets->add_css( CSS."kmh_global.less" ); ?>
 		<? $this->assets->add_css( TCSS."template.less" ); ?>
+		<? $this->assets->add_css( TCSS."avartar.less" ); ?>
 
 		<? foreach ( $css as $key => $row ) : ?>
 			<? $this->assets->add_css($row); ?>
@@ -66,7 +67,7 @@
 		<? $this->assets->add_js( LIB."sweetalert-1/dist/sweetalert.min.js" ); ?>
 		<? $this->assets->add_js( LIB."magnific-popup/jquery.magnific-popup.min.js" ); ?>
 		<? $this->assets->add_js( LIB."pjax.min.js" ); ?>
-
+		<? $this->assets->add_js( JS."kmh_pjax.js" ); ?>
 		<? $this->assets->add_js( JS."kmh_common.js" ); ?>
 		<? $this->assets->add_js( TJS."template.js" ); ?>
 
@@ -80,7 +81,7 @@
 		<main id="main">
 			<div class="container">
 				<div id="content_wrap">
-					<? include_once(TPATH.'page_notice.php'); ?>
+					<? include_once(MODULEPATH.'page_notice.php'); ?>
 					<!-- <h1><?=page_title($nav_sub)?></h1> -->
 					<?=$content_body?>
 				</div>

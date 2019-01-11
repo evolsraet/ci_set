@@ -2,21 +2,15 @@
 	<link rel="stylesheet" href="<?=$row?>">
 <? endforeach; ?>
 
-<div class="box">
-	<div class="box-header with-border">
-		<h3 class="box-title">&nbsp;</h3>
-
-		<div class="box-tools pull-right">
-			<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-			</button>
-			<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-		</div>
+<div class="panel">
+	<!--
+	<div class="panel-heading">
+		<h3 class="panel-title">Panel Heading</h3>
 	</div>
-	<!-- /.box-header -->
-	<div class="box-body">
+	 -->
+	<div class="panel-body">
 		<?=$output->output?>
 	</div>
-	<!-- ./box-body -->
 </div>
 
 

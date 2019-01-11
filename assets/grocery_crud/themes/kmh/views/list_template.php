@@ -116,7 +116,7 @@
 		</a>
 		</div>
 	<?php }?>
-	
+
 	<div style='height:10px;'></div>
 
 	<?php echo $list_view?>

@@ -1,5 +1,4 @@
 <div class="board_wrapper board_list skin_<?=$board_info->board_skin?>">
-
 	<?
         // 공용 헤더
         $path = VIEWPATH."board/header.php";

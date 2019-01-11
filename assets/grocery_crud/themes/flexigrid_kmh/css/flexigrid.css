@@ -42,7 +42,8 @@ table th
 	font-size:14px;
 	position:relative;
 	border:0px solid #eee;
-	overflow:hidden;
+	/*overflow:hidden;*/
+	overflow-x: auto;
 	color:#000;
 }
 .flexigrid.crud-form

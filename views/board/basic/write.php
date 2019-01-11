@@ -4,8 +4,6 @@
 	$form = new Phpform();
 ?>
 
-
-
 <?
 	if( $this->is_update ) :
 		$form_action = $board_base.'update_act/'.$this->post_id;
@@ -63,6 +61,8 @@
 	$form->textarea('', 10, 'post_content', $update->post_content, array('placeholder'=>"본문") );
 
 ?>
+
+
 
 <div id="old_files">
 	<!-- 파일 -->

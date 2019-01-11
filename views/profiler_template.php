@@ -43,7 +43,7 @@
         #ci-profiler-menu-open{background-color:#141722;position:fixed; z-index: 9999; left:0;bottom:0;padding:5px 7px;}
         #ci-profiler-menu-open img{display:block;}
         #ci-profiler-menu-open:hover{background-color:#5a8616;}
-        #codeigniter-profiler{background-color:#141722;clear:both;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;position:fixed;bottom:0;left:0;width:100%;z-index:1000;}
+        #codeigniter-profiler{background-color:#141722;clear:both;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;position:fixed;bottom:0;left:0;width:100%;z-index:9999;}
         #profiler-panel{background-color:#1f2332;padding:0 5px;}
         #profiler-panel .main{font-family:Monaco,'Lucida Console','Courier New',monospace;}
         .ci-profiler-box{padding:0 10px 10px 10px;margin:0 0 10px 0;max-height:300px;overflow:auto;color:#fff;font-size:11px!important;}

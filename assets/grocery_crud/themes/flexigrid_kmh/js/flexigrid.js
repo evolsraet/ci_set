@@ -37,7 +37,7 @@ $(function(){
 				'speedIn'		:	600,
 				'speedOut'		:	200,
 				'overlayShow'	:	false
-			});			
+			});
 		}
 	};
 
@@ -240,8 +240,8 @@ $(function(){
 			$('#filtering_form').trigger('submit');
 		}
 	}
-
 });
+
 
 function displaying_and_pages(this_container)
 {

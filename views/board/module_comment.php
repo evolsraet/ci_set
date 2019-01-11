@@ -7,7 +7,7 @@
 	<h3><i class="fa fa-comments"></i> Comments</h3>
 	<div id="comment_list"></div>
 
-	<? if( $CI->members->is_login() ) : ?>
+	<? if( $_POST['board_btn_data']->auth->comment ) : ?>
 	<!-- 댓글 작성 -->
 		<?
 			$form_action = $CI->board_base.'comment_insert/'.$CI->post_id;
@@ -77,6 +77,7 @@
 			return false;
 		}
 		else {
+			$("#comments").append( $("#comment_write_form") );
 			return true;
 		}
 	}
@@ -102,8 +103,10 @@
 		var url = $("#board_base").val() + 'comment_reply/' + cm_id;
 
 		$("#comment_write_form #cm_parent").val(cm_id);
-		var parent_who = $("#comment_"+cm_id+" .title strong").html();
+		var parent_who = $("#comment_"+cm_id+" .comment-author").html();
 		$("#comment_write_form button[type='submit']").html(parent_who+'(님)글에 댓글 등록');
+
+		$("#comment_"+cm_id+" .media-body").append( $("#comment_write_form") );
 
 		$("#cm_content").focus();
 	}

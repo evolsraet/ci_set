@@ -55,6 +55,7 @@ $route['translate_uri_dashes'] = FALSE;
 
 // page 컨트롤러
 $route['page/.+']  = 'page/index';
+$route['admin/page/.+']  = 'page/index';
 $route['vue/.+']  = 'page/index';
 
 // match - board

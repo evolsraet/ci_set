@@ -243,6 +243,7 @@ class Member extends MY_Controller {
 
 		private function login_process( $mb_data = null ) {
 			$this->session->set_userdata('member', $mb_data);
+			$this->logined = $this->session->userdata('member');
 		}
 
 		public function login_act() {
@@ -275,7 +276,7 @@ class Member extends MY_Controller {
 
 				// 액티비티 기록
 				$this->kmh->activity($db->mb_id, '로그인');
-				add_flashdata('page_notice', '로그인 되었습니다.');
+				add_flashdata('page_notice', "{$this->logined->mb_display}님 로그인 되었습니다.");
 
 			} catch (Exception $e) {
 				$result['msg'] = $e->getMessage();
@@ -371,7 +372,7 @@ class Member extends MY_Controller {
 					endif;
 					// End of 기존 등록 여부
 
-					add_flashdata('page_notice', '로그인 되었습니다.');
+					add_flashdata('page_notice', "{$this->logined->mb_display}님 로그인 되었습니다.");
 				else :
 					throw new Exception("연결에 실패했습니다.", 100);
 				endif;

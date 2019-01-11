@@ -1,6 +1,6 @@
 $(document).ready(function() {
 	// 갤러리
-	$('a.gallery_mpu').magnificPopup({
+	$('a.gallery_images').magnificPopup({
 		type: 'image',
 		gallery: {
 			enabled: true,

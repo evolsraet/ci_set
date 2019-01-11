@@ -14,9 +14,9 @@
 	$config['site_email']		= 'admin@watosys.co.kr';
 
 // 기본 템플릿
-	// $config['base_template'] = "vue_boiler";
-	$config['base_template'] = "_boiler";
-	$config['admin_template'] = "adminLTE";
+	// $config['base_template'] = "_boiler";
+	$config['base_template'] = "_remark";
+	$config['admin_template'] = "adminRemark";
 
 // 회원가입 사용불가
 	$config['deny_mb_id'] = array(

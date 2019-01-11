@@ -70,7 +70,7 @@ if($success_message !== null){?>
 			<!-- <div class="btnseparator"></div> -->
 			<?php } ?>
 			<?php if(!$unset_print) { ?>
-        	<a class="btn btn-sm btn-default" data-url="<?php echo $print_url; ?>">
+        	<a class="btn btn-sm btn-default print-anchor" data-url="<?php echo $print_url; ?>">
 				<?php echo $this->l('list_print');?>
             </a>
 			<!-- <div class="btnseparator"></div> -->

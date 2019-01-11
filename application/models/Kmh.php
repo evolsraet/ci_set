@@ -42,6 +42,7 @@ class Kmh extends CI_Model {
 		$this->db->set('ac_type', 	print_r($type, true) );
 		$this->db->set('ac_detail',	print_r($detail, true) );
 		$this->db->set('ac_ip', 	$this->input->ip_address() );
+		if($this->logined->mb_id) $this->db->set('ac_mb_id', 	$this->logined->mb_id );
 		$this->db->insert('activity');
 	}
 

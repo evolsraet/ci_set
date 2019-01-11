@@ -14,7 +14,8 @@
 				->as_ul(
 					$id='category',
 					$set=$this->input->get('category'),
-					$link='?category='
+					$link='?category=',
+					$class="nav nav-tabs nav-tabs-line"
 				);
 			?>
 		</div>
@@ -33,35 +34,39 @@
 
 				<div class="col-md-3 col-sm-4 col-xs-6">
 						<div class="gallery_item">
+							<a href="">
 							<div class="photo_wrap">
-								<img src="<?=$this->files->post_image( $row->post_id, 500, 400 )?>" alt="image">
+								<a <?=view_link($row,'link',$board_base)?>>
+									<img src="<?=$this->files->post_image( $row->post_id, 500, 400 )?>" alt="image">
+								</a>
 								<? $test_image[] = $this->files->last_image; ?>
-								<div class="overlay">
+								<div class="overlay_wrap">
 									<div class="buttons">
 										<a href="<?=$this->files->last_image?>"
-											class="btn btn-outline gallery_mpu non_pjax"
+											class="_btn _btn-outline gallery_images non_pjax"
 											title="<?=strip_tags(view_link($row, 50))?>"
 											>
-											<i class="fa fa-eye"></i>
+											<i class="fa fa-search"></i>
 										</a>
-										<a <?=view_link($row,'link',$board_base)?> class="btn btn-outline">
+										<a <?=view_link($row,'link',$board_base)?> class="gallery_link _btn _btn-outline">
 											<i class="fa fa-link"></i>
 										</a>
 									</div>
 								</div>
 							</div>
+							</a>
 							<div class="desc">
 								<p class="title">
 									<?=notice_or_no($row, null)?>
-									<a 	<?=view_link($row,'link',$board_base)?> >
+									<a <?=view_link($row,'link',$board_base)?> >
 										<?=view_link($row)?>
 									</a>
 								</p>
-								<div class="row">
-									<div class="col-xs-6 text-left">
+								<div class="row meta">
+									<div class="col-sm-6 col-xs-12 text-left">
 										<p class="writer"><?=writer_display($row)?></p>
 									</div>
-									<div class="col-xs-6 text-right">
+									<div class="col-sm-6 col-xs-12 text-right">
 										<p class="date"><?=get_date( $row->post_created_at )?></p>
 									</div>
 								</div>

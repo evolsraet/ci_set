@@ -3,7 +3,7 @@
 // use lodash\lodash;
 // use Carbon\Carbon;
 
-class MY_Controller extends CI_Controller{
+class MY_Controller extends CI_Controller {
 
 	//Page Info
 	protected $data = array();
@@ -104,7 +104,9 @@ class MY_Controller extends CI_Controller{
 		$this->pjax_meta .= "mb{$this->logined->mb_id}__tpl{$this->template}__rd{$render_type}";
 
 		// 개발 모드
-		if( ENVIRONMENT == 'development' && $render_type!='JSON' ) {
+		if( ENVIRONMENT == 'development'
+			&& !( $render_type=='JSON' || $render_type=='AJAX' )
+		) {
 			$this->output->enable_profiler(TRUE);
 		}
 

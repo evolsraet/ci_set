@@ -1,7 +1,9 @@
 <? $this->assets->load_css(VIEWDIR."latest/{$skin}/latest.less"); ?>
 
-<div class="panel panel-default latest latest_basic">
-	<div class="panel-heading"><?=$title?></div>
+<div class="panel panel-primary panel-bordered latest latest_basic">
+	<div class="panel-heading">
+		<h3 class="panel-title"><?=$title?></h3>
+	</div>
 	<div class="panel-body">
 		<ul class="latest">
 			<? foreach( (array) $list as $key => $row ) : ?>

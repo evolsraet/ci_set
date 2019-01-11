@@ -6,7 +6,9 @@ class Page extends MY_Controller {
     	parent::__construct();
     }
 
-	public function index($renderData="") {
+	public function index() {
+		$render = $_GET['render'] ? $_GET['render'] : '';
+
 		$this->load->helper('file');
 
 		// 테스트 페이지 IE9 미만 에러
@@ -40,7 +42,7 @@ class Page extends MY_Controller {
 
 		// echo $file;
 
-		$this->_render($file,$renderData);
+		$this->_render($file,$render);
 	}
 
 }

@@ -66,20 +66,15 @@
 
 	$(document).on('click', '.reset_passsword', function(){
 		url = '/member/reset_passsword';
-		btn = $(this);
 
 		$.ajax({
 			url: url,
 			type: 'post',
 			dataType: 'json',
 			data: { '<?=$this->security->get_csrf_token_name()?>' : '<?=$this->security->get_csrf_hash()?>' },
-			beforeSend : function() {
-				$(btn).button('loading');
-			},
 			error : function(request ,status, error) {
 				alert('AJAX 통신 중 에러가 발생했습니다.');
 				console.log( request.responseText );
-				$(btn).button('reset');
 			},
 			success : function(response, status, request) {
 				if( response.status == 'ok' ) {
@@ -87,16 +82,18 @@
 						type: 'success',
 						title: '메일이 발송되었습니다.',
 						text: response.reset_email + ' 메일을 확인해주세요.',
+					}, function(){
+						location.href='/';
 					});
 				} else {
 					swal({
 						type: 'error',
 						title: '에러가 발생했습니다.',
 						text: response.msg
+					}, function(){
+						$('.btn').button('reset');
 					});
 				}
-				$(btn).button('reset');
-				bs3_modal_close();
 			}
 		});
 	});

@@ -1,0 +1,72 @@
+// LESS 기본 로드
+@import (reference) url('/assets/css/less_load.less');
+
+body {
+	overflow-y: scroll;
+	padding-top: 0;
+}
+
+#header {
+	a {
+		font-weight: bold;
+	}
+}
+
+.well {
+	// background: @brand-success;
+	// background: red;
+}
+
+img {
+	max-width: 100%;
+}
+
+// 푸터 고정
+.wrapper {
+	display: table;
+    width: 100%;
+	#header {
+		display: table-row;
+		height: 1px;
+	}
+	#main {
+		display: table-row;
+	}
+	#footer {
+		display: table-cell;
+		height: 1px;
+	}
+}
+
+#header, h1, h2, h3, h4, h5, .title, .btn, th {
+	font-family: 'Nanum Square';
+}
+
+#footer {
+	margin-top: 40px;
+	background: #f1f4f5;
+	padding: 40px 0;
+}
+
+
+// 화면전환 Pace.js
+	// #main {
+	// 	opacity: 0;
+	// }
+	// .pace-running #main {
+	// 	opacity: 1;
+	// 	transition: opacity .5s ease;
+	// }
+
+	// .pace-done #main {
+	// 	opacity: 1 !important;
+	// }
+
+	// .no-js #main {
+	// 	opacity: 1 !important;
+	// }
+
+// Remark 보정
+	.panel {
+		border: 1px solid @gray-light;
+	}

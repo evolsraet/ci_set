@@ -20,7 +20,7 @@ class Comment_model extends MY_Model {
 
 	public function after_get($data) {
 		if( $data->cm_deleted_at ) :
-			if( $this->members->is_admin() ) :
+			if( $this->members->is_admin() || is_board_admin() ) :
 				$data->cm_content = '<span class="text-muted">[삭제된 댓글]<br></span>'.$data->cm_content;
 			else :
 				$data->cm_content = '<span class="text-muted">[삭제된 댓글]<br></span>';

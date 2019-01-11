@@ -12,6 +12,11 @@
 		<?=$view->post_title ? "{$view->post_title} - " : ""?>
 		<?=$title?>
 	</title>
+
+	<!-- favicon 갱신 ?v= 방식으로 캐싱 취소 -->
+  	<!-- <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png"> -->
+	<link rel="shortcut icon" href="data:;base64,iVBORwOKGO=" />
+
 	<meta name="description" content="<?=$description?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<meta name="keywords" content="<?=$keywords?><?=$view->post_title ? " , {$view->post_title}" : ""?>">

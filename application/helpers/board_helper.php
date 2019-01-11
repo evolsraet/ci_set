@@ -153,7 +153,7 @@
         else :
             $admins = array();
             foreach( (array) explode(',', $CI->board_info->board_admin) as $key => $row ) :
-                $admins[] = $row;
+                if(!empty($row))  $admins[] = $row;
             endforeach;
             if( in_array( $CI->logined->mb_id, $admins) ) return true;
         endif;

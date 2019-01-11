@@ -30,6 +30,15 @@
 <!-- 컨텐츠 -->
 <article class="board_content">
 	<?=$view->post_content?>
+
+	<? foreach( fe($view->file) as $key => $row ) : ?>
+		<? if( $row->file_is_image && $row->file_re_desc == 'attach' ) : ?>
+			<img src="<?=$this->config->item('file_path') . $row->file_folder . $row->file_save?>"
+				alt="첨부 이미지 : <?=$row->file_name?>"
+				>
+		<? endif; ?>
+	<? endforeach; ?>
+
 </article>
 
 <hr>

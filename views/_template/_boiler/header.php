@@ -1,3 +1,5 @@
+<? include( MODULEPATH . 'popup.php' ); ?>
+
 <header id="header">
 	<nav class="navbar navbar-inverse navbar-static-top">
 		<div class="container">
@@ -60,7 +62,10 @@
 
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-								<?=$this->files->member_image($this->logined->mb_id, 23)?>
+								<span class="avatar avatar-xs avatar-online">
+									<?=$this->files->member_image($this->logined->mb_id, 23)?>
+					                <i></i>
+              					</span>
 								<?=$this->logined->mb_display?> <span class="caret"></span>
 							</a>
 							<ul class="dropdown-menu">

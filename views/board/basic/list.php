@@ -15,7 +15,8 @@
 				->as_ul(
 					$id='category',
 					$set=$this->input->get('category'),
-					$link='?category='
+					$link='?category=',
+					$class="nav nav-tabs nav-tabs-line"
 				);
 			?>
 		</div>

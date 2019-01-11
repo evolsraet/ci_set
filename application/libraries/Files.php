@@ -101,7 +101,7 @@ class Files {
 		public function no_image($width=0, $height=0) {
 			if( $width  == 0 )	$width = 500;
 			if( $height == 0 )	$height = 500;
-			$url = "http://via.placeholder.com/{$width}x{$height}?text=NO%20IMAGE";
+			$url = "http://via.placeholder.com/{$width}x{$height}/f1f4f5/76838f?text=NO%20IMAGE";
 			return $url;
 		}
 
@@ -327,8 +327,9 @@ class Files {
 			if( $image_file->file_save ) :
 				return
 					'<img src="'
-					.$this->image_resize( $image_file->web_path, $size, $size )
-					.'" class="member_image img-circle" alt="member photo" width="'.$size.'">';
+					.$this->image_resize( $image_file->web_path, $size, $size ).'"'
+					." style=\"max-width: {$size}px; width: {$size}px; height: {$size}px\""
+					.' class="member_image img-circle" alt="member photo">';
 			else :
 				$this->CI->load->helper('kmh');
 				$this->CI->load->model('member_model');
@@ -338,8 +339,9 @@ class Files {
 				if( $db->mb_social_image )
 					return
 						'<img src="'
-						.$db->mb_social_image
-						.'" class="member_image img-circle" alt="member photo" width="'.$size.'">';
+						.$db->mb_social_image.'"'
+						." style=\"max-width: {$size}px; width: {$size}px; height: {$size}px\""
+						.' class="member_image img-circle" alt="member photo" width="'.$size.'">';
 
 				// 없을경우, 텍스트
 				switch ($db->mb_level) {

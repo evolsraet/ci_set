@@ -38,6 +38,8 @@ class Assets {
 	protected $bundle_file_path = FCPATH.'/assets/bundle/';
 	protected $logs = '';
 
+	protected $all_reset = false;
+
 	public $use_bundling = true;
 
 	// bundle_file_path
@@ -77,6 +79,11 @@ class Assets {
     	} else {
     		$this->css[] = $url;
     	}
+    }
+
+    public function all_reset() {
+    	$this->all_reset = true;
+    	$this->bundle_reset();
     }
 
     public function bundle_reset() {
@@ -331,10 +338,12 @@ class Assets {
 				$folder_name_web = str_replace($file_name, '', $url);
 				$folder_name = FCPATH.$folder_name_web;
 
-				$version = $this->get_asset_version($folder_name.$file_name); 		// 최종 수정시간
+				if( !$this->all_reset )
+					$version = $this->get_asset_version($folder_name.$file_name); 		// 최종 수정시간
 
 				$file_name_as_css = str_replace($ext, 'css', $file_name);
-				$css_version = $this->get_asset_version($folder_name.$file_name_as_css);
+				if( !$this->all_reset )
+					$css_version = $this->get_asset_version($folder_name.$file_name_as_css);
 
 				@chmod($folder_name, DIR_WRITE_MODE);
 
@@ -344,7 +353,7 @@ class Assets {
 				// die();
 
 				// LESS와 CSS 수정일시 비교 후 변환
-				if( $version > $css_version ) {
+				if( $version > $css_version || $this->all_reset ) {
 					$this->CI->benchmark->mark('less_convert');
 
 					// LESS 변환

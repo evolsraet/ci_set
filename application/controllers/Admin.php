@@ -56,6 +56,11 @@ class Admin extends MY_Controller {
 	public function setting( $id ) {
 		$this->load->library('grocery_CRUD');
 		$crud = new grocery_CRUD();
+
+		$crud->unset_jquery();
+		// $crud->unset_jquery_ui();
+		$crud->unset_bootstrap();
+
 		$table_full = 'kmh_'.$id;
 		$crud->set_table($table_full);
 		// $crud->set_theme('datatables');
