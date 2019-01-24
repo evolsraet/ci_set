@@ -1,0 +1,170 @@
+// LESS 기본 로드
+@import url('/assets/css/less_load.less');
+
+.mall_category {
+	margin-bottom: 20px;
+}
+
+.page_order_write {
+	background: @color-blue-grey-100;
+}
+
+.section_mall {
+	.form-horizontal {
+		.view_mode {
+			padding-top: 7px;
+		}
+	}
+}
+
+// 리스트
+	#product_list {
+		h4 {
+			a {
+				color: @title-color;
+			}
+		}
+	}
+
+	.projects-sort {
+		line-height: 2.6;
+		text-align: right;
+	}
+
+	#product_list .projects-sort-label {
+		margin-right: 3px;
+		cursor: default;
+	}
+	#product_list .dropdown-toggle {
+		cursor: pointer;
+	}
+	#product_list .projects-wrap {
+		padding-top: 30px;
+	}
+	#product_list .panel {
+		padding: 10px;
+		margin-bottom: 0;
+		// overflow: hidden;
+	}
+	#product_list .blocks > li {
+		margin-bottom: 30px;
+	}
+	#product_list .overlay {
+		margin-bottom: 12px;
+		overflow: visible;
+		border-radius: 4px;
+	}
+	#product_list .overlay .btn-group {
+		position: absolute;
+		top: 5px;
+		right: 5px;
+	}
+	#product_list .overlay .btn-icon {
+		color: #bdbdbd;
+	}
+	#product_list .overlay .btn-icon:hover {
+		color: white;
+	}
+	#product_list .overlay .project-button {
+		color: #fff;
+	}
+	#product_list .overlay .project-button:hover {
+		color: #526069;
+		background-color: white;
+	}
+	#product_list .overlay .dropdown .dropdown-menu > li > a {
+		padding: 6px 8px;
+	}
+	#product_list .overlay .dropdown:hover .dropdown-toggle {
+		color: #fff;
+	}
+	#product_list .overlay .dropdown:hover .dropdown-menu {
+		display: block;
+	}
+	#product_list .overlay .dropdown-menu {
+		min-width: 110px;
+		margin-top: 0;
+		color: #76838f;
+	}
+	#product_list .overlay .dropdown-menu a {
+		text-decoration: none;
+	}
+	#product_list .overlay-panel {
+		background: rgba(38, 50, 56, .8);
+	}
+
+	#product_list .price {
+		color: @color-black;
+		font-size: 1.2em;
+		font-weight: bold;
+	}
+
+// 뷰
+	.product_metas {
+		li {
+			// display: block;
+			font-size: 1.2em;
+			margin: 10px 0;
+
+			.title {
+			}
+			.desc {
+				color: @brand-dark;
+			}
+		}
+	}
+
+	#total_price {
+		font-size: 1.2em;
+	}
+
+	#product_view {
+		.detail_tab {
+			li.active>a {
+				color: @brand-dark;
+				border-bottom-color: @brand-dark;
+			}
+		}
+		.tab-content {
+			h3 {
+				display: none;
+			}
+		}
+	}
+
+// 장바구니
+	#cart_page {
+		.cart_item_count {
+			width: 90px;
+		}
+
+		.table {
+			.product_info {
+				h4 {
+					margin-top: 0;
+				}
+				.label {
+					margin-bottom: 5px;
+				}
+			}
+			.price_td {
+				font-size: 1.2em;
+				span {
+					font-size: 1.2em;
+					color: @gray-base;
+				}
+			}
+		}
+
+		.total_price {
+			font-size: 1.5em;
+			span.price {
+				font-size: 1.2em;
+				color: @gray-base;
+			}
+		}
+
+		.item_count input {
+			width: 90px;
+		}
+	}

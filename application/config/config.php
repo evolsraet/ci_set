@@ -380,8 +380,9 @@ $config['encryption_key'] = 'kmh_passwrd_whos_knows';
 */
 $config['sess_driver'] = 'files';
 $config['sess_cookie_name'] = 'ci_session';
-$config['sess_expiration'] = 7200;
-$config['sess_save_path'] = NULL;
+$config['sess_expiration'] = 2 * 60 * 60 * 24;
+$config['sess_save_path'] = FCPATH . '_session';
+// $config['sess_save_path'] = NULL;
 $config['sess_match_ip'] = FALSE;
 $config['sess_time_to_update'] = 300;
 $config['sess_regenerate_destroy'] = FALSE;
@@ -452,8 +453,8 @@ $config['global_xss_filtering'] = TRUE;
 | 'csrf_regenerate' = Regenerate token on every submission
 | 'csrf_exclude_uris' = Array of URIs which ignore CSRF checks
 */
+// $config['csrf_protection'] = FALSE;
 $config['csrf_protection'] = TRUE;
-// $config['csrf_protection'] = TRUE;
 /*
 	csrf_token_name 은
 	자바스크립트 및 메타태그에서 공용으로 사용하기 위해

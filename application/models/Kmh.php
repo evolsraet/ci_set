@@ -14,7 +14,7 @@ class Kmh extends CI_Model {
 
 	// 개발용 로그	- 디비에 기록
 	public function log($msg, $title='') {
-		if( ENVIRONMENT != 'development' ) return;
+		// if( ENVIRONMENT != 'development' ) return false;
 
 		$trace = debug_backtrace();
 		$trace = $trace[0];
@@ -52,7 +52,30 @@ class Kmh extends CI_Model {
 			return $this;
 		}
 
-		public function as_select($id, $selected = null, $class='', $default_text = '전체', $required = null) {
+		public function as_select($id, $selected = null, $class='form-control', $default_text = '전체', $required = null) {
+	        $active_init = $selected==''?"selected":"";
+
+	        if( !count($this->array) ) return false;
+
+	        $result = "";
+	        $result .= "<select class=\"{$class}\">".PHP_EOL;
+
+	        if( $default_text !== null ) :
+		        $result .= "    <option {$active_init}>".PHP_EOL;
+		        $result .= "        {$default_text}".PHP_EOL;
+		        $result .= "    </option>".PHP_EOL;
+	        endif;
+
+	        foreach( $this->array as $key => $row ) :
+	            $active_row = $selected==$key?"active":"";
+
+	            $result .= "        <option {$active_row} value=\"{$key}\">".PHP_EOL;
+	            $result .= "            {$row}".PHP_EOL;
+	            $result .= "        </option>".PHP_EOL;
+	        endforeach;
+	        $result .= "</select>".PHP_EOL;
+
+	        return $result;
 		}
 
 		public function as_radio($id, $selected = null, $class='', $default_text = '전체', $required = null) {
@@ -63,17 +86,25 @@ class Kmh extends CI_Model {
 
 	        if( !count($this->array) ) return false;
 
+            if( $link === null )	$this_link = 'javascript:void(0)';
+            else 					$this_link = "{$link}";
+
 	        $result = "";
 	        $result .= "<ul class=\"{$class}\">".PHP_EOL;
-	        $result .= "    <li class=\"{$active_init}\">".PHP_EOL;
-	        $result .= "        <a href=\"{$link}\">{$default_text}</a>".PHP_EOL;
-	        $result .= "    </li>".PHP_EOL;
+
+	        if( $default_text !== null ) :
+		        $result .= "    <li class=\"{$active_init}\">".PHP_EOL;
+		        $result .= "        <a href=\"{$this_link}\">{$default_text}</a>".PHP_EOL;
+		        $result .= "    </li>".PHP_EOL;
+		    endif;
 
 	        foreach( $this->array as $key => $row ) :
 	            $active_row = $selected==$key?"active":"";
+	            if( $link === null )	$this_link = 'javascript:void(0)';
+	            else 					$this_link = "{$link}{$key}";
 
 	            $result .= "        <li class=\"{$active_row}\">".PHP_EOL;
-	            $result .= "            <a href=\"{$link}{$key}\">{$row}</a>".PHP_EOL;
+	            $result .= "            <a href=\"{$this_link}\" data-value=\"{$key}\">{$row}</a>".PHP_EOL;
 	            $result .= "        </li>".PHP_EOL;
 	        endforeach;
 	        $result .= "</ul>".PHP_EOL;

@@ -63,11 +63,15 @@
 		<? $this->assets->add_js( LIB."pace-1.0.2/pace.min.js" ); ?>
 		<? $this->assets->add_js( LIB."sweetalert-1/dist/sweetalert.min.js" ); ?>
 		<? $this->assets->add_js( LIB."magnific-popup/jquery.magnific-popup.min.js" ); ?>
+		<? $this->assets->add_js( LIB."placeholders.min.js" ); ?>
+
 		<? $this->assets->add_js( LIB."pjax.min.js" ); ?>
 
 		<? $this->assets->add_js( JS."kmh_common.js" ); ?>
 		<? $this->assets->add_js( TJS."template.js" ); ?>
-
+		<? foreach ( (array)$javascript_bundle as $key => $row ) : ?>
+			<? $this->assets->add_js($row); ?>
+		<? endforeach; ?>
 		<? $this->assets->bundle_js( "{$this->template}_footer"); ?>
 	<!-- 하단 JS 번들 -->
 

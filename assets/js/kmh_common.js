@@ -1,10 +1,48 @@
+// 전체 적용
+$(document).ready(function() {
+	// SELECT2 - Remark 사용시 data-plugin='select2'
+	$(".select2_plugin").select2({
+		width: '100%'
+	});
+});
+
 // PJAX 대응 주소이동
 function pjax_href( url ) {
-	if (Pjax.isSupported())
+	if (typeof(Pjax) != 'undefined' && typeof(Pjax.isSupported) != 'undefined')
 		pjax.loadUrl( url );
 	else
 		location.href = url;
 }
+
+// 에디터 파일 업로드
+function send_file(file_rel_type, file, el) {
+	var form_data = new FormData();
+  	form_data.append('file', file);
+  	form_data.append('csrf_token', csrf_hash);
+  	form_data.append('file_rel_type', file_rel_type);
+  	form_data.append('file_rel_id', $("#_post_files_code").val());
+  	$.ajax({
+    	data: form_data,
+    	type: "POST",
+    	url: CI.baseUrl + 'file/editor_ajax_upload',
+    	cache: false,
+    	contentType: false,
+    	enctype: 'multipart/form-data',
+    	processData: false,
+    	success: function(res) {
+    		console.log(res);
+      		$(el).summernote('editor.insertImage', res.imgurl);
+
+      		if( res.status == 'fail' )	alert(res.msg);
+    	}
+  	});
+}
+
+/*----------  데이터  ----------*/
+	function add_comma(num) {
+		var regexp = /\B(?=(\d{3})+(?!\d))/g;
+		return num.toString().replace(regexp, ',');
+	}
 
 /*----------  체크  ----------*/
 	function is_json(str) {
@@ -37,7 +75,6 @@ function pjax_href( url ) {
 	function bs3_modal_close() {
 		$("#kmh_modal").modal('hide');
 	}
-
 
 /*----------  쿠키  ----------*/
 
@@ -102,4 +139,94 @@ function pjax_href( url ) {
 	}
 	function close_popup(pu_id) {
 		$("#popup_"+pu_id).slideUp('fast');
+	}
+
+// 폼체크
+	function chkForm(f_name) {
+		var i,currEl;
+		f = document.getElementsByName(f_name);
+		f= f[0];
+		var errMsg = "필수 입력항목 입니다.";
+		for(i = 0; i < f.elements.length; i++){
+			currEl = f.elements[i];
+			//필수 항목을 체크한다.
+			if (currEl.getAttribute('required') == 'required' ) {
+				// console.log( currEl );
+				if(currEl.type == "TEXT" || currEl.type == "text" ||
+					 currEl.tagName == "SELECT" || currEl.tagName == "select" ||
+					 currEl.tagName == "TEXTAREA" || currEl.tagName == "textarea"){
+					if(!chkText(currEl,errMsg)) return false;
+				} else if(currEl.type == "PASSWORD" || currEl.type == "password"){
+					if(!chkText(currEl,errMsg)) return false;
+				} else if(currEl.type == "CHECKBOX" || currEl.type == "checkbox"){
+					if(!chkCheckbox(f, currEl,errMsg)) return false;
+				} else if(currEl.type == "RADIO" || currEl.type == "radio"){
+					if(!chkRadio(f, currEl,errMsg)) return false;
+				}
+
+			}
+
+			// 입력 페턴을 체크한다.
+			if(currEl.getAttribute("option") != null && currEl.value.length > 0){
+				console.log( currEl );
+				if(!chkPatten(currEl,currEl.option,errMsg)) return false;
+			}
+		}
+
+		return true;
+	}
+
+
+	function chkPatten(field,patten,name) {
+		var regNum =/^[0-9]+$/;
+		var regPhone =/^[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}$/;
+		var regMail =/^[_a-zA-Z0-9-]+@[._a-zA-Z0-9-]+\.[a-zA-Z]+$/;
+		var regDomain =/^[.a-zA-Z0-9-]+.[a-zA-Z]+$/;
+		var regAlpha =/^[a-zA-Z]+$/;
+		var regHost =/^[a-zA-Z-]+$/;
+		var regHangul =/[가-힣]/;
+		var regHangulEng =/[가-힣a-zA-Z]/;
+		var regHangulOnly =/^[가-힣]*$/;
+		var regId = /^[a-zA-Z]{1}[a-zA-Z0-9_-]{4,15}$/;
+		var regDate =/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
+		patten = eval(patten);
+		if(!patten.test(field.value)){
+			alert(name + "\n\n항목의 형식이 올바르지 않습니다.");
+			field.focus();
+			return false;
+		}
+		return true;
+	}
+
+	function chkText(field, name) {
+		if(field.value.length < 1){
+			alert(name);
+			field.focus();
+			console.log('chkText');
+			return false;
+		}
+		return true;
+	}
+
+	function chkCheckbox(form, field, name) {
+		fieldname = eval(form.name+'.'+field.name);
+		if (!fieldname.checked){
+			alert(name);
+			field.focus();
+			console.log('chkCheckbox');
+			return false;
+		}
+		return true;
+	}
+
+	function chkRadio(form, field, name) {
+		fieldname = eval(form.name+'.'+field.name);
+		for (i=0;i<fieldname.length;i++) {
+			if (fieldname[i].checked)
+				return true;
+		}
+		alert(name);
+		field.focus();
+		console.log('chkRadio');
+		return false;
 	}

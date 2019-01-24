@@ -14,6 +14,16 @@ class Members {
         // $ci_session = $this->CI->session->userdata('member');
     }
 
+    public function update_login_info() {
+        $this->CI->load->model('member_model');
+        $ci_session = $this->CI->session->userdata('member');
+        if( $ci_session->mb_id ) :
+            $db = $this->CI->member_model->get( $ci_session->mb_id );
+            $this->CI->session->set_userdata('member', $db);
+            $this->CI->logined = $db;
+        endif;
+    }
+
     public function is_login() {
         $ci_session = $this->CI->session->userdata('member');
         if( $ci_session->mb_id ) return true;

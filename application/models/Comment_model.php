@@ -14,7 +14,6 @@ class Comment_model extends MY_Model {
 		$this->updated = true;
 		$this->soft_delete = true;
 
-		$this->before_delete[] = 'before_delete';
 		$this->after_get[] = 'after_get';
 	}
 
@@ -29,11 +28,6 @@ class Comment_model extends MY_Model {
 
 
 		return $data;
-	}
-
-	// observer
-	public function before_delete($data) {
-
 	}
 
 }

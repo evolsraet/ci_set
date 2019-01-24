@@ -41,7 +41,7 @@ class Post_model extends MY_Model {
 	protected function after_get($data) {
         // HTML 확인
         if( !$data->post_use_editor )
-        	$data->post_content = nl2br($this->view->post_content);
+        	$data->post_content = nl2br($data->post_content);
 
        	return $data;
 	}
@@ -56,9 +56,20 @@ class Post_model extends MY_Model {
 			$delete_post_ids[] = $row->post_id;
 		endforeach;
 
+		// 파일 삭제
 		$this->file_model
 			->where('file_rel_type', 'board')
 			->where_in( 'file_rel_id',  $delete_post_ids)
+			->delete();
+
+		// 댓글 삭제
+		$this->comment_model
+			->group_start()
+				->where('cm_type', null)
+				->or_where('cm_type', 'board')
+			->group_end()
+			->where_in('cm_post_id', $delete_post_ids)
+			->force_delete()
 			->delete();
 	}
 
@@ -80,7 +91,12 @@ class Post_model extends MY_Model {
 		// 댓글을 위한 셀렉트 (댓글갯수 사용안할 경우 불필요)
 		$table_comment = $this->_database->dbprefix('comment');
 		$table_post = $this->_database->dbprefix('post');
-		$select = "(SELECT COUNT(*) from {$table_comment} where {$table_comment}.cm_post_id = {$table_post}.post_id) as cm_cnt,
+		$select = "(
+					SELECT COUNT(*) from {$table_comment}
+					where {$table_comment}.cm_post_id = {$table_post}.post_id
+					and {$table_comment}.cm_type IS NULL
+					)
+					as cm_cnt,
 					member.*,
 					post.*";
 		$this->select( $select );

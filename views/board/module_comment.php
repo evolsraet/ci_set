@@ -7,10 +7,16 @@
 	<h3><i class="fa fa-comments"></i> Comments</h3>
 	<div id="comment_list"></div>
 
-	<? if( $_POST['board_btn_data']->auth->comment ) : ?>
+	<? if( $_POST['board_btn_data']->auth->comment || $CI->comment_auth ) : ?>
 	<!-- 댓글 작성 -->
 		<?
+
 			$form_action = $CI->board_base.'comment_insert/'.$CI->post_id;
+
+			if( !empty($CI->comment_type) ) :
+				$form_action .= "?comment_type={$CI->comment_type}";
+			endif;
+
 			$form_config = array(
 				// 'class'=>'form-horizontal',
 				'ajax_before'=>'comment_write_before',
@@ -63,7 +69,14 @@
 	function reload_comment() {
 		$("#comment_list").html( ajax_loading() );
 
-		$.post( $('#board_base').val() + 'comment_list/<?=$CI->post_id?>',function(data, textStatus, xhr) {
+		var url = $('#board_base').val() + 'comment_list/<?=$CI->post_id?>';
+
+		<? if( !empty($CI->comment_type) ) : ?>
+			// 게시판 외
+			url += '?comment_type=<?=$CI->comment_type?>';
+		<? endif; ?>
+
+		$.post(url, function(data, textStatus, xhr) {
 			reset_comment_form();
 			// 목록 갱신
 			$("#comment_list").html( data );
@@ -102,6 +115,11 @@
 		var cm_id = $(btn).attr('data-cm_id');
 		var url = $("#board_base").val() + 'comment_reply/' + cm_id;
 
+		<? if( !empty($CI->comment_type) ) : ?>
+			// 게시판 외
+			url += '?comment_type=<?=$CI->comment_type?>';
+		<? endif; ?>
+
 		$("#comment_write_form #cm_parent").val(cm_id);
 		var parent_who = $("#comment_"+cm_id+" .comment-author").html();
 		$("#comment_write_form button[type='submit']").html(parent_who+'(님)글에 댓글 등록');
@@ -115,6 +133,11 @@
 		var cm_id = $(btn).attr('data-cm_id');
 		var url = $("#board_base").val() + 'comment_delete/' + cm_id;
 
+		<? if( !empty($CI->comment_type) ) : ?>
+			// 게시판 외
+			url += '?comment_type=<?=$CI->comment_type?>';
+		<? endif; ?>
+
 		if( !confirm("삭제된 댓글은 복구가 불가능합니다.\n정말 삭제하시겠습니까?") ) return false;
 
 		$.post( url, function(data, textStatus, xhr) {
@@ -127,6 +150,11 @@
 	function comment_edit(btn) {
 		var cm_id = $(btn).attr('data-cm_id');
 		var url = $("#board_base").val() + 'comment_update/' + cm_id;
+
+		<? if( !empty($CI->comment_type) ) : ?>
+			// 게시판 외
+			url += '?comment_type=<?=$CI->comment_type?>';
+		<? endif; ?>
 
 		// 원본 보관
 		var original_content = $.trim( $('#comment_'+cm_id+' .desc').html().replace(/\<br\>/g, "\r") );

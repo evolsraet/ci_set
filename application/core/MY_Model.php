@@ -41,6 +41,8 @@
 
 	create, update 옵저버 전달되는 데이터는? 배열인가?
 
+	->set, ->where는 옵저버로 넘어가지 않는다
+
 	before_create  = 데이터배열			(many-개별)
 	after_create   = 키값				(many-개별)
 	before_update  = 데이터배열		(many-개별)
@@ -74,6 +76,11 @@ class MY_Model extends CI_Model
 	 * without overwriting CI's global $this->db connection.
 	 */
 	public $_database;
+
+	// 페이징 용
+	public $rows_per_page = null;
+	public $total_rows = null;
+	public $page_number = null;
 
 	/**
 	 * This model's default primary key or unique identifier.
@@ -232,7 +239,7 @@ class MY_Model extends CI_Model
 	/**
 	 * Fetch a single record based on an arbitrary WHERE call. Can be
 	 * any valid value to $this->_database->where().
-
+	*/
 	public function get_by()
 	{
 		$where = func_get_args();
@@ -258,6 +265,7 @@ class MY_Model extends CI_Model
 
 	/**
 	 * Fetch an array of records based on an array of primary values.
+	 */
 	public function get_many($values)
 	{
 		$this->_database->where_in($this->primary_key, $values);
@@ -267,6 +275,7 @@ class MY_Model extends CI_Model
 
 	/**
 	 * Fetch an array of records based on an arbitrary WHERE call.
+	 */
 	public function get_many_by()
 	{
 		$where = func_get_args();
@@ -311,27 +320,67 @@ class MY_Model extends CI_Model
 				'limit' => array($rows_per_page, $offset)
 			);
 
+		$this->rows_per_page = $rows_per_page;
+		$this->total_rows = $total_rows;
+		$this->page_number = $page_number;
+
 		return $this;
+	}
+
+	// after paging()
+	public function pagenation($base_url='') {
+		$this->load->library('pagination');
+
+		$pagination_config['base_url']   = $base_url . querystring('page');
+		$pagination_config['total_rows'] = $this->total_rows;
+		$pagination_config['per_page']   = $this->rows_per_page;
+
+		$this->pagination->initialize( $pagination_config );
+		return $this->pagination->create_links();
 	}
 
 	/**
 	 * Insert a new row into the table. $data should be an associative array
 	 * of data to be inserted. Returns newly created ID.
 	 */
-	public function insert($data, $skip_validation = FALSE)
+	public function insert($data = FALSE, $skip_validation = FALSE)
 	{
+		if( $data===FALSE ) :
+			$data = new stdClass;
+		else :
+			$data = (object) $data;
+		endif;
+
+		$data = $this->created_at($data);
+
 		if ($skip_validation === FALSE)
 		{
 			$data = $this->validate($data);
 		}
 
-		if ($data !== FALSE)
-		{
-			$data = $this->trigger('before_create', $data);
-			$data = $this->created_at($data);
+		// 옵저버 전달용 $data 만들기
+		$custom_set = $this->qb_set_count(true);
 
+		$data = $this->trigger('before_create', $data);
+		if( $data !== FALSE ) {
+			$this->set( $data );
+		}
+
+		// 옵저버 전달용 $data 만들기 (개별 set 한 내용까지 포함되도록. 실행은 불가능할수 있음 3번째 파라미터 등)
+		if( $custom_set ) {
+			foreach( (array) $custom_set as $key => $row ) :
+				if( isset($row['set'][2]) ) :
+					// $data->{ $row['set'][0] } = array($row['set'][1], $row['set'][2]);
+				else:
+					$data->{ $row['set'][0] } = $row['set'][1];
+				endif;
+			endforeach;
+		}
+
+		if ( $this->qb_set_count() )
+		{
 			$this->_qb_do();
-			$this->_database->insert($this->_table, $data);
+			$this->_database->insert($this->_table);
 			$this->_qb_reset();
 
 			$insert_id = $this->_database->insert_id();
@@ -339,6 +388,59 @@ class MY_Model extends CI_Model
 			$this->trigger('after_create', $insert_id );
 
 			return $insert_id;
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+
+	// 한가지 아이템만.
+	// 옵저버는 create를 사용
+	public function replace($data = FALSE, $skip_validation = FALSE) {
+		if( $data===FALSE ) :
+			$data = new stdClass;
+		else :
+			$data = (object) $data;
+		endif;
+
+		$data = $this->created_at($data);
+
+		if ($skip_validation === FALSE)
+		{
+			$data = $this->validate($data);
+		}
+
+		// 옵저버 전달용 $data 만들기
+		$custom_set = $this->qb_set_count(true);
+
+		$data = $this->trigger('before_create', $data);
+		if( $data !== FALSE ) {
+			$this->set( $data );
+		}
+
+		// 옵저버 전달용 $data 만들기 (개별 set 한 내용까지 포함되도록. 실행은 불가능할수 있음 3번째 파라미터 등)
+		if( $custom_set ) {
+			foreach( (array) $custom_set as $key => $row ) :
+				if( isset($row['set'][2]) ) :
+					// $data->{ $row['set'][0] } = array($row['set'][1], $row['set'][2]);
+				else:
+					$data->{ $row['set'][0] } = $row['set'][1];
+				endif;
+			endforeach;
+		}
+
+		if ( $this->qb_set_count() )
+		{
+			$this->_qb_do();
+			$result = $this->_database->replace($this->_table);
+			$this->_qb_reset();
+
+			$insert_id = $this->_database->insert_id();
+
+			$this->trigger('after_create', $insert_id );
+
+			return $result;
 		}
 		else
 		{
@@ -370,13 +472,19 @@ class MY_Model extends CI_Model
 	/**
 	 * Updated a record based on the primary value.
 	 */
+
 	public function update($primary_value = NULL, $data = FALSE, $skip_validation = FALSE)
 	{
+		if( $data===FALSE ) :
+			$data = new stdClass;
+		else :
+			$data = (object) $data;
+		endif;
+
+		$data = $this->updated_at($data);
+
 		$trace = debug_backtrace();
 		$trace = $trace[0];
-
-		$data = $this->trigger('before_update', $data);
-		$data = $this->updated_at($data);
 
 		if ($skip_validation === FALSE)
 		{
@@ -387,8 +495,27 @@ class MY_Model extends CI_Model
 			$this->where( $this->primary_key, $primary_value );
 		}
 
+		// 옵저버 전달용 $data 만들기
+		$custom_set = $this->qb_set_count(true);
+
+		$data = $this->trigger('before_update', $data);
 		if( $data !== FALSE ) {
 			$this->set( $data );
+		}
+
+		// kmh_print( $this->qb_functions );
+		// die();
+
+
+		// 옵저버 전달용 $data 만들기 (개별 set 한 내용까지 포함되도록. 실행은 불가능할수 있음 3번째 파라미터 등)
+		if( $custom_set ) {
+			foreach( (array) $custom_set as $key => $row ) :
+				if( isset($row['set'][2]) ) :
+					// $data->{ $row['set'][0] } = array($row['set'][1], $row['set'][2]);
+				else:
+					$data->{ $row['set'][0] } = $row['set'][1];
+				endif;
+			endforeach;
 		}
 
 		if(	!$this->qb_where_count() ) {
@@ -403,14 +530,25 @@ class MY_Model extends CI_Model
 			show_error( $error_msg );
 		}
 
+		// kmh_print('$this->qb_set_count()');
+		// kmh_print($this->qb_set_count());
+		// kmh_print($this->qb_set_count(true));
 		if ( $this->qb_set_count() )
 		{
+			$where = $this->qb_where_count(true);
+
 			$this->_qb_do();
 			$result = $this->_database->update($this->_table);
 			$this->_qb_reset();
+			$affected_rows = $this->_database->affected_rows();
 
-			$this->trigger('after_update', array('data'=>$data, 'result'=>$result));
-
+			$this->trigger('after_update', array(
+					'data'=>$data,
+					'result'=>$result,
+					'where'=>$where,
+					'affected_rows', $affected_rows
+				)
+			);
 			return $result;
 		}
 		else
@@ -499,16 +637,39 @@ class MY_Model extends CI_Model
 
 	/**
 	 * Update all records
+	 *
+	 * 전체 레코드 수정시만 필요하다
 	 */
-	public function update_all($data)
+	public function update_all($data=FALSE)
 	{
-		$data = $this->trigger('before_update', $data);
+		if( $data===FALSE ) :
+			$data = new stdClass;
+		else :
+			$data = (object) $data;
+		endif;
+
 		$data = $this->updated_at($data);
 
+		// 옵저버 전달용 $data 만들기
+		$custom_set = $this->qb_set_count(true);
+
+		if( $data !== FALSE ) {
+			$this->set( $data );
+		}
+
+		// 옵저버 전달용 $data 만들기 (개별 set 한 내용까지 포함되도록. 실행은 불가능할수 있음 3번째 파라미터 등)
+		if( $custom_set ) {
+			foreach( (array) $custom_set as $key => $row ) :
+				$data->{ $row['set'][0] } = $row['set'][1];
+			endforeach;
+		}
+
+		$data = $this->trigger('before_update', $data);
+
 		$this->_qb_do();
-		$result = $this->_database->set($data)
-						   ->update($this->_table);
+		$result = $this->_database->update($this->_table);
 		$this->_qb_reset();
+
 		$this->trigger('after_update', array('data'=>$data, 'result'=>$result));
 
 		return $result;
@@ -542,8 +703,8 @@ class MY_Model extends CI_Model
 		$trace = debug_backtrace();
 		$trace = $trace[0];
 
-		$this->kmh->log($this->force_delete, 'force_delete 시작');
-		$this->kmh->log($this->soft_delete, 'soft_delete 시작');
+		// $this->kmh->log($this->force_delete, 'force_delete 시작');
+		// $this->kmh->log($this->soft_delete, 'soft_delete 시작');
 
 		// 강제삭제
 		if( $this->force_delete == TRUE ) :
@@ -551,7 +712,7 @@ class MY_Model extends CI_Model
 			$this->soft_delete = FALSE;
 		endif;
 
-		$this->kmh->log($this->soft_delete, 'soft_delete 중간');
+		// $this->kmh->log($this->soft_delete, 'soft_delete 중간');
 
 		if( $id !== NULL )
 			$this->where($this->primary_key, $id);
@@ -591,7 +752,7 @@ class MY_Model extends CI_Model
 
 		$this->_qb_reset();
 
-		$this->kmh->log( $this->_database->last_query(), 'after delete'.$_SERVER['REQUEST_URI'] );
+		// $this->kmh->log( $this->_database->last_query(), 'after delete'.$_SERVER['REQUEST_URI'] );
 
 		$to_observer['result'] = $result;
 
@@ -608,8 +769,8 @@ class MY_Model extends CI_Model
 			$this->soft_delete = $model_soft_delete;
 		endif;
 
-		$this->kmh->log($this->force_delete, 'force_delete 끝');
-		$this->kmh->log($this->soft_delete, 'soft_delete 끝');
+		// $this->kmh->log($this->force_delete, 'force_delete 끝');
+		// $this->kmh->log($this->soft_delete, 'soft_delete 끝');
 
 		return $result;
 	}
@@ -797,7 +958,11 @@ class MY_Model extends CI_Model
 				if( isset($value[0]) )	$options['model'] = $value[0];
 				if( isset($value[1]) )	$options['primary_key'] = $value[1];
 				if( isset($value[2]) )	$options['foreign_key'] = $value[2];
+
 			}
+
+			// kmh_print( $options );
+			// die();
 
 			if (in_array($relationship, $this->_with))
 			{
@@ -1137,6 +1302,12 @@ class MY_Model extends CI_Model
 		endforeach;
 	}
 
+	// 쿼리빌더 1회 유지
+	public function qb_cache() {
+		$this->qb_cache = true;
+		return $this;
+	}
+
 	protected function _qb_reset( $force_reset = FALSE ) {
 		if( !$this->qb_cache || $force_reset ) {
 			$this->qb_functions = array();
@@ -1168,31 +1339,39 @@ class MY_Model extends CI_Model
 	}
 	*/
 
-	public function qb_where_count() {
+	public function qb_where_count($return_data = false) {
 		$where_count = 0;
+		$data = array();
 		foreach( (array) $this->qb_functions as $function_group ) :
 			foreach( (array) $function_group as $function => $args ) :
 				if(
-					strpos($function, 'where')!==FALSE ||
-					strpos($function, 'like')!==FALSE
-					)
+					strpos($function, 'where')!==FALSE || strpos($function, 'like')!==FALSE
+					&& !empty((array)($args[0]))
+					) :
+					$data[]	= $function_group;
 					$where_count++;
+				endif;
 			endforeach;
 		endforeach;
 
-		return $where_count;
+		if( $return_data ) 			return $data;
+		else 						return $where_count;
 	}
 
-	public function qb_set_count() {
+	public function qb_set_count($return_data = false) {
 		$set_count = 0;
+		$data = array();
 		foreach( (array) $this->qb_functions as $function_group ) :
 			foreach( (array) $function_group as $function => $args ) :
-				if( strpos($function, 'set')!==FALSE )
+				if( strpos($function, 'set')!==FALSE && !empty((array)($args[0])) ) :
+					$data[]	= $function_group;
 					$set_count++;
+				endif;
 			endforeach;
 		endforeach;
 
-		return $set_count;
+		if( $return_data ) 			return $data;
+		else 						return $set_count;
 	}
 
 	// 쿼리빌더 펑션들 - 추후 인보크로 교체 고려
@@ -1267,6 +1446,12 @@ class MY_Model extends CI_Model
 		}
 
 		public function order_by()
+		{
+			$args = func_get_args();
+			$this->qb_functions[] = array( __FUNCTION__ => $args );
+			return $this;
+		}
+		public function group_by()
 		{
 			$args = func_get_args();
 			$this->qb_functions[] = array( __FUNCTION__ => $args );

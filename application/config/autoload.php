@@ -135,3 +135,7 @@ $autoload['language'] = array();
 |	$autoload['model'] = array('first_model' => 'first');
 */
 $autoload['model'] = array('kmh');
+// 쇼핑몰
+$autoload['model'][] = 'mall/cart_model';
+$autoload['model'][] = 'mall/category_model';
+$autoload['model'][] = 'mall/order_model';

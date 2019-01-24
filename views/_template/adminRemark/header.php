@@ -9,6 +9,13 @@
 			data-toggle="collapse">
 				<i class="icon wb-more-horizontal" aria-hidden="true"></i>
 			</button>
+			<div class="navbar-brand navbar-brand-center">
+				<a href="/">
+					<img class="navbar-brand-logo" src="<?=TDIR?>/images/logo.png" title="<?=$this->config->item('site_title')?>">
+				</a>
+					<span class="navbar-brand-text hidden-xs">관리자</span>
+			</div>
+			<!-- 그리드 메뉴 원본
 			<div class="navbar-brand navbar-brand-center site-gridmenu-toggle" data-toggle="gridmenu">
 				<img class="navbar-brand-logo" src="<?=TDIR?>/images/logo.png" title="Remark">
 				<span class="navbar-brand-text hidden-xs">관리자</span>
@@ -18,6 +25,7 @@
 				<span class="sr-only">Toggle Search</span>
 				<i class="icon wb-search" aria-hidden="true"></i>
 			</button>
+			-->
 		</div>
 		<div class="navbar-container container-fluid">
 			<!-- Navbar Collapse -->
@@ -32,6 +40,7 @@
 								</i>
 						</a>
 					</li>
+					<!--
 					<li class="hidden-xs" id="toggleFullscreen">
 						<a class="icon icon-fullscreen" data-toggle="fullscreen" href="#" role="button">
 							<span class="sr-only">Toggle fullscreen</span>
@@ -43,6 +52,7 @@
 							<span class="sr-only">Toggle Search</span>
 						</a>
 					</li>
+					 -->
 					<!-- 메가 메뉴 -->
 					<? if( 0 ) : ?>
 					<li class="dropdown dropdown-fw dropdown-mega">
@@ -273,11 +283,15 @@
 							</li>
 						</ul>
 					</li>
+					<!--
 					<li class="dropdown">
 						<a data-toggle="dropdown" href="javascript:void(0)" title="Notifications" aria-expanded="false"
-						data-animation="scale-up" role="button">
+							data-animation="scale-up" role="button">
+
 							<i class="icon wb-bell" aria-hidden="true"></i>
-							<span class="badge badge-danger up">5</span>
+							<? if( $new_order_count ) : ?>
+								<span class="badge badge-info up">5</span>
+							<? endif; ?>
 						</a>
 						<ul class="dropdown-menu dropdown-menu-right dropdown-menu-media" role="menu">
 							<li class="dropdown-menu-header" role="presentation">
@@ -355,6 +369,7 @@
 							</li>
 						</ul>
 					</li>
+
 					<li class="dropdown">
 						<a data-toggle="dropdown" href="javascript:void(0)" title="Messages" aria-expanded="false"
 						data-animation="scale-up" role="button">
@@ -455,6 +470,7 @@
 							<i class="icon wb-chat" aria-hidden="true"></i>
 						</a>
 					</li>
+					 -->
 				</ul>
 				<!-- End Navbar Toolbar Right -->
 			</div>
@@ -480,9 +496,11 @@
 			<div>
 				<div>
 					<?
-						$base_path = '/'.$this->uri->segment(1);
+						$base_path    = '/'.$this->uri->segment(1);
 						$menu_depth_1 = $this->uri->segment(2);
 						$menu_depth_2 = $this->uri->segment(3);
+
+						$new_order_count = $this->order_model->where('order_status', '100_ask')->count_by();
 					?>
 					<ul class="site-menu">
 						<li class="site-menu-category">일반</li>
@@ -515,11 +533,19 @@
 									<a href="<?=$base_path?>/<?=$nav_key?>/<?=@array_first($admin_nav_sub[$nav_key],'key')?>">
 										<i class="site-menu-icon  <?=$nav_row['icon']?> lh_inherit"></i>
 										<span class="site-menu-title"><?=$nav_row['text']?></span>
+										<!-- ifelse -->
+										<? if( $nav_key == 'order' && $new_order_count ) : ?>
+											<div class="site-menu-badge">
+												<span class="badge badge-info"><?=$new_order_count?></span>
+											</div>
+										<? endif; ?>
+										<!-- End Of ifelse -->
 									</a>
 								</li>
 							<? endif; // 드롭다운 ifelse ?>
 						<? endforeach; ?>
 					</ul>
+					<!--
 					<div class="site-menubar-section">
 						<h5>
 							Milestone
@@ -536,10 +562,12 @@
 							<div class="progress-bar progress-bar-warning" style="width: 60%;" role="progressbar"></div>
 						</div>
 					</div>
+					 -->
 				</div>
 			</div>
 		</div>
 		<div class="site-menubar-footer">
+			<!--
 			<a href="javascript: void(0);" class="fold-show" data-placement="top" data-toggle="tooltip"
 			data-original-title="Settings">
 				<span class="icon wb-settings" aria-hidden="true"></span>
@@ -550,6 +578,7 @@
 			<a href="/" data-placement="top" data-toggle="tooltip" data-original-title="Logout">
 				<span class="icon wb-power" aria-hidden="true"></span>
 			</a>
+			 -->
 		</div>
 	</div>
 	<div class="site-gridmenu">

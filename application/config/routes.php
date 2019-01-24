@@ -49,9 +49,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
-$route['default_controller'] = 'home';
+$route['default_controller'] = 'mall';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+
+$route['cart/.+'] = 'mall/cart';
+
 
 // page 컨트롤러
 $route['page/.+']  = 'page/index';
@@ -70,8 +73,20 @@ $route['location/.+']  = 'page/index';
 
 // 관리자
 // $route['admin/dashboard/.+'] 		= 'page/index';
-$route['admin/etc/.+']     = 'page/index';
-$route['admin/board/.+'] = 'board/index';
+$route['admin/etc/.+']            = 'page/index';
+$route['admin/board/.+']          = 'board/index';
+
+// order 로 시작하는 모두 - 정규식 전환필요
+$route['admin/order']             = 'mall/order';
+$route['admin/order/(.+)']        = 'mall/order/$1';
+$route['admin/order_write/(.+)']  = 'mall/order_write/$1';
+$route['admin/order_cancel/(.+)'] = 'mall/order_cancel/$1';
+$route['admin/order_update_act']  = 'mall/order_update_act';
+
+$route['admin/member/point']     = 'member/point';
+$route['admin/member/point/(.+)'] = 'member/point/$1';
+
+// $route['admin/order/()']  = 'mall/$1/$2';
 
 
 // board method

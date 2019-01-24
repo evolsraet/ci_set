@@ -8,11 +8,13 @@ class MY_Controller extends CI_Controller {
 	//Page Info
 	protected $data = array();
 	public $template = FALSE;
-	public $page_name = FALSE;
+	// public $page_name = FALSE;
 	public $has_nav = TRUE;
+	public $render_type = FALSE;
 	public $under_ie9_error = FALSE;
 	//Page contents
 	protected $javascript = array();
+	protected $javascript_bundle = array();
 	protected $css = array();
 	protected $fonts = array();
 	//Page Meta
@@ -63,7 +65,7 @@ class MY_Controller extends CI_Controller {
 		$this->keywords    = $this->config->item('site_keywords');
 		$this->author      = $this->config->item('site_author');
 
-		$this->page_name = strToLower(get_class($this));	// 최종 라우팅 된 클래스 명
+		// $this->page_name = strToLower(get_class($this));	// 최종 라우팅 된 클래스 명
 
 		$this->logined = $this->session->userdata('member');
 
@@ -95,7 +97,10 @@ class MY_Controller extends CI_Controller {
 
 
 	protected function _render($view, $render_type="FULLPAGE") {
+		if( $_GET['print'] == 'true' ) $render_type = 'PRINT';
+
 		if( $render_type=='' ) $render_type = "FULLPAGE";
+		$this->render_type = $render_type;
 
 		// PJAX meta
 		// PJAX 구분 질 모든 요소를 넣는다 (다를 경우 페이지 갱신됨)
@@ -123,6 +128,7 @@ class MY_Controller extends CI_Controller {
 				echo json_encode($view);
 				break;
 			case "NO_NAV"   : 	// 네비만 제거
+			case "PRINT"   : 	// 네비만 제거
 				$this->has_nav = false;
 			case "FULLPAGE" :	// 일반
 			default :
@@ -131,7 +137,6 @@ class MY_Controller extends CI_Controller {
 				$to_template['nav_sub'] 		= $this->config->item('nav_sub');
 		  		$to_template['admin_nav'] 		= $this->config->item('admin_nav');
 				$to_template['admin_nav_sub'] 	= $this->config->item('admin_nav_sub');
-
 				//static
 				$to_template["javascript"] 		= $this->javascript;
 				$to_template["css"]        		= $this->css;
@@ -163,6 +168,19 @@ class MY_Controller extends CI_Controller {
 						";
 				endif;
 				// End of IE9 미만 에러
+
+				// PANEL WRAP
+				if( $render_type == 'PANEL' ) :
+					$to_template["content_body"] =
+						'<div class="panel">'
+						.'<div class="panel-body">'
+						. $to_template["content_body"]
+						.'</div></div>';
+				endif;
+				// End of PANEL WRAP
+
+				if( $render_type == 'PRINT' ) :
+				endif;
 
 				$to_template["basejs"]       	= $this->load->view("_template/_common/basejs",$this->data,true);
 

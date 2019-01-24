@@ -13,6 +13,8 @@ class Board extends MY_Controller {
 	protected $auth       = false;	// 권한 변수
 	public $board_info = false;	// 게시판 정보
 
+	public $comment_type = false; // 게시판 외 코멘트
+
 	public function __construct() {
 		parent::__construct();
 
@@ -40,36 +42,49 @@ class Board extends MY_Controller {
 		$this->load->helper('file');
 		$this->load->helper('board');
 		$this->load->library('files');
+		$this->load->library('encrypt');
 
+		// 게시판 외 코멘트
+		if( strpos($this->method, 'comment') !== false && !empty($this->input->get('comment_type')) ) :
+			$this->comment_type = $this->input->get('comment_type');
+	        $this->auth = new stdClass();
 
-		// 설정
-		$this->board_info         = $this->post_model->get_board_info( $this->board_id );
-		$this->data['board_info'] =& $this->board_info;
+	        switch ($this->comment_type) {
+	        	case 'product':
+	        		$this->auth->comment = $this->members->is_login();
+	        		break;
+	        }
 
-		$this->data['board_base'] = base_url();
-		for ($i=1; $i <= $this->board_id_segment; $i++) {
-			$this->data['board_base'] .= $this->uri->segment( $i ) . '/';
-		}
-		$this->board_base =& $this->data['board_base'];
+		else :
+			// 설정
+			$this->board_info         = $this->post_model->get_board_info( $this->board_id );
+			$this->data['board_info'] =& $this->board_info;
 
-		// 에러반환
-		if( empty($this->board_info->board_id) ) show_error('존재하지 않는 게시판입니다.');
+			$this->data['board_base'] = base_url();
+			for ($i=1; $i <= $this->board_id_segment; $i++) {
+				$this->data['board_base'] .= $this->uri->segment( $i ) . '/';
+			}
+			$this->board_base =& $this->data['board_base'];
 
-        // 기본권한 설정
+			// 에러반환
+			if( empty($this->board_info->board_id) ) show_error('존재하지 않는 게시판입니다.');
 
-		// 댓글은 회원 이상
-		$this->board_info->board_auth_comment = $this->board_info->board_auth_comment ? $this->board_info->board_auth_comment : 1;
+	        // 기본권한 설정
 
-        $this->auth = new stdClass();
-		$this->auth->list          = $this->members->is_level($this->board_info->board_auth_list);
-		$this->auth->write         = $this->members->is_level($this->board_info->board_auth_write);
-		$this->auth->reply         = $this->members->is_level($this->board_info->board_auth_reply);
-		$this->auth->view          = $this->members->is_level($this->board_info->board_auth_view);
-		$this->auth->comment       = $this->members->is_level($this->board_info->board_auth_comment);
-		$this->auth->update        = false;
-		$this->auth->need_password = false;
+			// 댓글은 회원 이상
+			$this->board_info->board_auth_comment = $this->board_info->board_auth_comment ? $this->board_info->board_auth_comment : 1;
 
-		$this->data['auth'] =& $this->auth;
+	        $this->auth = new stdClass();
+			$this->auth->list          = $this->members->is_level($this->board_info->board_auth_list);
+			$this->auth->write         = $this->members->is_level($this->board_info->board_auth_write);
+			$this->auth->reply         = $this->members->is_level($this->board_info->board_auth_reply);
+			$this->auth->view          = $this->members->is_level($this->board_info->board_auth_view);
+			$this->auth->comment       = $this->members->is_level($this->board_info->board_auth_comment);
+			$this->auth->update        = false;
+			$this->auth->need_password = false;
+
+			$this->data['auth'] =& $this->auth;
+		endif;
 
 		define('BOARDDIR', VIEWDIR."board/");
 		define('SKINDIR', BOARDDIR.$this->board_info->board_skin.'/');
@@ -295,7 +310,6 @@ class Board extends MY_Controller {
 							$auth_to_view = true;
 						else :
 							// 손님용 암호 확인
-							$this->load->library('encrypt');
 							$hash_post_id = $this->input->cookie( "post_password" );
 							if( $this->encrypt->decode( $hash_post_id ) == $id )
 								$auth_to_view = true;
@@ -327,7 +341,6 @@ class Board extends MY_Controller {
 						$auth_to_view = true;
 					elseif( $this->view->post_mb_id=='' ) :
 						// 손님용 암호 확인
-						$this->load->library('encrypt');
 						$hash_post_id = $this->input->cookie( "post_password" );
 						if( $this->encrypt->decode( $hash_post_id ) == $id )
 							$auth_to_view = true;
@@ -341,7 +354,7 @@ class Board extends MY_Controller {
 
 			// 최종 조회권한 확인
 			if( !$auth_to_view )
-				throw new Exception("처리할 권한이 없습니다.", 1);
+				throw new Exception("기본권한 : 처리할 권한이 없습니다.", 1);
 
 		} catch (Exception $e) {
 			$result = array(
@@ -500,6 +513,8 @@ class Board extends MY_Controller {
 				->update();
 			// $this->kmh->log( $this->db->last_query(), '업로드 파일 임시코드 변경' );
 
+
+
 			// 새글의 post_family 엡데이트
 			if( $update_for_family )
 				$this->post_model
@@ -510,6 +525,17 @@ class Board extends MY_Controller {
 			$result['status'] = 'ok';
 			$result['msg'] = '정상 처리되었습니다.';
 			$result['id'] = $insert_id;
+
+			// 비회원 : 포스트 아이디 저장
+			if( !$this->members->is_login() ) :
+				$hash_post_id = $this->encrypt->encode($insert_id);
+	            $cookie = array(
+	                'name'   => "post_password",
+	                'value'  => $hash_post_id,
+	                'expire' => '86500'
+	            );
+	            $this->input->set_cookie($cookie);
+	        endif;
 
 			// 액티비티
 			$this->kmh->activity($insert_id, "새글작성 by {$this->logined->mb_display}({$this->logined->mb_id})", 'board', $this->method);
@@ -588,6 +614,17 @@ class Board extends MY_Controller {
 			$result['msg'] = '정상 처리되었습니다.';
 			$result['id'] = $this->post_id;
 
+			// 비회원 : 포스트 아이디 저장
+			if( !$this->members->is_login() ) :
+				$hash_post_id = $this->encrypt->encode($this->post_id);
+	            $cookie = array(
+	                'name'   => "post_password",
+	                'value'  => $hash_post_id,
+	                'expire' => '86500'
+	            );
+	            $this->input->set_cookie($cookie);
+	        endif;
+
 			// 액티비티
 			$this->kmh->activity($this->post_id,
 				"업데이트 by {$this->logined->mb_display}({$this->logined->mb_id})",
@@ -634,7 +671,6 @@ class Board extends MY_Controller {
 	public function check_password( $id ) {
 		if( !$this->input->is_ajax_request() ) exit;
 
-		$this->load->library('encrypt');
 
 		$result['status'] = 'fail';
 		$result['msg'] = '에러가 발생했습니다.';
@@ -713,7 +749,6 @@ class Board extends MY_Controller {
 						$auth_to_view = true;
 					elseif( $this->view->cm_mb_id=='' ) :
 						// 손님용 암호 확인 (비회원 댓글은 현재 사용안함)
-						$this->load->library('encrypt');
 						$hash_cm_id = $this->input->cookie( "cm_password" );
 						if( $this->encrypt->decode( $hash_cm_id ) == $id )
 							$auth_to_view = true;
@@ -727,7 +762,7 @@ class Board extends MY_Controller {
 
 			// 최종 조회권한 확인
 			if( !$auth_to_view )
-				throw new Exception("처리할 권한이 없습니다.", 1);
+				throw new Exception("댓글뷰 : 처리할 권한이 없습니다.", 1);
 
 		} catch (Exception $e) {
 			$result = array(
@@ -751,6 +786,8 @@ class Board extends MY_Controller {
 		$prefix = 'cm_';
 		$data_ex = array('cm_id'); // 예외 컬럼
 		$data = (object)db_filter($this->input->post(), $prefix, $data_ex);
+
+		if( $this->comment_type ) $data->cm_type = $this->comment_type;
 
 		// 수동 데이터
 		$data->cm_post_id = $post_id;
@@ -807,6 +844,7 @@ class Board extends MY_Controller {
 	public function comment_list( $post_id, $type = null ) {
 		$data = array();
 		$data['auth'] = $this->auth;
+		if( $this->comment_type ) $type = $this->comment_type;
 		$data['comments'] = $this->comment_model
 					->with_deleted()
 					->join('member', 'mb_id = cm_mb_id', 'left')

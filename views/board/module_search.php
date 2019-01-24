@@ -22,12 +22,16 @@
 			</select>
 		</div>
 
-		<div class="form-group _col-xs-5">
-			<input type="text" name="skey" id="skey" class="form-control"
-				placeholder="검색어"
-				value="<?=$CI->input->get('skey')?>"
-				>
+		<div class="form-group _col-xs-6">
+			<div class="input-group">
+				<input type="text" name="skey" id="skey" class="form-control"
+					placeholder="검색어"
+					value="<?=$CI->input->get('skey')?>"
+					>
+				<span class="input-group-btn">
+					<button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+				</span>
+			</div>
 		</div>
-		<button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
 	</form>
 </div>

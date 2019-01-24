@@ -35,7 +35,7 @@ class Assets {
 
 	protected $js = array();
 	protected $css = array();
-	protected $bundle_file_path = FCPATH.'/assets/bundle/';
+	protected $bundle_file_path = null;
 	protected $logs = '';
 
 	protected $all_reset = false;
@@ -49,6 +49,8 @@ class Assets {
     public function __construct() {
     	$this->CI =& get_instance();
     	$this->CI->load->helper('file', 'kmh');
+
+    	$this->bundle_file_path = FCPATH.'/assets/bundle/';
     }
 
     public function __destruct() {

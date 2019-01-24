@@ -1,7 +1,7 @@
 <? include( MODULEPATH . 'popup.php' ); ?>
 
 <header id="header">
-	<nav class="navbar navbar-inverse navbar-static-top">
+	<nav class="navbar navbar-default navbar-fixed-top">
 		<div class="container">
 			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header">
@@ -59,7 +59,36 @@
 					<button type="submit" class="btn btn-default">Submit</button>
 				</form>
 				-->
+
+
 				<ul class="nav navbar-nav navbar-right">
+					<? if( !$this->members->is_admin() ) : ?>
+						<li class="dropdown cart_count">
+							<a href="/mall/cart"
+								title="장바구니"
+								aria-expanded="false"
+								data-toggle="tooltip"
+								data-animation="scale-up"
+								role="button"
+								>
+								<i class="icon wb-shopping-cart" aria-hidden="true"></i>
+								<span class="badge badge-danger up cart_count_text"><?=$this->cart_model->login_check_where()->count_by()?></span>
+							</a>
+						</li>
+						<li class="dropdown">
+							<a href="/mall/order"
+								title="주문확인"
+								aria-expanded="false"
+								data-toggle="tooltip"
+								data-animation="scale-up"
+								role="button"
+								>
+								<i class="icon wb-order" aria-hidden="true"></i>
+								<!-- <span class="badge badge-danger up"><?=$this->cart_model->login_check_where()->count_by()?></span> -->
+							</a>
+						</li>
+					<? endif; ?>
+
 					<? if ( $this->members->is_login() ) : // 로그인 여부 ?>
 
 						<li class="dropdown">
@@ -73,6 +102,7 @@
 							</a>
 							<ul class="dropdown-menu">
 								<li><a href="/member/update">정보수정</a></li>
+								<li><a href="/member/point">포인트 내역</a></li>
 								<? if( $this->members->is_admin() ) : ?>
 								<li><a href="/admin">관리자</a></li>
 								<? endif; ?>

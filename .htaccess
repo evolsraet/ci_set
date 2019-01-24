@@ -40,3 +40,6 @@ RewriteRule ^/?api/(.*)$ /index.php/$1 [R=301,L]
 		FileETag none
 	</FilesMatch>
 #### 스마트옵티마이져
+
+# 호스팅용 세팅을 위해
+PHP_FLAG allow_url_fopen 1

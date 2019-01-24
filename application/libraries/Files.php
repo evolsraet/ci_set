@@ -93,7 +93,10 @@ class Files {
 			$tmp_code =
 				$this->tmpcode_prefix
 				.$name."_"
-				.$_SERVER['REMOTE_ADDR'].date('His');
+				.$_COOKIE['ci_session'];
+
+			// 아이피+시분초 보다 세션쿠키가 더 정확 (한 공유기 여러 사용자)
+			// .$_SERVER['REMOTE_ADDR'].date('His');
 
 			return $tmp_code;
 		}
@@ -273,7 +276,7 @@ class Files {
 
 
 			} catch (Exception $e) {
-				$this->CI->kmh->log( $e->getMessage(), $image_path );
+				// $this->CI->kmh->log( $e->getMessage(), $image_path );
 
 				switch ($e->getCode()) {
 					case 2:
@@ -371,6 +374,31 @@ class Files {
 			return $result;
 		}
 
+		// 범용 이미지 불러오기 1개
+		public function front_image($file_rel_type, $file_rel_id, $file_rel_desc, $width = 0, $height = 0, $no_resize = false) {
+			$this->CI->load->model('file_model');
+
+			$result = $this->CI->file_model
+				->where('file_rel_type', $file_rel_type)
+				->where('file_rel_id', $file_rel_id)
+				->where('file_rel_desc', $file_rel_desc)
+				->where('file_is_image', 1)
+				->order_by('file_id', 'ASC')
+				->get();
+
+			if( $result->web_path ) {
+				$this->last_image = $result->web_path;
+
+				if( $no_resize === true )
+					return $result->web_path;
+				else
+					return $this->image_resize( $result->web_path, $width, $height );
+
+			} else {
+				return $this->last_image = $this->no_image($width, $height);
+			}
+		}
+
 		// file 디비 형태를 받아 타입 리턴
 		public function get_file_type( &$file_data, $type='fa4' ) {
 			$ext = explode('.', $file_data->file_save);
@@ -427,8 +455,8 @@ class Files {
 
 		// 업로드
 		public function upload( $file_post_name, $folder, $rel_type = null, $rel_id=null, $rel_desc=null ) {
-			$this->CI->kmh->log( func_get_args(), 'upload 변수' );
-			$this->CI->kmh->log( $_FILES, 'upload _FILES' );
+			// $this->CI->kmh->log( func_get_args(), 'upload 변수' );
+			// $this->CI->kmh->log( $_FILES, 'upload _FILES' );
 
 			$total_result = array();
 			$total_result['count'] = 0;
@@ -553,7 +581,7 @@ class Files {
 
 			} // END TRY
 
-			$this->CI->kmh->log( $total_result, '업로드 결과 : '.$_SERVER['REQUEST_URI'] );
+			// $this->CI->kmh->log( $total_result, '업로드 결과 : '.$_SERVER['REQUEST_URI'] );
 
 			// 초기화
 			$this->initialize(array(), true);
@@ -564,7 +592,7 @@ class Files {
 		public function delete_old_tmp_files() {
 			// $this->CI->output->enable_profiler(TRUE);
 
-			$expire_days = 1; // days
+			$expire_days = 2; // days
 			$expire_date = Carbon::now()->subDays( $expire_days )->toDateString(); // 만료일
 			// $expire_date = Carbon::now()->toDateTimeString(); // 만료일 (지금 이전 모두)
 

@@ -3,13 +3,36 @@
 
 body {
 	overflow-y: scroll;
-	padding-top: 0;
+	padding-top: 66px;
+	&.no_nav {
+		padding-top: 0;
+	}
+}
+
+section {
+	margin-bottom: 60px;
 }
 
 #header {
 	a {
 		font-weight: bold;
 	}
+
+	.navbar {
+		margin-bottom: 0;
+	}
+}
+
+h1.page_title {
+	margin: 0 0 40px;
+	background: @color-blue-grey-400;
+	color: #fff;
+	padding: 40px;
+	text-align: center;
+}
+
+h2 {
+	margin-bottom: 40px;
 }
 
 .well {
@@ -21,22 +44,32 @@ img {
 	max-width: 100%;
 }
 
-// 푸터 고정
-.wrapper {
-	display: table;
-    width: 100%;
-	#header {
-		display: table-row;
-		height: 1px;
-	}
-	#main {
-		display: table-row;
-	}
-	#footer {
-		display: table-cell;
-		height: 1px;
-	}
+.slick-prev {
+	left: 0;
 }
+.slick-next {
+	right: 0;
+}
+
+// 푸터 고정 -- slick 모바일 충돌
+// .wrapper {
+// 	display: table;
+//     width: 100%;
+// 	#header {
+// 		display: table-row;
+// 		height: 1px;
+// 	}
+// 	#main {
+// 		display: table-row;
+// 		#content_wrap {
+// 			margin-bottom: 40px;
+// 		}
+// 	}
+// 	#footer {
+// 		display: table-cell;
+// 		height: 1px;
+// 	}
+// }
 
 #header, h1, h2, h3, h4, h5, .title, .btn, th {
 	font-family: 'Nanum Square';

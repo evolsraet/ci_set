@@ -17,7 +17,7 @@
   });
 
   var color = $.configs.get('site', 'primaryColor');
-  console.info(color); // will output 'blue'
+  // console.info(color); // will output 'blue'
 
   window.Site = $.site.extend({
     run: function(next) {

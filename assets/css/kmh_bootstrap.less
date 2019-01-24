@@ -13,6 +13,17 @@
 	background-color: #fff;
 }
 
+// selec2 fix
+	.select2-container {
+		z-index: 1700;
+	}
+
+// SUMMERNOTE fix
+	.form-horizontal .note-editor .form-group {
+		margin-left: 0;
+		margin-right: 0;
+	}
+
 // 스윗얼렛 fix
 
 	//  배경 스크롤바 유지 / 스크롤 방지
@@ -31,7 +42,7 @@
 	}
 
 // 흰 배경 버튼
-.btn-white {
+.btn_white {
 	color: #fff;
 	&:focus, &:hover {
 		background: transparent;
@@ -40,7 +51,7 @@
 }
 
 // 흰 아웃선 버튼
-.btn-outline {
+.btn_outline {
 	background: transparent;
 	color: #fff !important;
 	border: 1px solid #fff;
@@ -49,6 +60,15 @@
 		background: @brand-primary;
 	}
 }
+
+// 테이블
+	.table_vertical_middle {
+		thead, tbody, tfoot {
+			td, th {
+				vertical-align: middle !important;
+			}
+		}
+	}
 
 .card {
 	border: 0;
@@ -104,12 +124,5 @@
 	&>.footer {
 		padding: 20px;
 		// border-top: 1px solid #e1e1e1;
-	}
-}
-
-.table {
-	border-top: 1px solid @table-border-color;
-	th {
-		color: darken(@text-color, 10%);
 	}
 }

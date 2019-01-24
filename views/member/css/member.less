@@ -8,20 +8,17 @@
 	padding: 20px;
 }
 
-// 배경
-.page_login, .page_join {
-	// background: #f1f1f1;
-}
-
 // 로그인 페이지
-.page_login {
+.page_login, .page_join, .page_social_login {
 	// margin-top: 100px;
 	// background: #f1f1f1;
 	.wrapper {
-		background: url('http://picsum.photos/1680/1080?blur') no-repeat;
+		background: url('/assets/img/common/member.jpg') no-repeat;
 		background-size: cover;
 		#main {
-			display: table-cell;
+			background-color: rgba(38,50,56,.6);
+
+			// display: table-cell;
 			vertical-align: middle;
 			#content_wrap {
 				padding: 40px 0;
@@ -44,4 +41,13 @@
 			font-size: 2.5rem;
 		}
 	}
+}
+
+.agree_box {
+	// pre {
+		height: 200px;
+		padding: 20px;
+		border: 1px solid @gray;
+		overflow-y: scroll;
+	// }
 }

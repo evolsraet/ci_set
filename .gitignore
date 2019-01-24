@@ -4,10 +4,12 @@
 /uploads/*
 /assets/bundle/*
 !/assets/lib/*
+/_session/*
 
 */config/development
 */logs/log-*.php
 */cache/*
+
 
 user_guide_src/build/*
 user_guide_src/cilexer/build/*
@@ -21,3 +23,4 @@ application/logs/*
 !.keep
 
 /vendor/
+_session/ci_session0s4ssvj7sric5k27jprjnnopt6ijn3dq

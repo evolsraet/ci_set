@@ -11,6 +11,7 @@ class Member extends MY_Controller {
 		parent::__construct();
 
 		$this->load->model('member_model');
+		$this->load->model('point_model');
 		$this->load->library('members');
 		$this->load->library('encrypt');
 
@@ -110,7 +111,7 @@ class Member extends MY_Controller {
 		}
 
 		public function join() {
-			$this->_render( $this->member_skin_path.'join');
+			$this->_render( $this->member_skin_path.'join', 'NO_NAV');
 		}
 
 		public function reset_passsword() {
@@ -515,6 +516,10 @@ class Member extends MY_Controller {
 		public function join_act( $input_data = null ) {
 			// if( !$this->input->is_ajax_request() ) exit;
 
+			$require = array(
+				'mb_mobile'
+			);
+
 			if( $input_data === null ) 	$post_data = $this->input->post();
 			else 						$post_data = $input_data;
 
@@ -526,6 +531,11 @@ class Member extends MY_Controller {
 			try {
 				if( empty($post_data[$this->auth_field]) )
 					throw new Exception("필수 항목이 없습니다. {$this->auth_field}", 1);
+
+				foreach( (array) $require as $field ) :
+					if( empty($post_data[$field]) )
+						throw new Exception("필수 항목이 없습니다. {$field}", 1);
+				endforeach;
 
 				$data = db_filter( $post_data, 'mb_' );
 
@@ -608,4 +618,51 @@ class Member extends MY_Controller {
 
 			kmh_json($result);
 		}
+
+	/*----------  포인트 관련  ----------*/
+
+	public function point() {
+		/*----------  저장  ----------*/
+		if( $this->input->is_ajax_request() ):
+			$result = array();
+			try {
+				$data = (object) db_filter($this->input->post(), 'pt_');
+				if( empty($data->pt_mb_id) || empty($data->pt_amount) )
+					throw new Exception("필수값이 누락되었습니다.", 1);
+
+				if( !$this->point_model->insert($data) )
+					throw new Exception("데이터베이스 에러가 발생했습니다.", 1);
+
+				$result['status'] = 'ok';
+				$result['msg'] = '정상처리되었습니다.';
+			} catch (Exception $e) {
+				$result['status'] = 'fail';
+				$result['msg'] = $e->getMessage();
+			}
+
+			kmh_json($result);
+			die();
+		endif;
+
+
+		/*----------  뷰  ----------*/
+		$this->css[]               = LIB."remark/vendor/bootstrap-table/bootstrap-table.css";
+		$this->javascript_bundle[] = LIB."remark/vendor/bootstrap-table/extensions/mobile/bootstrap-table-mobile.js";
+		$this->javascript_bundle[] = LIB."remark/vendor/bootstrap-table/bootstrap-table-ko-KR.js";
+
+		// 포인트 목록
+		$this->data = $this->point_model->get_list();
+
+		// 관리자는 회원 정보
+		if( $this->members->is_admin() ) :
+			$this->member_model->select( array('mb_id', $this->members->auth_field) );
+			$this->data['members'] = $this->member_model->get_all();
+			$this->data['members'] = as_simple_array( $this->data['members'], 'mb_id', $this->members->auth_field );
+		endif;
+
+		$render_type = $this->uri->segment(1)=='admin' ? 'PANEL' : '';
+		$this->_render('member/point', $render_type);
+	}
+
+
 }

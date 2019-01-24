@@ -166,12 +166,14 @@
 	===========================*/
 
 		// $nav_sub 페이지명
-		function page_title( $array ) {
+		function page_title( $array, $page_title = null ) {
 			$CI =& get_instance();
-			if( $CI->uri->total_rsegments() >= 2 ) {
-				return $array[$CI->uri->rsegment(1)][$CI->uri->rsegment(2)];
-			} elseif( $CI->uri->total_rsegments() >= 1 ) {
-				return $array[$CI->uri->rsegment(1)];
+			if( $page_title!='' ) {
+				return $page_title;
+			} elseif( $CI->uri->total_segments() >= 2 ) {
+				return $array[$CI->uri->segment(1)][$CI->uri->segment(2)];
+			} elseif( $CI->uri->total_segments() >= 1 ) {
+				return $array[$CI->uri->segment(1)];
 			} else {
 				return '페이지 타이틀이 없습니다.';
 			}
@@ -190,6 +192,7 @@
 			return trim(addslashes($buffer));
 		}
 
+		// x-template 스타일
 		function vue_component( $file, $data = null ) {
 			if(is_array($data)) extract($data);
 			ob_start();
@@ -369,6 +372,13 @@
 		  echo '</script>';
 		}
 
+		function bool($data, $y='Y', $n='N') {
+			if( $data==1 || $data=='Y' )
+				return $y;
+			else
+				return $n;
+		}
+
 		// xmp 형태 덤프 출력
 		function kmh_print($data) {
 			echo "<xmp>";
@@ -486,6 +496,30 @@
 			$CI->session->set_flashdata($name, $flashdata);
 		}
 
+		// 키와 값을 가진 배열로 변환
+		function as_simple_array( $data, $key_field, $val_field ) {
+			$result = array();
+			foreach( (array) $data as $key => $row ) :
+				$row = (object)$row;
+				$result[ $row->{$key_field} ] = $row->{$val_field};
+			endforeach;
+			return $result;
+		}
+
+		// 프로토콜 포함 도메인
+		function get_current_domain() {
+			$protocol = 'http://';
+
+			if ((isset($_SERVER['HTTPS']) && ( $_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1 ))
+					|| (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'))
+			{
+				$protocol = 'https://';
+			}
+
+			$url = $protocol . $_SERVER['HTTP_HOST'];
+		}
+
+		// 실제 IP
 		function get_ip()
 		{
 			if (!empty($_SERVER['HTTP_CLIENT_IP']))   //check ip from share internet
@@ -501,6 +535,21 @@
 				$ip=$_SERVER['REMOTE_ADDR'];
 			}
 			return $ip;
+		}
+
+		function obj_count( $data ) {
+			return count( (array) $data );
+		}
+
+		// 숫자만
+		function only_number($c) {
+			return preg_replace("/[^0-9]/", "",$c);
+		}
+
+		// 전화번호
+		function add_hyphen($num){
+		    $num = str_replace("-", "", $num);
+		    return preg_replace("/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/", "$1-$2-$3", $num);
 		}
 
 	/*=====  End of 데이터  ======*/

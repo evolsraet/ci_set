@@ -60,11 +60,19 @@
 					<?
 						$form->input('이메일','text', 'mb_email', $view->mb_email,
 							array(
+								'required' => 'required',
 								'placeholder'=>'이메일'
+							)
+						);
+						$form->input('연락처','text', 'mb_mobile', add_hyphen($view->mb_mobile),
+							array(
+								'required' => 'required',
+								'placeholder'=>'연락처'
 							)
 						);
 						$form->input('닉네임','text', 'mb_display', $view->mb_display,
 							array(
+								'required' => 'required',
 								'placeholder'=>'닉네임'
 							)
 						);
@@ -86,45 +94,101 @@
 						endif;
 					?>
 
+					<?
+						$form->input('성명','text', 'mb_name', $view->mb_name);
+					?>
+
+					<div class="form-group">
+						<label for="mb_post"
+							class="control-label"
+							>
+							주소
+						</label>
+						<div class="">
+							<div class="form-inline margin-bottom-5">
+								<div class="input-group">
+									<? $form->input('우편번호','text','mb_post',$view->mb_post,null,false); ?>
+										<span class="input-group-btn">
+											<button
+												type="button"
+												class="btn btn-info open_member_postcode"
+												>
+												&nbsp;<i class="fa fa-map-pin"></i>&nbsp;
+											</button>
+										</span> <!-- btn -->
+								</div> <!-- inputgroup -->
+							</div>	<!-- form-inline -->
+
+							<!-- 다음 우편번호 -->
+								<?
+									$postcode_id = 'member_postcode';
+									$postcode_post = 'mb_post';
+									$postcode_addr1 = 'mb_addr1';
+									$postcode_addr2 = 'mb_addr2';
+									include(MODULEPATH . 'daum_postcode.php');
+								?>
+							<!-- // 다음 우편번호 -->
+
+							<? $addr_attr = array('class'=>'margin-bottom-5');?>
+							<? $form->input('기본주소','text','mb_addr1',$view->mb_addr1,$addr_attr,false); ?>
+							<? $form->input('상세주소','text','mb_addr2',$view->mb_addr2,$addr_attr,false); ?>
+						</div> <!-- col -->
+					</div> <!-- form-group -->
+
+
+
 					<!-- 회원 사진 - 업데이트 전용 -->
 					<? if ( $is_update ) : ?>
-						<div id="member_photo_wrap">
-							<div class="member_photo">
-								<?
-									$member_photo = $this->file_model->member_image($view->mb_id);
-								?>
-								<? if( $member_photo->file_id ) : ?>
-									<div class="row">
-										<div class="col-sm-6 col-md-4">
-											<div class="thumbnail">
-												<img src="<?=$member_photo->web_path?>" alt="member image">
-												<div class="caption text-center">
-													<button type="button"
-															onclick="ajax_file_delete(<?=$member_photo->file_id?>)"
-															class="btn btn-warning"
-														>
-														<i class="fa fa-remove" alt="삭제"></i>
-													</button>
+						<div class="form-group">
+							<label for="member_photo_wrap"
+								class="control-label"
+								>
+								프로필 사진
+							</label>
+							<div id="member_photo_wrap">
+								<div class="member_photo">
+									<?
+										$member_photo = $this->file_model->member_image($view->mb_id);
+									?>
+									<? if( $member_photo->file_id ) : ?>
+										<div class="row">
+											<div class="col-sm-6 col-md-4">
+												<div class="thumbnail">
+													<img src="<?=$member_photo->web_path?>" alt="member image">
+													<div class="caption text-center">
+														<button type="button"
+																onclick="ajax_file_delete(<?=$member_photo->file_id?>)"
+																class="btn btn-warning"
+															>
+															<i class="fa fa-remove" alt="삭제"></i>
+														</button>
+													</div>
 												</div>
 											</div>
 										</div>
-									</div>
-								<? endif; ?>
-							</div>
-							<div class="file_add_wrap">
-								<input type="file" name="_mb_photo[]" multiple="multiple">
+									<? endif; ?>
+								</div>
+								<div class="file_add_wrap">
+									<input type="file" name="_mb_photo[]" multiple="multiple">
+								</div>
 							</div>
 						</div>
 					<? endif; ?>
 
+					<? if ( !$is_update ) : ?>
+					<!-- 약관 -->
+						<div class="agree_box">
+							<? include(FCPATH . 'personal.html'); ?>
+						</div>
+						<? $form->checkbox('약관동의',false,'_agree','',array('required'=>'required'), false); ?>
+					<!-- // 약관 -->
+					<? endif; ?>
 
 				</div>
 				<div class="footer">
-
 					<div class="text-center">
 						<button type="submit" class="btn btn-primary"><?=$btn_text?></button>
 					</div>
-
 				</div>
 			</div>
 			<? $form->close(); ?>
@@ -151,6 +215,10 @@
 						}
 					}
 				}, // mb_email
+				mb_mobile: {
+					required: true,
+					rangelength: [10, 16]
+				},
 				mb_display: {
 					required: true,
 					remote: {
