@@ -11,7 +11,7 @@
 	$config['site_description']	= 'YDIY, 데코덴';
 	$config['site_author']		= 'Kang, Minho';
 	$config['site_keywords']	= 'YDIY, 데코덴';
-	$config['site_email']		= 'ks1995@gmail.com';
+	$config['site_email']		= 'noreply@ydiy.co.kr';
 
 // 기본 템플릿
 	// $config['base_template'] = "_boiler";
@@ -108,6 +108,9 @@
 	// 개발
 		$config['recaptcha_sitekey'] = '6Le__YsUAAAAAO3mB5g42Lsll1gqPGouH6mEFdGF';
 		$config['recaptcha_secretkey'] = '6Le__YsUAAAAAElA5hgTSvxDE9Kk17-saHGeHLGw';
+
+// 구글 애널리틱스
+	$config['google_analytics'] = 'UA-133104900-1';
 
 // 기본 네비게이션
 	$config['nav'] = array();

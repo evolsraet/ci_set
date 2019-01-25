@@ -184,6 +184,11 @@
 					<!-- // 약관 -->
 					<? endif; ?>
 
+					<?
+						if( !$this->members->is_login() )
+							reCAPTCHA();
+					?>
+
 				</div>
 				<div class="footer">
 					<div class="text-center">
@@ -298,6 +303,8 @@
 		} else {
 			alert( response.msg );
 		}
+
+		$(btn).button('reset');
 	}
 
 </script>

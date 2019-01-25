@@ -22,7 +22,7 @@
 				<div class="body">
 
 					<?
-						$form->input('이메일','text', 'mb_email', 'ks1995@gmail.com',
+						$form->input('이메일','text', 'mb_email', '',
 							array(
 								'placeholder'=>'이메일'
 							)

@@ -255,19 +255,10 @@ class Board extends MY_Controller {
 			}
 
 			// 삽입 || 업데이트 시 카파차
-			if( $this->config->item('recaptcha_sitekey') ) {
-				if( $this->method=='write_act' || $this->method=='update_act' ) {
-					$url = 'https://www.google.com/recaptcha/api/siteverify';
-					$capacha_data = array(
-						'secret' => $this->config->item('recaptcha_secretkey'),
-						'response' => $this->input->post('g-recaptcha-response')
-					);
-					$captcha_success = get_api_json($url, $capacha_data);
-					if( $captcha_success->success !== true )
-						throw new Exception("'로봇이 아닙니다'를 체크해 주세요.", 1);
-
-				}
-			}
+			if( ($this->method=='write_act' || $this->method=='update_act') && !$this->members->is_login() ):
+				if( !reCAPTCHA_server() )
+					throw new Exception("'로봇이 아닙니다'를 체크해 주세요.", 1);
+			endif;
 
 			// 기본권한 확인
 			if( !$this->auth->{ $basic_check_method } )

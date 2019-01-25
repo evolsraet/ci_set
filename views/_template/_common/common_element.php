@@ -26,3 +26,17 @@
 		</div>
 	</div>
 	<!-- KMH common elements  -->
+
+	<!-- 애널리틱스 -->
+	<? if( $this->uri->segment(1) != 'admin' && $this->config->item('google_analytics') ) : ?>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=<?=$this->config->item('google_analytics')?>"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+
+			gtag('config', '<?=$this->config->item('google_analytics')?>');
+		</script>
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+	<? endif; ?>
+	<!-- End Of 애널리틱 -->

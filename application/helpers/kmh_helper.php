@@ -31,11 +31,19 @@
 			return json_decode($response);
 		}
 
+		function email_comment_noreply() {
+			return '
+				<div style="margin: 10px 0; text-align: center; font-weight: bold;">
+					이 메일주소는 답변받을 수 없습니다.
+				</div>
+			';
+		}
+
 		function email_send($from_email, $from_name, $to, $subject, $body) {
 			$CI =& get_instance();
 
 			if( empty($from_email) )	$from_email = $CI->config->item('site_email');
-			if( empty($from_name) )		$from_email = $CI->config->item('site_title');
+			if( empty($from_name) )		$from_name = $CI->config->item('site_title');
 
 			$data = array();
 			$data['site_title'] = $CI->config->item('site_title');
@@ -43,6 +51,7 @@
 
 			$CI->load->library('email');
 			$CI->email->from($from_email, $from_name);
+
 			$CI->email->to($to);
 			$CI->email->subject($data['site_title'] . ' - ' . $subject);
 			$CI->email->message(
@@ -312,7 +321,10 @@
 		}
 
 		// 구글 리캡챠
-		function reCAPTCHA( $sitekey ) {
+		function reCAPTCHA() {
+			$CI =& get_instance();
+			$sitekey = $CI->config->item('recaptcha_sitekey');
+
 			$result = '';
 			$result .= PHP_EOL.'<!-- reCAPTCHA -->';
 			$result .= PHP_EOL.'<script src="https://www.google.com/recaptcha/api.js"></script>';
@@ -320,7 +332,36 @@
 			$result .= PHP_EOL.'	<div class="g-recaptcha" data-sitekey="'.$sitekey.'"></div>';
 			$result .= PHP_EOL.'</div>';
 			$result .= PHP_EOL.'<!-- reCAPTCHA -->';
-			return $result;
+			echo $result;
+		}
+
+		// 서버 검증
+		function reCAPTCHA_server( $only_success = true ) {
+			$CI =& get_instance();
+			$secret_key = $CI->config->item('recaptcha_secretkey');
+			$post_key   = $_POST['g-recaptcha-response'];
+
+			if( empty($secret_key) || empty($post_key) )
+				return false;
+
+			$url = 'https://www.google.com/recaptcha/api/siteverify';
+			$capacha_data = array(
+				'secret' => $secret_key,
+				'response' => $post_key
+			);
+			$result = get_api_json($url, $capacha_data);
+
+			// return $test = array(
+			// 	'secret_key'=>$secret_key,
+			// 	'post_key'=>$post_key,
+			// 	'result' => $result,
+			// );
+
+
+			if( $only_success )
+				return $result->success;
+			else
+				return $result;
 		}
 
 		// 파일 패스 urlencode

@@ -165,6 +165,8 @@ class Member extends MY_Controller {
 					</p>
 				";
 
+				$mail_content  .= email_comment_noreply();
+
 				// 메일 발송
 				$email_result = email_send(
 									null,
@@ -536,6 +538,9 @@ class Member extends MY_Controller {
 					if( empty($post_data[$field]) )
 						throw new Exception("필수 항목이 없습니다. {$field}", 1);
 				endforeach;
+
+				if( !reCAPTCHA_server() )
+					throw new Exception("'로봇이 아닙니다'를 체크해 주세요.", 1);
 
 				$data = db_filter( $post_data, 'mb_' );
 

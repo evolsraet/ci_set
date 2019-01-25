@@ -66,24 +66,26 @@
 						<li class="dropdown cart_count">
 							<a href="/mall/cart"
 								title="장바구니"
-								aria-expanded="false"
 								data-toggle="tooltip"
+								data-placement="bottom"
+								data-container="body"
 								data-animation="scale-up"
 								role="button"
 								>
-								<i class="icon wb-shopping-cart" aria-hidden="true"></i>
+								<i class="icon wb-shopping-cart"></i>
 								<span class="badge badge-danger up cart_count_text"><?=$this->cart_model->login_check_where()->count_by()?></span>
 							</a>
 						</li>
 						<li class="dropdown">
 							<a href="/mall/order"
 								title="주문확인"
-								aria-expanded="false"
 								data-toggle="tooltip"
+								data-placement="bottom"
+								data-container="body"
 								data-animation="scale-up"
 								role="button"
 								>
-								<i class="icon wb-order" aria-hidden="true"></i>
+								<i class="icon wb-order"></i>
 								<!-- <span class="badge badge-danger up"><?=$this->cart_model->login_check_where()->count_by()?></span> -->
 							</a>
 						</li>

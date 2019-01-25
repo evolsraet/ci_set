@@ -95,7 +95,8 @@
 	?>
 </div>
 
-<?=reCAPTCHA( $this->config->item('recaptcha_sitekey') )?>
+
+<? if( !$this->members->is_login() )	reCAPTCHA(); ?>
 
 <!-- 버튼 -->
 <hr>

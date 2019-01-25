@@ -100,11 +100,13 @@
 
 // reCAPTCHA 2 사용 ( recaptcha_sitekey == false 시 사용 중단 )
 	// 미사용
-		// $config['recaptcha_sitekey'] = false;
-		// $config['recaptcha_secretkey'] = false;
+	// $config['recaptcha_sitekey'] = false;
+	// $config['recaptcha_secretkey'] = false;
 	// 개발
-		$config['recaptcha_sitekey'] = '6LcHD2sUAAAAAHzFZX66gAxFj3AUgB0Ztm1JQNk2';
-		$config['recaptcha_secretkey'] = '6LcHD2sUAAAAADEW119E1XvpFeCIRncGE61YlEHE';
+	$config['recaptcha_sitekey'] = '6LcHD2sUAAAAAHzFZX66gAxFj3AUgB0Ztm1JQNk2';
+	$config['recaptcha_secretkey'] = '6LcHD2sUAAAAADEW119E1XvpFeCIRncGE61YlEHE';
+// 구글 애널리틱스
+	$config['google_analytics'] = null;
 
 // 기본 네비게이션
 	$config['nav'] = array();
