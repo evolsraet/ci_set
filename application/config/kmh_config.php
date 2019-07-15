@@ -10,8 +10,8 @@
 	$config['site_title']		= '사이트이름';
 	$config['site_description']	= '사이트 설명입니다';
 	$config['site_author']		= 'Kang Minho';
-	$config['site_keywords']	= '키워드1, 키워드2';
-	$config['site_email']		= 'noreply@company.com';
+	$config['site_keywords']	= '사이트이름,사이트설명';
+	$config['site_email']		= 'noreply@email.com';
 
 // 기본 템플릿
 	// $config['base_template'] = "_boiler";

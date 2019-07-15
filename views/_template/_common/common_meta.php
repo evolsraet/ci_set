@@ -72,9 +72,7 @@
 	<meta name="author" content="<?=$author?>">
 	<meta name="robots" content="index,follow">	
 	<!-- favicon 갱신 ?v= 방식으로 캐싱 취소 -->
-  	<!-- <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png"> -->
-	<!-- <link rel="shortcut icon" href="data:;base64,iVBORwOKGO=" /> -->
-
+    <!-- 
 	<link rel="apple-touch-icon" sizes="180x180" href="<?=$domain?>/assets/img/favicon/apple-touch-icon.png?v=rMqvL2jqE7">
 	<link rel="icon" type="image/png" sizes="32x32" href="<?=$domain?>/assets/img/favicon/favicon-32x32.png?v=rMqvL2jqE7">
 	<link rel="icon" type="image/png" sizes="16x16" href="<?=$domain?>/assets/img/favicon/favicon-16x16.png?v=rMqvL2jqE7">
@@ -84,7 +82,8 @@
 	<meta name="msapplication-TileColor" content="#da532c">
 	<meta name="msapplication-config" content="<?=$domain?>/assets/img/favicon/browserconfig.xml?v=rMqvL2jqE7">
 	<meta name="theme-color" content="#ffffff">
-
+    -->
+    
     <meta property="og:type" content="website">
     <meta property="og:title" content="<?=$title?>">
     <meta property="og:description" content="<?=$description?>">

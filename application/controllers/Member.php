@@ -41,6 +41,8 @@ class Member extends MY_Controller {
 		}
 
 		public function enc( $id ) {
+			if( ENVIRONMENT != 'development' ) die('NO PERMITION');
+			
 			$str = '';
 			$str.= "encrypt : ".$this->encryption->encrypt($id)."<br>";
 			$str.= "decrypt : ".$this->encryption->decrypt($id)."<br>";
