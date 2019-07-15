@@ -1,5 +1,5 @@
 # ci_set
-Codeigniter Kmh Set Private.
+Codeigniter Kmh Set Private and in progress.
 
 DO NOT USE THIS.
 
