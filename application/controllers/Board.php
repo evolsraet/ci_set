@@ -374,6 +374,7 @@ class Board extends MY_Controller {
 		$this->_check_basic();
 
 		try {
+			$this->load->library('user_agent');
 	        // 조회 추가 -- 쿠키 값 없을경우만
 	        if( !$this->agent->is_robot() && !preg_match('/,' . $id . '/', $this->input->cookie('post_seen')) ) {
 	            //업뎃
