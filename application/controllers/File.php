@@ -128,7 +128,7 @@ class File extends MY_Controller {
         	->update( $file_id );
 
         // $this->kmh->log( 'download' );
-        $this->kmh->log( $this->db->last_query() );
+        // $this->kmh->log( $this->db->last_query() );
 
         // 다운로드
         force_download( $file->file_name, $url);

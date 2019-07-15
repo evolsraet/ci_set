@@ -37,9 +37,16 @@
 		}
 	</style>
 	<div id="popup_<?=$row->pu_id?>" class="popup <?=$row->pu_type=="레이어"?"layer":""?>">
+		<? if( $row->pu_link ) : ?>
 		<a href="<?=$row->pu_link?>" title="<?=$row->pu_title?>">
-			<img src="<?=$this->config->item('file_path')?>crud/<?=$row->pu_file?>" alt="">
+		<? endif; ?>
+			<img src="<?=$this->config->item('file_path')?>crud/<?=$row->pu_file?>" alt="팝업이미지">
+			<? if( trim(strip_tags($row->pu_desc))!='' ) : ?>
+				<?=$row->pu_desc?>
+			<? endif; ?>			
+		<? if( $row->pu_link ) : ?>
 		</a>
+		<? endif; ?>
 		<div class="close_btn">
 			<a href="javascript:never_popup(<?=$row->pu_id?>)" style="color: #fff !important;">일주일간 보지 않기</a>
 			<a href="javascript:browser_popup(<?=$row->pu_id?>)" style="color: #fff !important; font-weight: 700">[닫기]</a>

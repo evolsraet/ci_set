@@ -66,6 +66,7 @@
 
 	$(document).on('click', '.reset_passsword', function(){
 		url = '/member/reset_passsword';
+		$(this).button('loading');
 
 		$.ajax({
 			url: url,

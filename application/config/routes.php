@@ -49,12 +49,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
-$route['default_controller'] = 'mall';
+$route['default_controller'] = 'home';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
 $route['cart/.+'] = 'mall/cart';
-
 
 // page 컨트롤러
 $route['page/.+']  = 'page/index';
@@ -71,20 +70,33 @@ $route['partner/.+']   = 'page/index';
 $route['whatis/.+']    = 'page/index';
 $route['location/.+']  = 'page/index';
 
+// SEO
+$route['rss']     = 'seo/rss';
+$route['sitemap'] = 'seo/sitemap';
+
 // 관리자
 // $route['admin/dashboard/.+'] 		= 'page/index';
 $route['admin/etc/.+']            = 'page/index';
 $route['admin/board/.+']          = 'board/index';
-
-// order 로 시작하는 모두 - 정규식 전환필요
-$route['admin/order']             = 'mall/order';
-$route['admin/order/(.+)']        = 'mall/order/$1';
-$route['admin/order_write/(.+)']  = 'mall/order_write/$1';
-$route['admin/order_cancel/(.+)'] = 'mall/order_cancel/$1';
-$route['admin/order_update_act']  = 'mall/order_update_act';
-
+// 포인트
 $route['admin/member/point']     = 'member/point';
 $route['admin/member/point/(.+)'] = 'member/point/$1';
+
+// 관리자 몰
+$route['admin/order']                 = 'mall/order';
+$route['admin/order/(.+)']            = 'mall/order/$1';
+$route['admin/order_write/(.+)']      = 'mall/order_write/$1';
+$route['admin/order_cancel/(.+)']     = 'mall/order_cancel/$1';
+$route['admin/order_delete/(.+)']     = 'mall/order_delete/$1';
+$route['admin/order_update_act']      = 'mall/order_update_act';
+
+$route['admin/product']               = 'mall/product';
+$route['admin/product/(:any)']        = 'mall/product/$1';
+$route['admin/product/(:any)/(:any)'] = 'mall/product/$1/$2';
+$route['admin/option_list/(:any)']           = 'mall/option_list/(:any)';
+$route['admin/option_update']         = 'mall/option_update';
+$route['admin/option_delete']         = 'mall/option_delete';
+
 
 // $route['admin/order/()']  = 'mall/$1/$2';
 

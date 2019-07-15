@@ -156,18 +156,6 @@
 			if( $a==$b ) return $class;
 		}
 
-		// 현 도메인일 경우 이전 주소, 아닐 경우 루트
-		function server_referer() {
-			if( strpos($_SERVER['HTTP_REFERER'], $_SERVER['HTTP_HOST'])!==false
-				&& strpos($_SERVER['HTTP_REFERER'], 'member')===false
-				) {
-				return $_SERVER['HTTP_REFERER'];
-			} else {
-				return '/';
-			}
-
-		}
-
 	/*=====  End of 조건부  ======*/
 
 	/*===========================
@@ -527,6 +515,28 @@
 	/*===========================
 	=            데이터            =
 	===========================*/
+		// 36집법
+		function doublehex($num, $str_pad = null) {
+			if( !is_numeric($num) )	return false;
+			if( $num === 0 || $num === '0' )	return 0;
+
+			$ch = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+			$strlen = strlen($ch);
+
+			$result = '';
+			while ($num > 0) {
+				$reminder = $num % $strlen;
+				$num = ($num - $reminder) / $strlen;
+				$result = $ch[$reminder] . $result;
+			}
+
+			if( $str_pad !== null && $str_pad > strlen($result) )
+				return str_pad($result, $str_pad, 0, STR_PAD_LEFT);
+			else
+				return $result;
+		}
+
+
 		// CI Flashdata 추가 (배열)
 		function add_flashdata( $name, $msg, $class=null ) {
 			$CI =& get_instance();
@@ -538,11 +548,15 @@
 		}
 
 		// 키와 값을 가진 배열로 변환
-		function as_simple_array( $data, $key_field, $val_field ) {
+		function as_simple_array( $data, $key_field=null, $val_field=null ) {
 			$result = array();
 			foreach( (array) $data as $key => $row ) :
-				$row = (object)$row;
-				$result[ $row->{$key_field} ] = $row->{$val_field};
+				if( $key_field == null && $val_field == null  ) :
+					$result[ $row ] = $row;
+				else :
+					$row = (object)$row;
+					$result[ $row->{$key_field} ] = $row->{$val_field};
+				endif;
 			endforeach;
 			return $result;
 		}
@@ -593,6 +607,52 @@
 		    return preg_replace("/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/", "$1-$2-$3", $num);
 		}
 
+		// 현 도메인일 경우 이전 주소, 아닐 경우 루트
+		function server_referer() {
+			if( strpos($_SERVER['HTTP_REFERER'], $_SERVER['HTTP_HOST'])!==false
+				&& strpos($_SERVER['HTTP_REFERER'], 'member')===false
+				) {
+				return $_SERVER['HTTP_REFERER'];
+			} else {
+				return '/';
+			}
+		}
+
+		// 돌아갈 목록 페이지 세션에 저장
+		function set_referer_url( $name, $base_url='/', $exclude = array() ) {
+			$CI =& get_instance();
+
+			if( strpos($_SERVER['HTTP_REFERER'], $_SERVER['HTTP_HOST'])!==false ) :	// 도메인 내
+				$is_exclude = false;
+				foreach( (array) $exclude as $key => $row ) :
+					if( strpos($_SERVER['HTTP_REFERER'], $row)!==false ) :
+						$is_exclude = true;
+					endif;
+				endforeach;
+
+				if( !$is_exclude ) :
+					$_SESSION[$name] = $_SERVER['HTTP_REFERER'];
+				endif;
+				
+				// set_cookie($name, $_SERVER['HTTP_REFERER'], 60 * 60 * 24);
+			else:
+				$_SESSION[$name] =  $base_url;
+				// set_cookie($name, $base_url, 60 * 60 * 24);
+			endif;
+		}
+
+		function get_referer_url( $name, $base_url='/' ) {
+			$CI =& get_instance();
+			// $referer = get_cookie($name);
+			$referer = $_SESSION[$name];
+
+			if( $referer ) :	// 쿠키 있으면
+				return $referer;
+			else:
+				return $base_url;
+			endif;
+		}
+
 	/*=====  End of 데이터  ======*/
 
 
@@ -601,18 +661,39 @@
 	=            배열            =
 	==========================*/
 
+		// 링크 무시용
+		function ignore( $val, $ignore='index' ) {
+			if( $val == $ignore )
+				return '';
+			else
+				return $val;
+		}
+
 		// 배열 첫번째
-		function array_first($array, $which='value') {
+		function array_first($array, $which='value',$ignore='index') {
+			$result = '';
 			foreach ($array as $key => $value) {
-				if( $which=='value' ) return $value;
-				else return $key;
+				if( $which=='value' ) {
+					$result = $value;
+				} else {
+					$result = $key;
+				}
+				break;
 			}
+
+			if( $ignore != '' && $result == $ignore )
+				return '';
+			else
+				return $result;
 		}
 
 		// DB 인서트/업데이트용 필터
 		// 배열에서 prefix 확인된 것만 필터링
 		// '_null' 값을 null로 대치
 		function db_filter($array, $prefix, $data_ex = null ) {
+			get_instance()->load->helper('security');
+			$array = xss_clean($array);
+
 			$data = array();
 			// 데이터 만들기
 			foreach ($array as $key => $value) {
@@ -621,6 +702,8 @@
 					$data[$key] = $value;
 				}
 			}
+
+			// kmh_print($data); die();
 			return $data;
 		}
 

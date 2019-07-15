@@ -25,33 +25,21 @@ class Category_model extends MY_Model {
 		// after_delete
 	}
 
-	public function depth0_code($data) {
-		return substr($data, 0, 3);
-	}
-
-	public function as_nav($type='main') {
+	public function as_nav($full_depth=0) {
 		$cate = array();
-		$cate_sub = array();
-		$cate_db = $this->db->where('cate_depth',0)->get('category')->result();
-		foreach( (array) $cate_db as $key => $row ) :
-			$cate[ $row->cate_id ] = $row->cate_name;
-			$sub_db = $this->db->where('cate_depth', 1)->like('cate_id', $row->cate_id, 'after')->get('category')->result();
-			foreach( (array) $sub_db as $sub_row ) :
-				$cate_sub[ $row->cate_id ][ $sub_row->cate_id ] = $sub_row->cate_name;
+
+		for ($find_depth=0; $find_depth <= $full_depth; $find_depth++) :
+			$cate_db = $this->category_model->where('cate_depth',$find_depth)->get_all();
+			$parent_depth = $find_depth-1;
+			foreach( (array) $cate_db as $key => $row ) :
+				if( $find_depth > 0 ) :
+					$cate[$find_depth][ get_cate_id($row->cate_id, $parent_depth) ][$row->cate_id] = $row->cate_name;
+				else:
+					$cate[$find_depth][$row->cate_id] = $row->cate_name;
+				endif;
 			endforeach;
-			// $cate_sub[ $row->cate_id ]= (object)$cate_sub[ $row->cate_id ];
-		endforeach;
+		endfor;
 
-		switch ($type) {
-			case 'sub':
-				// return (object)$cate_sub;
-				return $cate_sub;
-				break;
-
-			default:
-				// return (object)$cate;
-				return $cate;
-				break;
-		}
+		return $cate;
 	}
 }

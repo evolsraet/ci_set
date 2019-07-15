@@ -8,15 +8,15 @@ class MY_Controller extends CI_Controller {
 	//Page Info
 	protected $data = array();
 	public $template = FALSE;
-	// public $page_name = FALSE;
+	public $page_name = NULL;	// 페이지 명 (메뉴명 노출) - 네비에서 기본으로 가져오고 특정한 경우만 설정
 	public $has_nav = TRUE;
 	public $render_type = FALSE;
 	public $under_ie9_error = FALSE;
 	//Page contents
-	protected $javascript = array();
-	protected $javascript_bundle = array();
-	protected $css = array();
-	protected $fonts = array();
+	public $javascript = array();
+	public $javascript_bundle = array();
+	public $css = array();
+	public $fonts = array();
 	//Page Meta
 	protected $title = FALSE;
 	protected $description = FALSE;
@@ -38,6 +38,19 @@ class MY_Controller extends CI_Controller {
 		parent::__construct();
 
 		$this->template = $this->config->item('base_template');
+
+		// 봇 로그
+		// $this->load->library('user_agent');
+		// if( $this->agent->is_robot() ) :
+		// 	$this->db->insert(
+		// 		'log_bot',
+		// 		array(
+		// 			'bot_info' => get_ip() . ' : ' . print_r( $_SERVER['HTTP_USER_AGENT'], true ),
+		// 			'bot_name' => $this->agent->robot(),
+		// 			'bot_url' => $_SERVER['REQUEST_URI']
+		// 		)
+		// 	);
+		// endif;
 
 		// 관리자
 		if( $this->uri->segment(1)==='admin' ) {
@@ -64,8 +77,6 @@ class MY_Controller extends CI_Controller {
 		$this->description = $this->config->item('site_description');
 		$this->keywords    = $this->config->item('site_keywords');
 		$this->author      = $this->config->item('site_author');
-
-		// $this->page_name = strToLower(get_class($this));	// 최종 라우팅 된 클래스 명
 
 		$this->logined = $this->session->userdata('member');
 
@@ -99,8 +110,7 @@ class MY_Controller extends CI_Controller {
 	protected function _render($view, $render_type="FULLPAGE") {
 		if( $_GET['print'] == 'true' ) $render_type = 'PRINT';
 
-		if( $render_type=='' ) $render_type = "FULLPAGE";
-		$this->render_type = $render_type;
+		$this->render_type = $render_type ? $render_type : "FULLPAGE";
 
 		// PJAX meta
 		// PJAX 구분 질 모든 요소를 넣는다 (다를 경우 페이지 갱신됨)
@@ -128,7 +138,7 @@ class MY_Controller extends CI_Controller {
 				echo json_encode($view);
 				break;
 			case "NO_NAV"   : 	// 네비만 제거
-			case "PRINT"   : 	// 네비만 제거
+			case "PRINT"   : 	// 프린트 모드
 				$this->has_nav = false;
 			case "FULLPAGE" :	// 일반
 			default :
@@ -179,12 +189,14 @@ class MY_Controller extends CI_Controller {
 				endif;
 				// End of PANEL WRAP
 
+				// 프린트모드 
 				if( $render_type == 'PRINT' ) :
 				endif;
+				// End of 프린트모드 
 
+				// 기본 JS by PHP
 				$to_template["basejs"]       	= $this->load->view("_template/_common/basejs",$this->data,true);
-
-				//render view
+				// 렌더링
 				$this->load->view("_template/{$this->template}/template",$to_template);
 
 				break;

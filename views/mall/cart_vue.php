@@ -3,7 +3,13 @@
 	$form = new Phpform();
 ?>
 
-<? $this->assets->load_js( "https://unpkg.com/vue", false ); // 개발 ?>
+<?
+	if( ENVIRONMENT == 'development' ) :
+		$this->assets->load_js( "https://unpkg.com/vue@2.6.8/dist/vue.js", false ); // 개발
+	else :
+		$this->assets->load_js( "https://unpkg.com/vue@2.6.8/dist/vue.min.js", false ); // 배포
+	endif;
+?>
 <? $this->assets->load_js( VIEWPATH . 'mall/assets/cart.js', false ); ?>
 
 <!-- login -->
@@ -154,17 +160,19 @@ $(document).ready(function() {
 				this.carts.splice( index, 1);
 			},
 			cart_order: function(type){
+				var self = this;
+
 				var cart_checked_array = [];
 
-				console.log(this.$refs.cart_item_ref);
+				console.log(self.$refs.cart_item_ref);
 
 				if( type == 'all' ) {
-					$.each(this.$refs.cart_item_ref, function(key, row) {
+					$.each(self.$refs.cart_item_ref, function(key, row) {
 						cart_checked_array.push( Number(row.item.cart_id) );
 						row.cart_update();
 					});
 				} else {
-					$.each(this.$refs.cart_item_ref, function(key, row) {
+					$.each(self.$refs.cart_item_ref, function(key, row) {
 						if( row.item._cart_checkbox ) {
 							cart_checked_array.push( Number(row.item.cart_id) );
 							row.cart_update();
@@ -181,8 +189,8 @@ $(document).ready(function() {
 				}
 
 				// 폼 서밋
-				this.cart_checked = JSON.stringify(cart_checked_array);
-				this.$nextTick(function(){
+				self.cart_checked = JSON.stringify(cart_checked_array);
+				self.$nextTick(function(){
 					document.getElementById('cart_order_form').submit();
 				});
 			},
@@ -196,7 +204,7 @@ $(document).ready(function() {
 			},
 			cart_checkbox_toggle: function() {
 				var self = this;
-				this.$nextTick(function(){
+				self.$nextTick(function(){
 					$.each( self.carts, function(key, row) {
 						row._cart_checkbox = self.cart_checkbox_all;
 					});

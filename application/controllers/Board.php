@@ -42,7 +42,6 @@ class Board extends MY_Controller {
 		$this->load->helper('file');
 		$this->load->helper('board');
 		$this->load->library('files');
-		$this->load->library('encrypt');
 
 		// 게시판 외 코멘트
 		if( strpos($this->method, 'comment') !== false && !empty($this->input->get('comment_type')) ) :
@@ -51,6 +50,8 @@ class Board extends MY_Controller {
 
 	        switch ($this->comment_type) {
 	        	case 'product':
+	        	case 'tab':
+	        	case 'playlist':
 	        		$this->auth->comment = $this->members->is_login();
 	        		break;
 	        }
@@ -302,7 +303,7 @@ class Board extends MY_Controller {
 						else :
 							// 손님용 암호 확인
 							$hash_post_id = $this->input->cookie( "post_password" );
-							if( $this->encrypt->decode( $hash_post_id ) == $id )
+							if( $this->encryption->decrypt( $hash_post_id ) == $id )
 								$auth_to_view = true;
 						endif;
 					endif;
@@ -333,7 +334,7 @@ class Board extends MY_Controller {
 					elseif( $this->view->post_mb_id=='' ) :
 						// 손님용 암호 확인
 						$hash_post_id = $this->input->cookie( "post_password" );
-						if( $this->encrypt->decode( $hash_post_id ) == $id )
+						if( $this->encryption->decrypt( $hash_post_id ) == $id )
 							$auth_to_view = true;
 					endif;
 
@@ -374,11 +375,12 @@ class Board extends MY_Controller {
 
 		try {
 	        // 조회 추가 -- 쿠키 값 없을경우만
-	        if( !preg_match('/,' . $id . '/', $this->input->cookie('post_seen')) ) {
+	        if( !$this->agent->is_robot() && !preg_match('/,' . $id . '/', $this->input->cookie('post_seen')) ) {
 	            //업뎃
-	            $this->post_model
+	            $this->db
+	            	->where('post_id', $id)
 	            	->set('post_hit', $this->view->post_hit + 1)
-	            	->update($id);
+	            	->update('post');
 
 	            // 쿠키 설정 (하루)
 	            $this->input->set_cookie('post_seen', $this->input->cookie('post_seen') . ',' . $id, 60 * 60 * 24);
@@ -519,7 +521,7 @@ class Board extends MY_Controller {
 
 			// 비회원 : 포스트 아이디 저장
 			if( !$this->members->is_login() ) :
-				$hash_post_id = $this->encrypt->encode($insert_id);
+				$hash_post_id = $this->encryption->encrypt($insert_id);
 	            $cookie = array(
 	                'name'   => "post_password",
 	                'value'  => $hash_post_id,
@@ -607,7 +609,7 @@ class Board extends MY_Controller {
 
 			// 비회원 : 포스트 아이디 저장
 			if( !$this->members->is_login() ) :
-				$hash_post_id = $this->encrypt->encode($this->post_id);
+				$hash_post_id = $this->encryption->encrypt($this->post_id);
 	            $cookie = array(
 	                'name'   => "post_password",
 	                'value'  => $hash_post_id,
@@ -678,7 +680,7 @@ class Board extends MY_Controller {
 				throw new Exception("비밀번호가 일치하지 않습니다.");
 
 			// 성공
-			$hash_post_id = $this->encrypt->encode($id);
+			$hash_post_id = $this->encryption->encrypt($id);
 
             $cookie = array(
                 'name'   => "post_password",
@@ -741,7 +743,7 @@ class Board extends MY_Controller {
 					elseif( $this->view->cm_mb_id=='' ) :
 						// 손님용 암호 확인 (비회원 댓글은 현재 사용안함)
 						$hash_cm_id = $this->input->cookie( "cm_password" );
-						if( $this->encrypt->decode( $hash_cm_id ) == $id )
+						if( $this->encryption->decrypt( $hash_cm_id ) == $id )
 							$auth_to_view = true;
 					endif;
 

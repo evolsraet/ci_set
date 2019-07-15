@@ -13,7 +13,7 @@ class Member extends MY_Controller {
 		$this->load->model('member_model');
 		$this->load->model('point_model');
 		$this->load->library('members');
-		$this->load->library('encrypt');
+		$this->load->helper('member_helper');
 
 		// 계정 ID 필드
 		$this->auth_field = $this->members->auth_field;
@@ -42,14 +42,14 @@ class Member extends MY_Controller {
 
 		public function enc( $id ) {
 			$str = '';
-			$str.= "encrypt : ".$this->encrypt->encode($id)."<br>";
-			$str.= "decrypt : ".$this->encrypt->decode($id)."<br>";
+			$str.= "encrypt : ".$this->encryption->encrypt($id)."<br>";
+			$str.= "decrypt : ".$this->encryption->decrypt($id)."<br>";
 
 			$str.= "=== FROM MEMBER_model ===<br>";
 			$db = $this->member_model->where(  'mb_id' , $id )->get();
 
 			$str.= "encrypt : ".$db->mb_password."<br>";
-			$str.= "encrypt : ".$this->encrypt->decode($db->mb_password)."<br>";
+			$str.= "decrypt : ".$this->encryption->decrypt($db->mb_password)."<br>";
 
 			echo $str;
 		}
@@ -73,7 +73,7 @@ class Member extends MY_Controller {
 
 			$db = $this->member_model->get();
 
-			$this->kmh->log( $this->db->last_query(), 'check '.$field);
+			// $this->kmh->log( $this->db->last_query(), 'check '.$field);
 
 			switch ( $field ) {
 				case 'mb_display' :
@@ -137,7 +137,7 @@ class Member extends MY_Controller {
 
 						// 비밀번호 변경
 						$update_result = $this->member_model->where('mb_email', $reset_email)
-							->set('mb_password', $this->encrypt->encode($mb_password))
+							->set('mb_password', $this->encryption->encrypt($mb_password))
 							->update();
 
 						if( !$update_result )
@@ -269,7 +269,7 @@ class Member extends MY_Controller {
 					throw new Exception("심사중인 회원입니다.");
 				else if( $db->mb_status != 'ok' )
 					throw new Exception("정상회원이 아닙니다. 관리자에게 문의하세요.");
-				else if( $this->input->post('mb_password') != $this->encrypt->decode( $db->mb_password ) )
+				else if( $this->input->post('mb_password') != $this->encryption->decrypt( $db->mb_password ) )
 					throw new Exception("비밀번호가 일치하지 않습니다.");
 
 				// 인증성공 : 비번확인
@@ -518,9 +518,9 @@ class Member extends MY_Controller {
 		public function join_act( $input_data = null ) {
 			// if( !$this->input->is_ajax_request() ) exit;
 
-			$require = array(
-				'mb_mobile'
-			);
+			// $require = array(
+			// 	'mb_mobile'
+			// );
 
 			if( $input_data === null ) 	$post_data = $this->input->post();
 			else 						$post_data = $input_data;
@@ -550,6 +550,27 @@ class Member extends MY_Controller {
 				$result['id'] = $id;
 				$result['status'] = 'ok';
 				$result['msg'] = '정상 처리되었습니다.';
+
+				// 알림
+					if( $new_order_email = $this->config_model->get_value('new_order_email') ) :
+						$mail_content  = "
+							<p class=\"callout\">
+								<a href=\"http://{$_SERVER['HTTP_HOST']}/admin/member/member/edit/{$id}\">새로운 회원이 가입했습니다.</a>
+							</p>						
+						";
+						$mail_content  .= email_comment_noreply();
+
+						// 메일 발송
+						$email_result = email_send(
+											null,
+											null,
+											$new_order_email,
+											'새 회원 알림',
+											$mail_content
+										);
+						if( $email_result !== true )
+							$this->kmh->log($email_result, '메일 발송 에러');
+					endif;
 
 				$this->kmh->activity($id, '회원가입');
 				add_flashdata('page_notice', '회원가입이 정상적으로 처리되었습니다.');
@@ -627,6 +648,8 @@ class Member extends MY_Controller {
 	/*----------  포인트 관련  ----------*/
 
 	public function point() {
+		$this->page_name = '포인트 내역';
+
 		/*----------  저장  ----------*/
 		if( $this->input->is_ajax_request() ):
 			$result = array();

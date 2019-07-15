@@ -10,11 +10,43 @@ class Admin extends MY_Controller {
 		parent::__construct();
 
 		$this->load->model('mall/order_model');
+		$this->load->model('member_model');
 	}
 
 	public function index() {
 		redirect('/admin/order','refresh');
 		// redirect('/admin/dashboard/dashboard','refresh');
+	}
+
+	// 통계
+	public function order_stat() {
+		switch ( $_GET['sort'] ) {
+			case 'year':
+				$format = '%Y';
+				break;
+			case 'month':
+				$format = '%Y-%m';
+				break;
+			case 'day':
+				$format = '%Y-%m-%d';
+				break;
+			case 'week':
+			default:
+				$_GET['sort'] = 'week';
+				$format = '%x년 %v주';
+				break;
+		}
+
+		if( !$this->input->get('start') ) $_GET['start'] = date('Y-m') . '-01';
+		if( !$this->input->get('end') ) $_GET['end'] = date('Y-m-d');
+
+		$this->data['stat'] = $this->order_model->stat(
+									$this->input->get('start'),
+									$this->input->get('end'),
+									$format
+								);
+
+		$this->_render('mall/admin/stat');
 	}
 
 	public function dashboard() {
@@ -59,203 +91,6 @@ class Admin extends MY_Controller {
 
 	public function mall_config($id) {
 		$this->setting($id);
-	}
-
-	public function product( $sub = null ) {
-		if( empty($sub) ) redirect('/admin/product/list','refresh');
-
-		$this->load->model('mall/product_model');
-		$this->data['pd_id'] = $this->uri->segment(4);
-
-		// DATA
-		switch ($sub) {
-			case 'get_list':
-				// 리스트
-				 $db = $this->product_model
-				 				->join('category', 'cate_id = pd_cate_id', 'left outer')
-				 				->get_all();
-				 foreach( fe($db) as &$row ) :
-				 	$row->pd_price = number_format($row->pd_price);
-				 endforeach;
-				kmh_json( $db );
-				die();
-
-				break;
-			case 'update_act':
-				$result['status'] = 'fail';
-				$result['msg'] = '에러가 발생했습니다.';
-
-				try {
-					if( !$this->input->post('pd_id') )
-						throw new Exception("정상적인 접근이 아닙니다.", 1);
-
-					$data = (object)db_filter($this->input->post(), 'pd_');
-
-					if( $this->input->post('is_recovery')=='ok' )
-						$data->pd_deleted_at = null;
-
-					if( !$this->product_model->update($this->input->post('pd_id'), $data) )
-						throw new Exception("디비 삽입 중 에러가 발생했습니다.", 1);
-
-					// 기존 파일 삭제시
-						$this->load->library('files');
-						$file_delete_result = $this->input->post('file_delete');
-
-						if( count($file_delete_result) ) {
-							$this->file_model
-									->where_in('file_id',$file_delete_result)
-									->delete();
-						}
-
-					// 파일업로드 (다이렉트로 게시물 아이디 등록)
-						$result['upload_result'] =
-							$this->files->upload(
-									'_post_files',
-									"product/".$id,
-									'product',
-									$this->input->post('pd_id'),
-									'pd_img'
-								);
-
-					// 임시파일들 업데이트 (에디터도 있으므로 무조건)
-						$file_update_result = $this->file_model
-							->where('file_rel_id', $this->input->post('_post_files_code'))
-							->set('file_rel_id', $this->input->post('pd_id'))
-							->update();
-
-					$result['id'] = $this->input->post('pd_id');
-					$result['status'] = 'ok';
-					$result['msg'] = '정상 처리되었습니다.';
-				} catch (Exception $e) {
-					$result['status'] = 'fail';
-					$result['msg'] = $e->getMessage();
-				}
-
-				kmh_json( $result );
-				die();
-				break;
-			case 'write_act':
-				$result['status'] = 'fail';
-				$result['msg'] = '에러가 발생했습니다.';
-
-				try {
-					$data = db_filter($this->input->post(), 'pd_');
-
-					// 파일업로드 (임시코드로 업로드 후 추후에 게시글 번호로 업데이트)
-					$this->load->library('files');
-					$result['upload_result'] =
-						$this->files->upload(
-								'_post_files',
-								"product/".$id,
-								'product',
-								$this->input->post('_post_files_code'),
-								'pd_img'
-							);
-					// $this->kmh->log( $result['upload_result'], 'upload_result' );
-
-					if( !$id = $this->product_model->insert($data) )
-						throw new Exception("디비 삽입 중 에러가 발생했습니다.", 1);
-
-					// 임시파일들 업데이트 (에디터도 있으므로 무조건)
-					$file_update_result = $this->file_model
-						->set('file_rel_id', $id)
-						->where('file_rel_id', $this->input->post('_post_files_code'))
-						->update();
-
-
-					$result['id'] = $id;
-					$result['status'] = 'ok';
-					$result['msg'] = '정상 처리되었습니다.';
-				} catch (Exception $e) {
-					$result['status'] = 'fail';
-					$result['msg'] = $e->getMessage();
-				}
-
-				kmh_json( $result );
-				die();
-				break;
-			case 'delete_act':
-				try {
-					$result['status'] = 'fail';
-					$result['msg'] = '에러가 발생했습니다.';
-
-					if( !$this->data['pd_id'] )
-						throw new Exception("정상적인 접근이 아닙니다.", 1);
-
-					if( !$this->product_model->delete($this->data['pd_id']) )
-						throw new Exception("삭제 중 에러가 발생했습니다.", 1);
-
-					$result['status'] = 'ok';
-					$result['msg'] = '정상 처리되었습니다.';
-				} catch (Exception $e) {
-					$result['status'] = 'fail';
-					$result['msg'] = $e->getMessage();
-				}
-
-				kmh_json( $result );
-				die();
-				break;
-			case 'write':
-				$sub = 'view';
-			case 'view' :
-				$this->javascript[] = LIB.'summernote/dist/summernote.min.js';
-				$this->javascript[] = LIB.'summernote/dist/lang/summernote-ko-KR.js';
-				$this->javascript[] = JS."product_editor.js";;
-				$this->css[] = LIB.'summernote/dist/summernote.css';
-
-				if( $this->data['pd_id'] ) :
-					$this->data['view'] = $this->product_model->with_deleted()->get( $this->data['pd_id'] );
-					if( !$this->data['view']->pd_id )
-						show_404('정상적인 접근이 아닙니다.');
-					$this->data['is_update'] = true;
-
-					$this->data['view']->file = $this->file_model
-						->where('file_rel_type', 'product')
-						->where('file_rel_id', $this->data['pd_id'])
-						->where('file_rel_desc', 'pd_img')
-						->get_all();
-				else :
-					$this->data['is_update'] = false;
-				endif;
-				break;
-			default:
-				break;
-		}
-
-		// RENDER
-		$this->_render("mall/admin/{$sub}");
-	}
-
-	public function option_list() {
-		$this->load->model('mall/option_model');
-		$this->_render('mall/modules/admin/option_list', 'AJAX');
-	}
-
-	public function option_update() {
-		try {
-			$this->load->model('mall/option_model');
-			$data = db_filter( $this->input->post(), 'ot_' );
-			if( !$this->option_model->replace( $data ) )
-				throw new Exception("업데이트 중 에러가 발생했습니다.", 1);
-
-			add_flashdata( 'option', '정상적으로 처리되었습니다.' );
-		} catch (Exception $e) {
-			add_flashdata( 'option', $e->getMessage(), 'error' );
-		}
-	}
-	public function option_delete() {
-		try {
-			$this->load->model('mall/option_model');
-			$where = db_filter( $this->input->post(), 'ot_' );
-			if( !$this->option_model->where($where)->delete() )
-				throw new Exception("삭제 중 에러가 발생했습니다.", 1);
-
-			add_flashdata( 'option', '정상적으로 처리되었습니다.');
-		} catch (Exception $e) {
-			add_flashdata( 'option', $e->getMessage(), 'error' );
-		}
-
-
 	}
 
 	// CRUD 세팅
@@ -335,17 +170,20 @@ class Admin extends MY_Controller {
 				$crud->field_type('config_desc', 'readonly');
 				break;
 			case 'member':
+				$this->load->helper('member_helper');
+
 				unset($columns[array_search('mb_id', $columns)]);
 				unset($columns[array_search('mb_updated_at', $columns)]);
 
 				$fields = $columns;
 				$columns = array(
-					'mb_id', 'mb_tid', 'mb_email', 'mb_display', 'mb_created_at'
+					'mb_id', 'mb_tid', 'mb_email', 'mb_status', 'mb_display', 'mb_created_at'
 				);
 				$crud->columns($columns)
 					->fields( $fields )
 					->unset_add()
 					->unset_delete()
+					->field_type( 'mb_status','dropdown',mb_status() )
 					->callback_edit_field('mb_password',array($this,'set_password_input_to_empty'))
 					->callback_add_field('mb_password',array($this,'set_password_input_to_empty'))
 					->callback_before_update(array($this,'encrypt_password_callback'));
@@ -354,6 +192,7 @@ class Admin extends MY_Controller {
 				$crud->columns('pu_id','pu_type', 'pu_title', 'pu_start', 'pu_end', 'pu_align')
 					->set_field_upload('pu_file', $crud_file_path )
 					->required_fields('pu_type', 'pu_title', 'pu_start', 'pu_end','pu_file');
+					// ->required_fields('pu_type', 'pu_title', 'pu_start', 'pu_end');
 				break;
 			default:
 				break;
@@ -378,11 +217,18 @@ class Admin extends MY_Controller {
 		// 카테고리 풀 네임
 		public function cate_fullname($post_array, $primary_key) {
 			if( $post_array['cate_depth'] > 0 ) :
-				$find_cate = substr($post_array['cate_id'], 0, 3);
-				$parent = $this->db->like('cate_id', $find_cate, 'after')
-							->where('cate_depth', 0)
-							->get('category')->row();
-				$post_array['cate_fullname'] = $parent->cate_name . ' > ' . $post_array['cate_name'];
+				$post_array['cate_fullname'] = '';
+				$parent = array();
+				for ($depth=0; $depth < $post_array['cate_depth']; $depth++) {
+					$find_cate = get_cate_id($post_array['cate_id'], $depth);
+					$parent[] = $this->db->where('cate_id', $find_cate)
+								->where('cate_depth', $depth)
+								->get('category')->row();
+				}
+				foreach( (array) $parent as $key => $row ) :
+					$post_array['cate_fullname'] .= $row->cate_name . ' > ';
+				endforeach;
+				$post_array['cate_fullname'] .= $post_array['cate_name'];
 			else:
 				$post_array['cate_fullname'] = $post_array['cate_name'];
 			endif;
@@ -399,7 +245,7 @@ class Admin extends MY_Controller {
 		public function encrypt_password_callback($post_array, $primary_key) {
 			$this->load->model('member_model');
 
-			$post_array = $this->member_model->hash_password($post_array);
+			$post_array = (array) $this->member_model->hash_password($post_array);
 
 			return $post_array;
 		}

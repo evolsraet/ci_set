@@ -100,8 +100,10 @@ $(document).ready(function() {
             op_count_change: function() {
                 var self = this;
 
-                if( self.item.cart_item.op_count < self.item.product.pd_min )
-                    self.item.cart_item.op_count = self.item.product.pd_min;
+                if( self.item.cart_item.op_count < parseInt(self.item.product.pd_min) ) {
+                    // console.log( 'op_count_mod' );
+                    self.item.cart_item.op_count = parseInt(self.item.product.pd_min);
+                }
 
                 self.item.cart_item.op_price = self.item.cart_item.op_price_one * self.item.cart_item.op_count;
             },

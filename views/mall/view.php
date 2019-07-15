@@ -85,11 +85,13 @@
 										data-ot_price="<?=$option->ot_price?>"
 										data-ot_type="<?=$option->ot_type?>"
 										data-ot_name="<?=$option->ot_name?>"
+										<?=(!$option->ot_use)?"disabled":""?>
 										>
 										<?=$option->ot_name?>
 										<? if( $option->ot_price ) : ?>
 											(<?=$option->ot_price?>원)
 										<? endif; ?>
+										<?=(!$option->ot_use)?"[선택불가]":""?>
 									</option>
 								<? endforeach; ?>
 							</select>
@@ -186,11 +188,25 @@
 		if( response.status == undefined ) {
 			console.log( response );
 			alert('통신에러');
+			$(btn).button('reset');
 		} else if( response.status == 'ok' ) {
+			console.log( response );
 			if( response.type == 'cart' ) {
-				$(".cart_count_text").html(
+				// 카트 카운트 추가
+				if( response.method == 'insert' ) {
+					$(".cart_count_text").html(
 						Number($(".cart_count_text").html()) + 1
-				);
+					);
+				}
+				// 알림
+					var insert_text = '<strong>[ 옵션 : ';
+					$(".product_option").each(function(index, el) {
+						if( index != 0 )	insert_text += '/';
+						insert_text += $(this).find('option:selected').html();
+					});
+					insert_text += ' ] ';
+					insert_text += $("#buy_count").val() + '개</strong> 상품이 장바구니에 담겼습니다.';
+					$("#product_view").prepend('<div class="alert alert-danger text-center">'+insert_text+'</div>');
 
 				if( !confirm('장바구니 페이지로 이동하시겠습니까?') ) {
 					$(btn).button('reset');

@@ -7,11 +7,11 @@
  */
 
 // 사이트 정보
-	$config['site_title']		= '와토시스';
-	$config['site_description']	= 'site_description';
-	$config['site_author']		= 'WATOSYS';
-	$config['site_keywords']	= 'site_keywords';
-	$config['site_email']		= 'admin@watosys.co.kr';
+	$config['site_title']		= '사이트이름';
+	$config['site_description']	= '사이트 설명입니다';
+	$config['site_author']		= 'Kang Minho';
+	$config['site_keywords']	= '키워드1, 키워드2';
+	$config['site_email']		= 'noreply@company.com';
 
 // 기본 템플릿
 	// $config['base_template'] = "_boiler";
@@ -45,28 +45,28 @@
 	$config['hybridauth'] = array(
 		'base_url' => "{$protocol}{$_SERVER['HTTP_HOST']}/member/social_endpoint",
 
-		'providers' => [
-			'Kakao' => [
-				'enabled' => true,
-				'keys' => [
-					'id'  => '81232a8703f4db60b904fd5ec79b4541',
-					'secret' => 'JcSF118Bt7AehJcCp51TA1lHLYH1OFfq'
-				]
-			]
-		]
+		// 'providers' => [
+		// 	'Kakao' => [
+		// 		'enabled' => true,
+		// 		'keys' => [
+		// 			'id'  => '',
+		// 			'secret' => ''
+		// 		]
+		// 	],
+		// 	'Google'   => [
+		// 		'enabled' => true,
+		// 		'keys' => [
+		// 			'id'  => '',
+		// 			'secret' => ''
+		// 		]
+		// 	]			
+		// ],
 		// 'providers' => [
 		// 	'Twitter' => [
 		// 		'enabled' => true,
 		// 		'keys' => [
 		// 			'key'    => 'gYkw6AZtkabcetdQENwk35cGF',
 		// 			'secret' => 'dmmKBdAuonCe7wOM5Wrn3VCXNI3xuu0UyTnQaVSLpIkkcnSdPH'
-		// 		]
-		// 	],
-		// 	'Google'   => [
-		// 		'enabled' => true,
-		// 		'keys' => [
-		// 			'id'  => '34891859812-thnacq02166kodplgitnsipphrharh6e.apps.googleusercontent.com',
-		// 			'secret' => 'xYLVF8U6IfbDbWfN-GeCekHC'
 		// 		]
 		// 	],
 		// 	'Facebook' => [
@@ -100,32 +100,37 @@
 
 // reCAPTCHA 2 사용 ( recaptcha_sitekey == false 시 사용 중단 )
 	// 미사용
-	// $config['recaptcha_sitekey'] = false;
-	// $config['recaptcha_secretkey'] = false;
+		// $config['recaptcha_sitekey'] = false;
+		// $config['recaptcha_secretkey'] = false;
 	// 개발
-	$config['recaptcha_sitekey'] = '6LcHD2sUAAAAAHzFZX66gAxFj3AUgB0Ztm1JQNk2';
-	$config['recaptcha_secretkey'] = '6LcHD2sUAAAAADEW119E1XvpFeCIRncGE61YlEHE';
+		$config['recaptcha_sitekey'] = '6LcHD2sUAAAAAHzFZX66gAxFj3AUgB0Ztm1JQNk2';
+		$config['recaptcha_secretkey'] = '6LcHD2sUAAAAADEW119E1XvpFeCIRncGE61YlEHE';
+	// 실제
+		// $config['recaptcha_sitekey'] = '';
+		// $config['recaptcha_secretkey'] = '';
+
 // 구글 애널리틱스
-	$config['google_analytics'] = null;
+	$config['google_analytics'] = false;
 
 // 기본 네비게이션
 	$config['nav'] = array();
 	$config['nav_sub'] = array();
 
-	$config['nav']['mall']    	= '제품보기';
-	$config['nav']['notice']    	= '공지사항';
-	// $config['nav']['introduce'] = 'YDIY 소개';
+	$config['nav']['home']                  = '이용안내';
+	$config['nav']['board']                 = '게시판';
 
-	$config['nav_sub']['mall']['lists'] = '제품보기';
-	$config['nav_sub']['introduce']['welcome'] = 'YDIY 소개';
-	$config['nav_sub']['notice']['notice']    = '공지사항';
+	$config['nav_sub']['board']['notice']   = '공지사항';
+	$config['nav_sub']['board']['customer'] = '고객게시판';
+	$config['nav_sub']['board']['free']     = '자유게시판';
+	
+	$config['nav_sub']['home']['info']      = '이용안내';
 
 	// 회원
-	$config['nav']['member']  = '마이페이지';
-	$config['nav_sub']['member']['join']   = '회원가입';
-	$config['nav_sub']['member']['update']   = '회원정보 수정';
+	$config['nav']['member']                = '마이페이지';
+	$config['nav_sub']['member']['join']    = '회원가입';
+	$config['nav_sub']['member']['update']  = '회원정보 수정';
 	$config['nav_sub']['member']['login']   = '로그인';
-	$config['nav_sub']['member']['find']   = '계정찾기';
+	$config['nav_sub']['member']['find']    = '계정찾기';
 
 // 관리자 메뉴
 	$config['admin_nav'] = array();
@@ -135,18 +140,6 @@
 	// 	'text'=>'대시보드',
 	// 	'icon'=>'fa fa-fw fa-dashboard',
 	// );
-	$config['admin_nav']['mall_config'] = array(
-		'text'=>'쇼핑몰 설정',
-		'icon'=>'fa fa-fw fa-folder',
-	);
-	$config['admin_nav']['product'] = array(
-		'text'=>'제품관리',
-		'icon'=>'fa fa-fw fa-list-alt',
-	);
-	$config['admin_nav']['order'] = array(
-		'text'=>'주문서 관리',
-		'icon'=>'fa fa-fw fa-shopping-cart',
-	);
 	$config['admin_nav']['setting'] = array(
 		'text'=>'설정',
 		'icon'=>'fa fa-fw fa-gears',
@@ -165,17 +158,39 @@
 	// );
 
 	$config['admin_nav_sub']['dashboard']['dashboard'] = '대시보드';
-	$config['admin_nav_sub']['mall_config']['category'] = '카테고리';
-	$config['admin_nav_sub']['product']['list'] = '제품관리';
-	// $config['admin_nav_sub']['order'][''] = '주문서 관리';
-	$config['admin_nav_sub']['setting']['config'] = '환경설정';
-	$config['admin_nav_sub']['setting']['popup'] = '팝업';
-	$config['admin_nav_sub']['setting']['board'] = '게시판';
-	$config['admin_nav_sub']['member']['member'] = '회원';
-	$config['admin_nav_sub']['member']['point'] = '포인트 관리';
-	$config['admin_nav_sub']['board']['notice'] = '공지사항';
-	$config['admin_nav_sub']['etc']['etc'] = '기타';
+	$config['admin_nav_sub']['setting']['config']      = '환경설정';
+	$config['admin_nav_sub']['setting']['popup']       = '팝업';
+	$config['admin_nav_sub']['setting']['board']       = '게시판';
+	$config['admin_nav_sub']['setting']['tab_chord']   = '코드';
+	$config['admin_nav_sub']['member']['member']       = '회원';
+	$config['admin_nav_sub']['member']['point']        = '포인트 관리';
+	$config['admin_nav_sub']['board']['notice']        = '공지사항';
+	$config['admin_nav_sub']['etc']['etc']             = '기타';
+/*
+// 관리자 메뉴 (몰)
+	$config['admin_mall_nav'] = array();
+	$config['admin_mall_nav_sub'] = array();
 
+	$config['admin_mall_nav']['mall_config'] = array(
+		'text'=>'쇼핑몰 설정',
+		'icon'=>'fa fa-fw fa-folder',
+	);
+	$config['admin_mall_nav']['product'] = array(
+		'text'=>'제품관리',
+		'icon'=>'fa fa-fw fa-list-alt',
+	);
+	$config['admin_mall_nav']['order'] = array(
+		'text'=>'주문서 관리',
+		'icon'=>'fa fa-fw fa-shopping-cart',
+	);
+	$config['admin_mall_nav']['order_stat'] = array(
+		'text'=>'매출 통계',
+		'icon'=>'fa fa-fw fa-krw',
+	);	
+	
+	$config['admin_mall_nav_sub']['mall_config']['category'] = '카테고리';
+	$config['admin_mall_nav_sub']['product']['list'] = '제품관리';
+*/
 
 // 페이지네이션
 	// $config['pagination']['full_tag_open'] = "<div class=\"pagination\"><ul>";

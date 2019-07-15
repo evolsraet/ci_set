@@ -66,12 +66,11 @@ class Test_model extends MY_Model {
 		$this->console->log( array('before_create', $data) );
 		$this->_database->trans_start();
 		kmh_print('before_create');
-		echo "<br>AF Rows : " . $this->update($this->_table, array('test_id_copy'=>1)) . "<br>";
 		return $data;
 	}
 	public function after_create($key) {
 		$this->console->log( array('after_create', $key) );
-		$this->where('test_id', 2)->update($this->_table, array('test_varchar'=>'C'));
+		$this->update($key, array('test_varchar2'=>'after_create'));
 		$this->_database->trans_complete();
 		return $key;
 	}

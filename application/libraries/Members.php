@@ -24,6 +24,13 @@ class Members {
         endif;
     }
 
+    public function ask_member_count() {
+        $this->CI->load->model('member_model');
+        return $this->CI->member_model
+            ->where('mb_status', 'ask')
+            ->count_by();
+    }
+
     public function is_login() {
         $ci_session = $this->CI->session->userdata('member');
         if( $ci_session->mb_id ) return true;

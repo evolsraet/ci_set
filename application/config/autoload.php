@@ -59,7 +59,7 @@ $autoload['packages'] = array();
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
 // $autoload['libraries'] = array();
-$autoload['libraries'] = array('database','session', 'assets', 'members', 'console' ,'files');
+$autoload['libraries'] = array('database','session', 'encryption', 'assets', 'members', 'console' ,'files');
 
 /*
 | -------------------------------------------------------------------
@@ -90,7 +90,9 @@ $autoload['drivers'] = array();
 |
 |	$autoload['helper'] = array('url', 'file');
 */
-$autoload['helper'] = array('url', 'form', 'kmh');
+$autoload['helper'] = array('url', 'form', 'cookie', 'kmh');
+// mall
+// $autoload['helper'][] = 'mall_helper';
 
 /*
 | -------------------------------------------------------------------
@@ -134,8 +136,10 @@ $autoload['language'] = array();
 |
 |	$autoload['model'] = array('first_model' => 'first');
 */
-$autoload['model'] = array('kmh');
+$autoload['model'] = array('kmh', 'config_model');
 // 쇼핑몰
-$autoload['model'][] = 'mall/cart_model';
-$autoload['model'][] = 'mall/category_model';
-$autoload['model'][] = 'mall/order_model';
+// $autoload['model'][] = 'mall/cart_model';
+// $autoload['model'][] = 'mall/category_model';
+// $autoload['model'][] = 'mall/order_model';
+// 타브
+

@@ -32,4 +32,15 @@
 		endif;
 		// End of ifelse
 	}
+
+	// 코드값으로 몇 뎁스의 코드인지
+	function category_depth($str, $depth_per_str=3) {
+		return (strlen($str) / $depth_per_str) - 1;
+	}
+
+	// 뎁스에 맞게 코드값 자르기
+	function get_cate_id($str, $depth=0) {
+		$cate_length = ($depth+1) * 3;
+		return substr($str, 0, $cate_length);
+	}
 ?>

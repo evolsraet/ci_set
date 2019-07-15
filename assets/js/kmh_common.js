@@ -6,6 +6,13 @@ $(document).ready(function() {
 	});
 });
 
+$(function(){
+	$(".foldable").click(function(event) {
+		$(this).next('section').toggle();
+		$(this).find('i').toggleClass('fa-angle-up').toggleClass('fa-angle-down');
+	});
+});
+
 // PJAX 대응 주소이동
 function pjax_href( url ) {
 	if (typeof(Pjax) != 'undefined' && typeof(Pjax.isSupported) != 'undefined')

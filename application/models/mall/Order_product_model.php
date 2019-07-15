@@ -21,8 +21,9 @@ class Order_product_model extends MY_Model {
 		// $this->after_delete[] = 'after_delete';
 		$this->before_create[] = 'options_encode';
 		$this->before_update[] = 'options_encode';
-		$this->after_get[] = 'options_decode';
+
 		$this->before_get[] = 'with_product';
+		$this->after_get[] = 'options_decode';
 		// before_create
 		// after_create
 		// before_update

@@ -26,6 +26,14 @@ class Config_model extends MY_Model {
 		// after_delete
 	}
 
+	public function get_desc($id) {
+		$db = $this->get($id);
+		if( isset($db->config_desc) )
+			return $db->config_desc;
+		else
+			return false;
+	}
+
 	public function get_value($id) {
 		$db = $this->get($id);
 		if( isset($db->config_value) )

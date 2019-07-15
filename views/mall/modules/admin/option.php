@@ -3,6 +3,10 @@
 	<input type="text" class="form-control ot_type" placeholder="옵션 종류">
 	<input type="text" class="form-control ot_name" placeholder="이름">
 	<input type="text" class="form-control ot_price" placeholder="추가 가격">
+	<span class="checkbox-custom checkbox-primary" data-toggle="tooltip" title="사용여부">
+		<input type="checkbox" id="ot_use" class="ot_use" checked>
+		<label for="ot_use"></label>
+	</span>
 
 	<button type="button" class="btn btn-sm btn-primary" title="추가"><i class="fa fa-plus"></i></button>
 </div>
@@ -23,6 +27,7 @@
 		$("#option_form .btn-primary").click(function(event) {
 			var data = {
 				ot_pd_id: $("#pd_id").val(),
+				ot_use: $("#option_form .ot_use").prop('checked'),
 				ot_type: $("#option_form .ot_type").val(),
 				ot_name: $("#option_form .ot_name").val(),
 				ot_price: $("#option_form .ot_price").val(),
@@ -35,6 +40,7 @@
 
 			$.post('/admin/option_update', data, function(data, textStatus, xhr) {
 				option_list();
+				$("#option_form .ot_use").prop('checked', true),
 				$("#option_form .ot_type").val('');
 				$("#option_form .ot_name").val('');
 				$("#option_form .ot_price").val('');

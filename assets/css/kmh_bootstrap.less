@@ -4,13 +4,21 @@
 	base : bootstrap 3.3.7
 */
 
-
 // LESS 기본 로드
 @import url('/assets/css/less_load.less');
+
+a, button {
+	outline: none !important;
+}
 
 // 모바일 네비 햄버거 색상
 .navbar-inverse .navbar-toggle .icon-bar {
 	background-color: #fff;
+}
+
+// 툴팁 줄넘김
+.tooltip-inner {
+	word-break: keep-all;
 }
 
 // selec2 fix

@@ -34,7 +34,12 @@
 	<div class="panel panel-bordered">
 		<div class="panel-heading">
 			<div class="panel-title">
-				<h3>주문 정보</h3>
+				<h3>
+					주문 정보
+					<? if( $order_id ) : ?>
+						<small>#<?=$order_id?></small>
+					<? endif; ?>
+				</h3>
 				<p>
 					<? if( $order_id ) : ?>
 						<?=order_status($view->order_status);?>
@@ -124,7 +129,14 @@
 				</div> <!-- col -->
 			</div> <!-- form-group -->
 
-			<? $form->textarea('요청사항',3,'order_memo',$view->order_memo); ?>
+			<?
+				$form->textarea(
+					'요청사항',
+					3,
+					'order_memo',
+					$form_view_mode ? nl2br($view->order_memo) : $view->order_memo
+				);
+			?>
 
 			<!-- 포인트 사용 -->
 			<? if( $order_mode == 'write' && $this->members->is_login() ) : ?>
@@ -147,7 +159,7 @@
 
 			<!-- 관리자 -->
 			<? if( $this->members->is_admin() ) : ?>
-				<? $form->textarea('관리자 전용 메모',3,'order_admin_memo',$view->order_admin_memo); ?>
+				<? $form->textarea('관리자 전용 메모',3,'order_admin_memo',$form_view_mode ? nl2br($view->order_admin_memo) : $view->order_admin_memo); ?>
 				<? $form->input('관리자 조정 금액','text','order_admin_price',$view->order_admin_price); ?>
 			<? endif; ?>
 			<!-- End Of 관리자 -->
@@ -172,6 +184,13 @@
 			<button type="submit" class="btn btn-lg btn-primary">주문하기</button>
 		<? elseif( $view->order_id && !$form_view_mode ) : ?>
 			<button type="submit" class="btn btn-lg btn-primary">수정</button>
+			<? if( $this->members->is_admin() ) : ?>
+				<button type="button" class="order_delete btn btn-lg btn-danger"
+					data-order_id="<?=$view->order_id?>"
+					>
+					주문서 삭제
+				</button>
+			<? endif; ?>
 		<? endif; ?>
 
 		<? if( $view->order_status == '100_ask' && !$this->members->is_admin() ) : ?>
@@ -182,7 +201,16 @@
 				주문 취소
 			</button>
 		<? endif; ?>
-			<a href="<?=$this->mall_base_url?>/order" class="btn btn-lg btn-default">목록</a>
+
+		<!-- 뷰모드 전용 -->
+		<? if( $form_view_mode ) : ?>
+			<button type="button" class="btn btn-lg btn-default" onclick="printJS('order', 'html');">
+				프린트
+			</button>
+		<? endif; ?>
+		<!-- End Of 뷰모드 전용 -->
+
+		<a href="<?=$this->mall_base_url?>/order" class="btn btn-lg btn-default">목록</a>
 
 		<!-- End Of ifelse -->
 	</div>
@@ -226,6 +254,46 @@
 		});
 	});
 
+	<? if( $this->members->is_admin() ) : ?>
+	// 관리자 전용
+		$(".order_delete").click(function(event) {
+			if( !confirm("주문서 삭제는 주문과 관련된 모든 내용이 삭제됩니다.\n삭제하시겠습니까?") ) return false;
+			if( !confirm("이 작업은 취소 할 수 없습니다.\n정말 주문을 삭제하시겠습니까?") ) return false;
+
+			btn = $(this);
+			url = '<?=$this->mall_base_url?>/order_delete/' + $(btn).attr('data-order_id');
+
+			$.ajax({
+				url: url,
+				type: 'post',
+				dataType: 'json',
+				data: { '<?=$this->security->get_csrf_token_name()?>' : '<?=$this->security->get_csrf_hash()?>' },
+				beforeSend : function() {
+					$(btn).button('loading');
+				},
+				error : function(request ,status, error) {
+					alert('AJAX 통신 중 에러가 발생했습니다.');
+					console.log( request.responseText );
+					$(btn).button('reset');
+				},
+				success : function(response, status, request) {
+					if( response.status == 'ok' ) {
+						swal({
+							type: 'success',
+							title: response.msg,
+						}, function(){
+							location.href='<?=$this->mall_base_url?>/order';
+						});
+					} else {
+						alert(response.msg);
+						$(btn).button('reset');
+					}
+				}
+			});
+		});
+	// 관리자 전용		
+	<? endif; ?>
+	
 	function order_write_before() {
 		if( !chkForm('order_write_form') ) {
 			console.log('chkForm : ' + chkForm('order_write_form'));

@@ -1,0 +1,8 @@
+# www.robotstxt.org/
+# http://code.google.com/web/controlcrawlindex/
+# Disallow: /*ajax
+
+User-agent: *
+Allow: /
+Disallow: /*act
+Disallow: /*delete

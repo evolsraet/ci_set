@@ -64,12 +64,12 @@
 								'placeholder'=>'이메일'
 							)
 						);
-						$form->input('연락처','text', 'mb_mobile', add_hyphen($view->mb_mobile),
-							array(
-								'required' => 'required',
-								'placeholder'=>'연락처'
-							)
-						);
+						// $form->input('연락처','text', 'mb_mobile', add_hyphen($view->mb_mobile),
+						// 	array(
+						// 		'required' => 'required',
+						// 		'placeholder'=>'연락처'
+						// 	)
+						// );
 						$form->input('닉네임','text', 'mb_display', $view->mb_display,
 							array(
 								'required' => 'required',
@@ -95,9 +95,9 @@
 					?>
 
 					<?
-						$form->input('성명','text', 'mb_name', $view->mb_name);
+						// $form->input('성명','text', 'mb_name', $view->mb_name);
 					?>
-
+					<? if( 0 ) : ?>
 					<div class="form-group">
 						<label for="mb_post"
 							class="control-label"
@@ -134,6 +134,7 @@
 							<? $form->input('상세주소','text','mb_addr2',$view->mb_addr2,$addr_attr,false); ?>
 						</div> <!-- col -->
 					</div> <!-- form-group -->
+					<? endif; ?>
 
 
 
@@ -192,6 +193,9 @@
 				</div>
 				<div class="footer">
 					<div class="text-center">
+						<? if( !$is_update ) : ?>
+							<a href="/" class="btn btn-default">메인으로</a>
+						<? endif; ?>
 						<button type="submit" class="btn btn-primary"><?=$btn_text?></button>
 					</div>
 				</div>

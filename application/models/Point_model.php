@@ -33,7 +33,12 @@ class Point_model extends MY_Model {
 	}
 
 	// 간편 추가
-	public function add( $pt_mb_id, $pt_amount, $pt_desc=null, $pt_rel_id=null ) {
+	public function add( $pt_mb_id, $pt_amount, $pt_desc=null, $pt_rel_id=null, $check_pt_rel_id = true ) {
+		// 중복 체크 여부 확인 check_pt_rel_id
+		if( $check_pt_rel_id && !$this->check_pt_rel_id($pt_rel_id) ) :
+			return false;
+		endif;
+
 		$point = new stdClass;
 		$point->pt_mb_id  = $pt_mb_id;
 		$point->pt_amount = abs($pt_amount);

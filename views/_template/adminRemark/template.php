@@ -1,19 +1,20 @@
 <? ob_start(); ?>
 <!DOCTYPE html>
-<html class="no-js css-menubar" lang="ko">
 <!--[if lt IE 7]> <html class="no-js css-menubar lt-ie9 lt-ie8 lt-ie7" lang="ko"> <![endif]-->
 <!--[if IE 7]>    <html class="no-js css-menubar lt-ie9 lt-ie8" lang="ko"> <![endif]-->
 <!--[if IE 8]>    <html class="no-js css-menubar lt-ie9" lang="ko"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="ko"> <!--<![endif]-->
 
 <head>
 	<? include_once( VIEWPATH."/_template/_common/common_meta.php" ); ?>
-
-	<? // $this->assets->all_reset(); // 에셋 완전 리셋 - 오래걸림 ?>
-	<? $this->assets->bundle_reset(); // 번들만 리셋 ?>
 	<? include_once( VIEWPATH."/_template/_common/remark_header_load.php" ); ?>
 </head>
-<body class="<?=$body_class?>">
+
+<?
+	$site_menubar_fold = $_COOKIE['site_menubar_fold']=='true' ? 'site-menubar-unfold' : 'site-menubar-fold';
+?>
+
+<body class="<?=$body_class?> <?=$site_menubar_fold?> site-menubar-keep" data-auto-menubar="false">
 	<!-- <div class="_wrapper"> -->
 		<? if( $this->has_nav ) include_once (TPATH.'header.php'); ?>
 
@@ -24,9 +25,18 @@
 					<div class="page-header">
 						<h1 class="page-title">
 							<?
-								echo $page_title = $admin_nav_sub[ $this->uri->segment(2) ][ $this->uri->segment(3) ] ?
-												$admin_nav_sub[ $this->uri->segment(2) ][ $this->uri->segment(3) ] :
-												$admin_nav[ $this->uri->segment(2) ]['text']
+								// echo "[{$this->page_name}]";
+								$admin_nav = array_merge( $admin_nav, (array) $this->config->item('admin_mall_nav') );
+								$admin_nav_sub = array_merge( $admin_nav_sub, (array) $this->config->item('admin_mall_nav_sub') );
+
+								if( $this->page_name )
+									$page_title = $this->page_name;
+								elseif( $admin_nav_sub[ $this->uri->segment(2) ][ $this->uri->segment(3) ] )
+									$page_title = $admin_nav_sub[ $this->uri->segment(2) ][ $this->uri->segment(3) ];
+								else
+									$page_title = $admin_nav[ $this->uri->segment(2) ]['text'];
+
+								echo $page_title;
 							?>
 						</h1>
 						<!--

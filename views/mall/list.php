@@ -1,6 +1,8 @@
 <?
-	$cate = $this->category_model->as_nav();
-	$cate_sub = $this->category_model->as_nav('sub');
+	$cate = $this->category_model->as_nav(2);
+	// kmh_print($cate);
+	// die();
+	// $cate_sub = $this->category_model->as_nav('sub');
 ?>
 
 <form id="search_product" method="get">
@@ -13,13 +15,10 @@
 						전체
 					</a>
 				</li>
-				<? foreach ( (array)$cate as $cate_key => $cate_row ) : ?>
-					<? if ( $cate_key == 'member' ) : // 회원 ?>
-						<? continue; ?>
-					<? endif; // 회원 ?>
-					<? if ( count($cate_sub[ $cate_key ]) > 1 ) : // 드롭다운 ifelse ?>
+				<? foreach ( (array)$cate[0] as $cate_key => $cate_row ) : ?>
+					<? if ( count($cate[1][ $cate_key ]) > 1 ) : // 드롭다운 ifelse ?>
 						<li class="dropdown
-							<?=is_active( $this->category_model->depth0_code($_GET['category']), $cate_key)?>
+							<?=is_active( get_cate_id($_GET['category']), $cate_key)?>
 							"
 							>
 							<a href="#"
@@ -32,8 +31,8 @@
 								<?=$cate_row?> <span class="caret"></span>
 							</a>
 							<ul class="gnb_sub dropdown-menu">
-								<? foreach ( $cate_sub[$cate_key] as $sub_key => $sub_row ) : ?>
-									<li class="<?=is_active($_GET['category'], $sub_key)?>">
+								<? foreach ( $cate[1][$cate_key] as $sub_key => $sub_row ) : ?>
+									<li class="<?=is_active(get_cate_id($_GET['category'],1), $sub_key)?>">
 										<a href="?category=<?=$sub_key?>" class="real_link">
 											<?=$sub_row?>
 										</a>
@@ -42,8 +41,8 @@
 							</ul>
 						</li>
 					<? else : // 드롭다운 ifelse ?>
-						<li class="<?=is_active($this->category_model->depth0_code($_GET['category']), $cate_key)?>">
-							<a href="?category=<?=array_first($cate_sub[$cate_key],'key')?>" class="real_link">
+						<li class="<?=is_active(get_cate_id($_GET['category']), $cate_key)?>">
+							<a href="?category=<?=array_first($cate[1][$cate_key],'key')?>" class="real_link">
 								<?=$cate_row?>
 							</a>
 						</li>
@@ -101,6 +100,29 @@
 		</div>
 		<!-- // 검색 wrap -->
 	</div>
+
+	<!-- 소분류 있을 경우 -->
+	<? if( $cate[2][get_cate_id($_GET['category'],1)] ) : ?>
+		<div class="row">
+			<div class="col-xs-12 margin-bottom-30">
+				<ul class="nav nav-pills">
+					<li class="<?=is_active(category_depth($_GET['category']), 1)?>">
+						<a href="?category=<?=get_cate_id($_GET['category'],1)?>">
+							전체
+						</a>
+					</li>
+					<? foreach( (array) $cate[2][get_cate_id($_GET['category'],1)] as $key => $row ) : ?>
+						<li class="<?=is_active($_GET['category'], $key)?>">
+							<a href="?category=<?=$key?>">
+								<?=$row?>
+							</a>
+						</li>
+					<? endforeach; ?>
+				</ul>
+			</div>
+		</div>
+	<? endif; ?>
+	<!-- End Of 소분류 있을 경우 -->
 </form>
 
 <div id="product_list" class="projects-wrap">
@@ -128,7 +150,7 @@
 							<a href="/mall/view/<?=$item->pd_id?>" class="btn btn-outline btn-default project-button">제품보기</a>
 						</figcaption>
 					</figure>
-					<h4 pclass="text-truncate">
+					<h4 class="text-truncate" data-toggle="tooltip" title="<?=$item->pd_name?>">
 						<a href="/mall/view/<?=$item->pd_id?>">
 							<?=$item->pd_name?>
 						</a>

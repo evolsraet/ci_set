@@ -1,12 +1,16 @@
+	<? // $this->assets->all_reset(); // 에셋 완전 리셋 - 오래걸림 ?>
+	<? // $this->assets->bundle_reset(); // 번들만 리셋 ?>
 	<!-- 상단 CSS -->
 		<!-- Bootstrap _ Common Style -->
-		<? $this->assets->add_css( CSS."noto-sans-korean.css" ); ?>
+		<? // $this->assets->add_css( CSS."noto-sans-korean.css" ); ?>
+		<? $this->assets->add_css( "https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSans-kr.css" ); ?>
 		<? $this->assets->add_css( "https://cdn.rawgit.com/hiun/NanumSquare/master/nanumsquare.css" ); ?>
-		<!-- Remark Core -->
+
+		<!-- Framework Core -->
 		<? $this->assets->add_css( LIB."remark/css/bootstrap.less" ); ?>
 		<? $this->assets->add_css( LIB."remark/css/bootstrap-extend.less" ); ?>
 		<? $this->assets->add_css( LIB."remark/_base/css/site.less" ); ?>
-		<!-- Remark Plugins -->
+		<!-- Framework Plugins -->
 		<? $this->assets->add_css( LIB."remark/vendor/animsition/animsition.css" ); ?>
 		<? $this->assets->add_css( LIB."remark/vendor/asscrollable/asScrollable.css" ); ?>
 		<? $this->assets->add_css( LIB."remark/vendor/switchery/switchery.css" ); ?>
@@ -18,7 +22,8 @@
 		<? $this->assets->add_css( LIB."remark/vendor/toastr/toastr.css" ); ?>
 		<? $this->assets->add_css( LIB."remark/vendor/select2/select2.css" ); ?>
 		<? $this->assets->add_css( LIB."remark/vendor/asspinner/asSpinner.css" ); ?>
-		<!-- Remark Fonts -->
+		<? $this->assets->add_css( LIB."remark/vendor/bootstrap-datepicker/bootstrap-datepicker.css" ); ?>
+		<!-- Framework Fonts -->
 		<? $this->assets->add_css( LIB."remark/fonts/web-icons/web-icons.css" ); ?>
 		<? $this->assets->add_css( LIB."remark/fonts/brand-icons/brand-icons.css" ); ?>
 		<!-- KMH -->
@@ -26,12 +31,15 @@
 		<? // $this->assets->add_css( LIB."pace-1.0.2/themes/blue/pace-theme-flash.css" ); ?>
 		<? $this->assets->add_css( LIB."sweetalert-1/dist/sweetalert.css" ); ?>
 		<? $this->assets->add_css( LIB."magnific-popup/jquery.magnific-popup.css" ); ?>
+		<? $this->assets->add_css( LIB."print.js/print.min.css" ); ?>
 		<!-- template -->
 		<? $this->assets->add_css( CSS."kmh_bootstrap.less" ); ?>
 		<? $this->assets->add_css( CSS."kmh_global.less" ); ?>
 		<? $this->assets->add_css( TCSS."template.less" ); ?>
+		<!-- project -->
+		<? // $this->assets->add_css( CSS."project.less" ); ?>
 
-		<? foreach ( $css as $key => $row ) : ?>
+		<? foreach ( $this->css as $key => $row ) : ?>
 			<? $this->assets->add_css($row); ?>
 		<? endforeach; ?>
 
@@ -41,9 +49,10 @@
 	<!-- 상단 Script -->
 		<? $this->assets->add_js( LIB."jquery-1.12.4.min.js" ); ?>
 		<? $this->assets->add_js( LIB."modernizr-2.8.3.min.js" ); ?>
+		
 		<? $this->assets->add_js( LIB."remark/vendor/modernizr/modernizr.js" ); ?>
 		<? $this->assets->add_js( LIB."remark/vendor/breakpoints/breakpoints.js" ); ?>
-		<!-- Remark Core -->
+		<!-- Framework Core -->
 		<? $this->assets->add_js( LIB."remark/vendor/bootstrap/bootstrap.js" ); ?>
 		<? $this->assets->add_js( LIB."remark/vendor/animsition/animsition.js" ); ?>
 		<? $this->assets->add_js( LIB."remark/vendor/asscroll/jquery-asScroll.js" ); ?>
@@ -59,7 +68,7 @@
 	<!--[if lt IE 10]>
 		<? $this->assets->load_js( LIB."remark/vendor/media-match/media.match.min.js", false ); ?>
 		<? $this->assets->load_js( LIB."remark/vendor/respond/respond.min.js", false ); ?>
-		<![endif]-->
+	<![endif]-->
 
 	<script>
 		Breakpoints();
@@ -82,11 +91,13 @@
 		<? $this->assets->add_js( LIB."sweetalert-1/dist/sweetalert.min.js" ); ?>
 		<? $this->assets->add_js( LIB."magnific-popup/jquery.magnific-popup.min.js" ); ?>
 		<? $this->assets->add_js( LIB."placeholders.min.js" ); ?>
+		<? $this->assets->add_js( LIB."print.js/print.min.js" ); ?>
+		<? // $this->assets->load_js( 'https://printjs-4de6.kxcdn.com/print.min.js', false ); ?>
 
-		<!-- Remark Scripts -->
+		<!-- Framework Scripts -->
 		<? $this->assets->add_js( LIB."remark/js/core.js" ); ?>
 		<? $this->assets->add_js( LIB."remark/_base/js/site.js" ); ?>
-		<!-- Remark Plugins -->
+		<!-- Framework Plugins -->
 		<? $this->assets->add_js( LIB."remark/vendor/switchery/switchery.min.js" ); ?>
 		<? $this->assets->add_js( LIB."remark/vendor/intro-js/intro.js" ); ?>
 		<? $this->assets->add_js( LIB."remark/vendor/screenfull/screenfull.js" ); ?>
@@ -101,10 +112,12 @@
 		<? $this->assets->add_js( LIB."remark/js/components/select2.js" ); ?>
 		<? $this->assets->add_js( LIB."remark/vendor/asspinner/jquery-asSpinner.min.js" ); ?>
 		<? $this->assets->add_js( LIB."remark/js/components/asspinner.js" ); ?>
-		<!-- Remark Configs -->
+		<? $this->assets->add_js( LIB."remark/vendor/bootstrap-datepicker/bootstrap-datepicker.min.js" ); ?>
+		<? $this->assets->add_js( LIB."remark/js/components/bootstrap-datepicker.min.js" ); ?>		
+		<!-- Framework Configs -->
 		<? $this->assets->add_js( LIB."remark/js/configs/config-colors.js" ); ?>
 		<? $this->assets->add_js( LIB."remark/_base/js/configs/config-tour.js" ); ?>
-		<!-- Remark Components -->
+		<!-- Framework Components -->
 		<? $this->assets->add_js( LIB."remark/_base/js/sections/menu.js" ); ?>
 		<? $this->assets->add_js( LIB."remark/_base/js/sections/menubar.js" ); ?>
 		<? $this->assets->add_js( LIB."remark/_base/js/sections/gridmenu.js" ); ?>
@@ -119,7 +132,8 @@
 		<? // $this->assets->add_js( JS."kmh_pjax.js" ); ?>
 		<? $this->assets->add_js( JS."kmh_common.js" ); ?>
 		<? $this->assets->add_js( TJS."template.js" ); ?>
-		<? foreach ( (array)$javascript_bundle as $key => $row ) : ?>
+
+		<? foreach ( (array)$this->javascript_bundle as $key => $row ) : ?>
 			<? $this->assets->add_js($row); ?>
 		<? endforeach; ?>
 		<!-- BUNDLE -->

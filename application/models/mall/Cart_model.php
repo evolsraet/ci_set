@@ -1,8 +1,5 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-// ** 추가할것
-// 30일 이전 비회원 장바구니 삭제
-
 class Cart_model extends MY_Model {
 
 	public $prefix = 'cart_';
@@ -48,6 +45,8 @@ class Cart_model extends MY_Model {
 
 	// 항상 최신 데이터로 가져온다 ->product ->options
 	public function after_get($data) {
+		// kmh_print( $this->db->last_query() );
+
 		$this->load->model('mall/product_model');
 		$this->load->model('mall/option_model');
 
@@ -84,14 +83,39 @@ class Cart_model extends MY_Model {
 		return $data;
 	}
 
+	// 오래된 장바구니 삭제 (회원 1년, 비회원 1달)
+	public function delete_old_cart() {
+		// 1달 전
+		$date      = new DateTime();
+		$term      = new DateInterval('P1M');
+		$month_ago = $date->sub($term)->format('Y-m-d');
+
+		// 1년 전
+		$date     = new DateTime();
+		$term     = new DateInterval('P1Y');
+		$year_ago = $date->sub($term)->format('Y-m-d');
+
+		$result = $this->_database
+					->group_start()
+						->where('cart_mb_id', null)
+						->where('cart_created_at <', $month_ago)
+					->group_end()
+					->or_where('cart_created_at <', $year_ago)
+					->delete($this->_table);
+		// kmh_print( $this->_database->last_query() );
+		return $result;
+	}
+
 	public function login_check_where() {
 		$session_id = $this->get_session_id();
 
 		if( $this->members->is_admin() ) :
 			// 관리자는 모두 조회
 		elseif( $this->members->is_login() ) :
-			$this->where( 'cart_mb_id', $this->logined->mb_id );
-			$this->or_where( 'cart_session_id', $session_id );
+			$this->group_start();
+				$this->where( 'cart_mb_id', $this->logined->mb_id );
+				$this->or_where( 'cart_session_id', $session_id );
+			$this->group_end();
 		else:
 			$this->where( 'cart_session_id', $session_id );
 		endif;

@@ -4,6 +4,11 @@ Options +FollowSymLinks
 #	CI - index.php 제거
 #
 
+# RewriteEngine On
+# RewriteCond %{HTTPS} off [OR]
+# RewriteCond %{HTTP_HOST} ^www\. [NC]
+# RewriteRule ^ https://aaa.com%{REQUEST_URI} [L,NE,R=301]
+
 RewriteCond %{REQUEST_URI} !^(/index\.php|/assets/|/robots\.txt|/favicon\.ico)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
@@ -14,7 +19,7 @@ RewriteRule ^/?api/(.*)$ /index.php/$1 [R=301,L]
 
 #### 스마트옵티마이져
 	<IfModule mod_expires.c>
-		<FilesMatch "\.(gif|jpg|jpeg|png|swf|css|js|html?|xml|txt|ico)$">
+		<FilesMatch "\.(gif|jpg|jpeg|png|swf|css|js|html?|txt|ico)$">
 			ExpiresActive On
 			ExpiresDefault "access plus 10 years"
 		</FilesMatch>
@@ -28,18 +33,18 @@ RewriteRule ^/?api/(.*)$ /index.php/$1 [R=301,L]
 
 		<IfModule mod_expires.c>
 			RewriteCond %{REQUEST_FILENAME} -f
-			RewriteRule ^(.*\.(js|css|html?|xml|txt))$ smartoptimizer/?$1
+			RewriteRule ^(.*\.(js|css|html?|txt))$ smartoptimizer/?$1
 		</IfModule>
 
 		<IfModule !mod_expires.c>
 			RewriteCond %{REQUEST_FILENAME} -f
-			RewriteRule ^(.*\.(gif|jpg|jpeg|png|swf|css|js|html?|xml|txt|ico))$ smartoptimizer/?$1
+			RewriteRule ^(.*\.(gif|jpg|jpeg|png|swf|css|js|html?|txt|ico))$ smartoptimizer/?$1
 		</IfModule>
 	</IfModule>
-	<FilesMatch "\.(gif|jpg|jpeg|png|swf|css|js|html?|xml|txt|ico)$">
+	<FilesMatch "\.(gif|jpg|jpeg|png|swf|css|js|html?|txt|ico)$">
 		FileETag none
 	</FilesMatch>
 #### 스마트옵티마이져
 
 # 호스팅용 세팅을 위해
-PHP_FLAG allow_url_fopen 1
+# PHP_FLAG allow_url_fopen 1

@@ -21,9 +21,13 @@ class Order_model extends MY_Model {
 
 		// 연결
 
+		$this->before_create[] = '_trans_start';
 		$this->before_create[] = 'tel_encode';
 		$this->before_create[] = 'point_use';
 		$this->before_create[] = 'data_confirm';
+
+		$this->after_create[]  = 'point_use_after';
+		$this->after_create[]  = '_trans_complete';
 
 		$this->before_update[] = 'tel_encode';
 		$this->before_update[] = 'check_auth_common';
@@ -33,12 +37,10 @@ class Order_model extends MY_Model {
 		$this->before_get[]    = 'before_get';
 		$this->before_get[]    = 'check_auth_common';
 
-		$this->after_create[]  = 'point_use_after';
-
+		$this->after_get[]     = 'tel_decode';
 
 		$this->before_delete[] = 'check_auth_common';
 
-		$this->after_get[]     = 'tel_decode';
 
 		// before_create
 		// after_create
@@ -50,12 +52,25 @@ class Order_model extends MY_Model {
 		// after_delete
 	}
 
+	public function _trans_start($data) {
+		$this->_database->trans_start();
+		return $data;
+	}
+
+	public function _trans_complete($key) {
+		$this->_database->trans_complete();
+	}
+	
 	public function point_use($data) {
 		if( $data->order_point_use && $data->order_mb_id ) :
 
 			// 최대금액 (최조가격 < 포인트사용액)
-			if( $data->order_total_price < $data->order_point_use )
-				$data->order_point_use = $data->order_total_price;
+			// ---------- order_total_price 를 컨트롤러에서 포인트 사용 후로 이미 계산되므로
+			// ---------- 실제 사용포인트보다 적은 금액으로 조정되고 계산이 꼬이게됨. 사용하면 안됨.
+			// $possible_amout = $data->order_deli_price + $data->order_pd_price;
+			// if( $possible_amout < $data->order_point_use ) :
+			// 	$data->order_point_use = $data->order_total_price;
+			// endif;
 
 			// 데이터 구성
 			$point = new stdClass;
@@ -68,6 +83,7 @@ class Order_model extends MY_Model {
 
 		return $data;
 	}
+
 
 	public function point_use_after($key) {
 		if( $this->point_use_data->pt_amount ) :
@@ -99,20 +115,21 @@ class Order_model extends MY_Model {
 
 				switch ($data->order_status) {
 					case '500_complete':
-						// 완료되는 시점에 포인트 지급
-						$point = new stdClass;
-						$point->pt_rel_id = "order_add_{$order_db->order_id}";
-						$point->pt_mb_id  = $order_db->order_mb_id;
-						$point->pt_amount = $order_db->order_total_price * ( $order_point_per / 100 );
-						$point->pt_desc   = "주문 포인트 적립 #" . $order_db->order_id;
+						if( $order_db->order_total_price ) :
+							// 완료되는 시점에 포인트 지급
+							$point = new stdClass;
+							$point->pt_rel_id = "order_add_{$order_db->order_id}";
+							$point->pt_mb_id  = $order_db->order_mb_id;
+							$point->pt_amount = $order_db->order_total_price * ( $order_point_per / 100 );
+							$point->pt_desc   = "주문 포인트 적립 #" . $order_db->order_id;
 
-						if( $point->pt_amount > 1 && $this->point_model->check_pt_rel_id($point->pt_rel_id) ) :
-							if( !$this->point_model->insert($point) )
-								throw new Exception("포인트 적립 중 에러가 발생했습니다.", 1);
+							if( $point->pt_amount > 1 && $this->point_model->check_pt_rel_id($point->pt_rel_id) ) :
+								if( !$this->point_model->insert($point) )
+									throw new Exception("포인트 적립 중 에러가 발생했습니다.", 1);
 
-							add_flashdata('page_notice', "회원에게 ".number_format($point->pt_amount)."포인트가 적립되었습니다.<br>주문취소 시 회수되지만, 잔여포인트가 0보다 작을 수 있습니다.");
+								add_flashdata('page_notice', "회원에게 ".number_format($point->pt_amount)."포인트가 적립되었습니다.<br>주문취소 시 회수되지만, 잔여포인트가 0보다 작을 수 있습니다.");
+							endif;
 						endif;
-
 						break;
 					case '900_cancel':
 						// 사용된 포인트 복구
@@ -215,6 +232,48 @@ class Order_model extends MY_Model {
 		if( !$this->qb_cache()->count_by() )
 			throw new Exception("권한이 있는지 새로고침 후 확인해주세요.", 1);
 
+
+		return $data;
+	}
+
+	// 주문서 최종 가격 계산
+	public function total_price( $order_pd_price, $order_deli_price, $order_point_use=0, $order_admin_price=0 ) {
+		return $order_pd_price + $order_deli_price - $order_point_use + $order_admin_price;
+	}
+
+	// 통계 데이터
+	public function stat( $start, $end, $format = '%Y-%m-%d' ) {
+		// $group_by = "DATE_FORMAT(order_created_at, '%x년 %v주')";
+		// $group_by = "DATE_FORMAT(order_created_at, '%Y-%m')";
+
+		if( !$start OR !$end ) return null;
+
+		$group_by = "DATE_FORMAT(order_created_at, '{$format}')";
+		$date_where = array(
+			'order_created_at >=' => $start,
+			'order_created_at <=' => $end
+		);
+
+		// 총 주문갯수 서브쿼리
+		$total_order_query = $this->_database
+								->select('count(*)')
+								->where($group_by . ' = date', null, false)
+								->where($date_where)
+								->from('order')
+								->get_compiled_select();
+		$this->_database->reset_query();
+
+		// 쿼리
+		$data = $this->_database
+					->select($group_by . ' as date')
+					->select("({$total_order_query}) as order_cnt")
+					->select('count(*) as complete_cnt')
+					->select_sum('order_total_price', 'price')
+					->where('order_status', '500_complete')
+					->where($date_where)
+					->group_by($group_by)
+					->get('order')
+					->result();
 
 		return $data;
 	}

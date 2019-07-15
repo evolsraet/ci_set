@@ -36,13 +36,71 @@ class Mall extends MY_Controller {
 		$this->lists();
 	}
 
+	public function uniqtest($num=0) {
+		kmh_print( doublehex($num, 4) );
+
+		$array = array();
+		for ($i=0; $i < 100; $i++) { 
+			// $d = new DateTime();
+			// echo $d->format('H:i:s.u') . ' : ';
+
+			list($u, $timestamp) = explode(" ", microtime());
+			$u = substr($u,2,6);
+			echo date('Y-m-d H:i:s', $timestamp) . " .{$u} : ";
+			$hour = date('His', $timestamp);
+			echo $hour . " : ";
+			$code =	date('Ymd', $timestamp)
+					. '-' . doublehex($hour, 4)
+					. '-' . doublehex($u, 4)
+					. doublehex( rand(0,35) );
+
+			// 2019-03-14 13:36:28 .406685 : 133628406685 : 20190314-2JH23VHF (17)
+			// 2019-03-14 13:42:35 .513611 : 14134235513611 : 201903-7X3J-1JS3V (16)
+			// 2019-03-14 13:59:15 .086470 : 135915 : 20190314-3FKH-26T8M (19)					
+
+			// $id = strtoupper( uniqid(rand(10,99)) );
+			// $array[] = $id;
+			// $count = strlen($id);
+			// echo  " : ({$count}) $id <br>";
+
+			// $now = date("ymdHis"); //오늘의 날짜 년월일시분초 
+			// $rand = strtoupper(substr(md5(uniqid(time())),0,6)); //임의의난수발생 앞6자리 
+			// echo $orderNum = microtime() . ' : ' . $now . '-' .$rand . "<br>";
+
+			// $code = microtime();
+			// $code = dechex(microtime());
+			// $code = uniqid( get_current_user().'-' );
+			// $code = uniqid() . '-'  . dechex( rand(16,2554) );
+			// $code = substr_replace($code,'-',9,0);
+			// $code = $d->format('Ymd')
+			// 		. '-' . str_pad( doublehex($d->format('His')), 4, '0', STR_PAD_LEFT )
+			// 		. '-' . str_pad( doublehex(rand(0,1155)), 2, '0', STR_PAD_LEFT );
+			
+			echo ( $code );
+			// echo strtoupper( $code );
+			$string_conunt = strlen($code);
+			echo " ({$string_conunt})<br>";
+		}
+	}
+
 	public function test() {
 		$this->load->model( 'test_model' );
-		$this->db->trans_start();
-			echo "A";
-			echo $id = $this->test_model->insert(array('test_varchar'=>'A'));
-			echo "D" . $this->test_model->update($id, array('test_varchar'=>'D'));
-		$this->db->trans_complete();
+		kmh_print( $this->db->trans_enabled );
+
+			// kmh_print('inside TRANS');
+			// kmh_print( $this->db->trans_enabled );
+		// $this->db->trans_start();
+			// kmh_print( '$this->db->_trans_depth : ' . $this->db->_trans_depth );
+			// echo $insert_id = $this->test_model->insert(array('test_varchar'=>'controller insert'));
+			// $this->db
+			// 	->set('ac_mb_id2', 	$this->logined->mb_id )
+			// 	->insert('activity');
+		// $this->db->trans_complete();
+		kmh_print('end TRANS');
+		kmh_print( $this->db->trans_enabled );
+
+		if( $this->db->trans_status()===FALSE )
+			kmh_print( '$this->db->trans_status() false' );
 
 		kmh_print( "trans_status : " . $this->db->trans_status() );
 	}
@@ -81,8 +139,15 @@ class Mall extends MY_Controller {
 		$this->_render('mall/view');
 	}
 
+	public function cart_delete_test() {
+		kmh_print('cart_delete_test START');
+		$this->cart_model->delete_old_cart();
+		kmh_print('cart_delete_test END');
+	}
+
+	// 장바구니에 담기
 	public function begin_order() {
-		if( !$this->input->is_ajax_request() ) exit;
+		if( !$this->input->is_ajax_request() ) die('정상적인 접속이 아닙니다.');
 
 		try {
 			if( $this->members->is_admin() )
@@ -141,8 +206,40 @@ class Mall extends MY_Controller {
 				$cart = new stdClass;
 				$cart->cart_item = $product_data;
 
-				if( !$id = $this->cart_model->insert( $cart ) )
-					throw new Exception("장바구니 입력 중 에러가 발생했습니다.", 1);
+				// 기존 카트의 제품+옵션 인지 확인
+					$options_json = json_encode($cart->cart_item->op_options);
+					$db = $this->cart_model
+						->like('cart_item','"op_pd_id":"'.$product_data->op_pd_id.'"')
+						->like('cart_item', $options_json)
+						->get();
+					// if( !$db ) :
+					// 	if( $db === null ) throw new Exception("null", 1);
+					// 	if( $db === false ) throw new Exception("false", 1);
+					// 	throw new Exception("리드 실패", 1);
+					// endif;
+						
+
+				// 실행
+					if( $db ) :
+						$update_data = new stdClass;
+						$db->cart_item->op_count += $product_data->op_count;
+						$db->cart_item->op_price = $db->cart_item->op_count * $db->cart_item->op_price_one;
+						$update_data->cart_item = $db->cart_item;
+						// kmh_print($update_data);
+						// die('test');
+
+						if( !$this->cart_model->update($db->cart_id, $update_data) ) :
+							throw new Exception("장바구니 업데이트 중 오류가 발생했습니다.", 1);
+						endif;
+						
+						$result['method'] = 'update';
+					else :
+						if( !$id = $this->cart_model->insert( $cart ) ) :
+							throw new Exception("장바구니 입력 중 에러가 발생했습니다.", 1);
+						endif;
+
+						$result['method'] = 'insert';
+					endif;
 
 			$result['status'] = 'ok';
 			$result['msg'] = '정상 처리되었습니다.';
@@ -155,6 +252,8 @@ class Mall extends MY_Controller {
 	}
 
 	public function cart() {
+		$this->cart_model->delete_old_cart();
+
 		$this->page_name = '장바구니';
 		if( $this->members->is_admin() ) :
 			redirect('/');
@@ -341,12 +440,18 @@ class Mall extends MY_Controller {
 					$this->cart_model->set_carts($cart_checked_array);
 					$order_data->order_deli_price = $this->cart_model->deli_price();
 					$order_data->order_pd_price = $this->cart_model->pd_price();
+					// 삽입시 포인트 최대 금액 조정 - 포인트 사용 && 회원
+					if( ($order_data->order_deli_price+$order_data->order_pd_price) < $order_data->order_point_use ) :
+						$order_data->order_point_use = ($order_data->order_deli_price+$order_data->order_pd_price);
+					endif;
 					$order_data->order_admin_price = 0;
 					$order_data->order_total_price =
-							$order_data->order_deli_price
-							+ $order_data->order_pd_price
-							- $order_data->order_point_use
-							+ $order_data->order_admin_price;
+						$this->order_model->total_price(
+							$order_data->order_pd_price,
+							$order_data->order_deli_price,
+							$order_data->order_point_use,
+							$order_data->order_admin_price
+						);
 
 					// kmh_print( 'order_data' );
 					// kmh_print( $order_data );
@@ -387,6 +492,27 @@ class Mall extends MY_Controller {
 						foreach( (array) $cart_checked_array as $key => $row ) :
 							$this->cart_model->delete( $row );
 						endforeach;
+
+					// 알림
+						if( $new_order_email = $this->config_model->get_value('new_order_email') ) :
+							$mail_content  = "
+								<p class=\"callout\">
+									<a href=\"http://{$_SERVER['HTTP_HOST']}/admin/order_write/{$order_insert_id}\">새 주문이 접수되었습니다.</a>
+								</p>						
+							";
+							$mail_content  .= email_comment_noreply();
+
+							// 메일 발송
+							$email_result = email_send(
+												null,
+												null,
+												$new_order_email,
+												'새 주문 알림',
+												$mail_content
+											);
+							if( $email_result !== true )
+								$this->kmh->log($email_result, '메일 발송 에러');
+						endif;
 
 					// 로그 추가
 						$this->order_log_model->simple_add($order_insert_id, '100_ask');
@@ -450,11 +576,14 @@ class Mall extends MY_Controller {
 			$data = (object)db_filter($this->input->post(), $prefix, $data_ex);
 
 			// 관리자 할인 금액 적용
-			if( $data->order_admin_price ) :
+			if( isset($data->order_admin_price) ) :
 				$data->order_total_price =
-					$order_db->order_deli_price +
-					$order_db->order_pd_price +
-					$data->order_admin_price;
+						$this->order_model->total_price(
+							$order_db->order_pd_price,
+							$order_db->order_deli_price,
+							$order_db->order_point_use,
+							$data->order_admin_price
+						);
 			endif;
 
 			// 데이터
@@ -526,6 +655,242 @@ class Mall extends MY_Controller {
 		// End of 글작성
 
 		kmh_json($result);
+	}
+
+	public function order_delete( $order_id ) {
+		$result = array();
+		$result['status'] = 'fail';
+		$result['msg'] = '에러가 발생했습니다.';
+
+		// 글작성
+		try {
+			$status = '900_cancel';
+
+			// 권한확인 && 디비조회
+			if( !$this->members->is_admin() || !$order_db = $this->order_model->get($order_id) )
+				throw new Exception("주문서가 정확한지 확인 후 다시 시도하세요.", 1);
+
+			// 권한확인 && 디비조회
+			if( $order_db->order_status != $status )
+				throw new Exception("취소된 주문서만 삭제가능합니다.", 1);
+
+			// 실행
+			if( !$this->order_model->force_delete()->delete($order_id) )
+				throw new Exception("삭제 중 에러가 발생했습니다.", 1);
+
+			$result['status'] = 'ok';
+			$result['msg'] = '정상 처리되었습니다.';
+		} catch (Exception $e) {
+			$result['status'] = 'fail';
+			$result['msg'] = $e->getMessage();
+		}
+		// End of 글작성
+
+		kmh_json($result);
+	}
+
+
+	/*----------  관리자  ----------*/
+
+	public function product( $sub = null, $pd_id = null ) {
+		if( empty($sub) ) redirect('/admin/product/list','refresh');
+
+		$this->load->model('mall/product_model');
+		$this->data['pd_id'] = $pd_id;
+
+		// DATA
+		switch ($sub) {
+			case 'get_list':
+				// 리스트
+				 $db = $this->product_model
+				 				->join('category', 'cate_id = pd_cate_id', 'left outer')
+				 				->get_all();
+				 foreach( fe($db) as &$row ) :
+				 	$row->pd_price = number_format($row->pd_price);
+				 endforeach;
+				kmh_json( $db );
+				die();
+
+				break;
+			case 'update_act':
+				$result['status'] = 'fail';
+				$result['msg'] = '에러가 발생했습니다.';
+
+				try {
+					if( !$this->input->post('pd_id') )
+						throw new Exception("정상적인 접근이 아닙니다.", 1);
+
+					$data = (object)db_filter($this->input->post(), 'pd_');
+
+					if( $this->input->post('is_recovery')=='ok' )
+						$data->pd_deleted_at = null;
+
+					if( !$this->product_model->update($this->input->post('pd_id'), $data) )
+						throw new Exception("디비 삽입 중 에러가 발생했습니다.", 1);
+
+					// 기존 파일 삭제시
+						$this->load->library('files');
+						$file_delete_result = $this->input->post('file_delete');
+
+						if( count($file_delete_result) ) {
+							$this->file_model
+									->where_in('file_id',$file_delete_result)
+									->delete();
+						}
+
+					// 파일업로드 (다이렉트로 게시물 아이디 등록)
+						$result['upload_result'] =
+							$this->files->upload(
+									'_post_files',
+									"product/".$id,
+									'product',
+									$this->input->post('pd_id'),
+									'pd_img'
+								);
+
+					// 임시파일들 업데이트 (에디터도 있으므로 무조건)
+						$file_update_result = $this->file_model
+							->where('file_rel_id', $this->input->post('_post_files_code'))
+							->set('file_rel_id', $this->input->post('pd_id'))
+							->update();
+
+					$result['id'] = $this->input->post('pd_id');
+					$result['status'] = 'ok';
+					$result['msg'] = '정상 처리되었습니다.';
+				} catch (Exception $e) {
+					$result['status'] = 'fail';
+					$result['msg'] = $e->getMessage();
+				}
+
+				kmh_json( $result );
+				die();
+				break;
+			case 'write_act':
+				$result['status'] = 'fail';
+				$result['msg'] = '에러가 발생했습니다.';
+
+				try {
+					$data = db_filter($this->input->post(), 'pd_');
+
+					// 파일업로드 (임시코드로 업로드 후 추후에 게시글 번호로 업데이트)
+					$this->load->library('files');
+					$result['upload_result'] =
+						$this->files->upload(
+								'_post_files',
+								"product/".$id,
+								'product',
+								$this->input->post('_post_files_code'),
+								'pd_img'
+							);
+					// $this->kmh->log( $result['upload_result'], 'upload_result' );
+
+					if( !$id = $this->product_model->insert($data) )
+						throw new Exception("디비 삽입 중 에러가 발생했습니다.", 1);
+
+					// 임시파일들 업데이트 (에디터도 있으므로 무조건)
+					$file_update_result = $this->file_model
+						->set('file_rel_id', $id)
+						->where('file_rel_id', $this->input->post('_post_files_code'))
+						->update();
+
+
+					$result['id'] = $id;
+					$result['status'] = 'ok';
+					$result['msg'] = '정상 처리되었습니다.';
+				} catch (Exception $e) {
+					$result['status'] = 'fail';
+					$result['msg'] = $e->getMessage();
+				}
+
+				kmh_json( $result );
+				die();
+				break;
+			case 'delete_act':
+				try {
+					$result['status'] = 'fail';
+					$result['msg'] = '에러가 발생했습니다.';
+
+					if( !$this->data['pd_id'] )
+						throw new Exception("정상적인 접근이 아닙니다.", 1);
+
+					if( !$this->product_model->delete($this->data['pd_id']) )
+						throw new Exception("삭제 중 에러가 발생했습니다.", 1);
+
+					$result['status'] = 'ok';
+					$result['msg'] = '정상 처리되었습니다.';
+				} catch (Exception $e) {
+					$result['status'] = 'fail';
+					$result['msg'] = $e->getMessage();
+				}
+
+				kmh_json( $result );
+				die();
+				break;
+			case 'write':
+				$sub = 'view';
+			case 'view' :
+				$this->javascript[] = LIB.'summernote/dist/summernote.min.js';
+				$this->javascript[] = LIB.'summernote/dist/lang/summernote-ko-KR.js';
+				$this->javascript[] = JS."product_editor.js";;
+				$this->css[] = LIB.'summernote/dist/summernote.css';
+
+				if( $this->data['pd_id'] ) :
+					$this->data['view'] = $this->product_model->with_deleted()->get( $this->data['pd_id'] );
+					if( !$this->data['view']->pd_id )
+						show_404('정상적인 접근이 아닙니다.');
+					$this->data['is_update'] = true;
+
+					$this->data['view']->file = $this->file_model
+						->where('file_rel_type', 'product')
+						->where('file_rel_id', $this->data['pd_id'])
+						->where('file_rel_desc', 'pd_img')
+						->get_all();
+				else :
+					$this->data['is_update'] = false;
+				endif;
+				break;
+			default:
+				break;
+		}
+
+		// RENDER
+		$this->_render("mall/admin/{$sub}", 'PANEL');
+	}
+
+	public function option_list() {
+		$this->load->model('mall/option_model');
+		$this->_render('mall/modules/admin/option_list', 'AJAX');
+	}
+
+	public function option_update() {
+		try {
+			$this->load->model('mall/option_model');
+			$data = db_filter( $this->input->post(), 'ot_' );
+
+			if( $data['ot_use']=='true' )	$data['ot_use'] = true;
+			else 							$data['ot_use'] = false;
+			// kmh_print($data); die();
+
+			if( !$this->option_model->replace( $data ) )
+				throw new Exception("업데이트 중 에러가 발생했습니다.", 1);
+
+			add_flashdata( 'option', '정상적으로 처리되었습니다.' );
+		} catch (Exception $e) {
+			add_flashdata( 'option', $e->getMessage(), 'error' );
+		}
+	}
+
+	public function option_delete() {
+		try {
+			$this->load->model('mall/option_model');
+			$where = db_filter( $this->input->post(), 'ot_' );
+			if( !$this->option_model->where($where)->delete() )
+				throw new Exception("삭제 중 에러가 발생했습니다.", 1);
+
+			add_flashdata( 'option', '정상적으로 처리되었습니다.');
+		} catch (Exception $e) {
+			add_flashdata( 'option', $e->getMessage(), 'error' );
+		}
 	}
 }
 

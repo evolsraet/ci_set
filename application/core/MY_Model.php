@@ -228,7 +228,7 @@ class MY_Model extends CI_Model
 
 		$this->_temporary_return_type = $this->return_type;
 
-		$result = $this->trigger('after_get', $result);
+		if($result) $result = $this->trigger('after_get', $result);
 
 		$this->_with = array();
 		$this->_with_attr = array();
@@ -256,7 +256,7 @@ class MY_Model extends CI_Model
 
 		$this->_temporary_return_type = $this->return_type;
 
-		$row = $this->trigger('after_get', $row);
+		if($row) $row = $this->trigger('after_get', $row);
 
 		$this->_with = array();
 		$this->_with_attr = array();
@@ -1272,8 +1272,18 @@ class MY_Model extends CI_Model
 	 */
 
 	protected function _qb_do() {
+		// join 중복제거
+		$duplicated = array();
+
 		foreach( (array) $this->qb_functions as $function_group ) :
 			foreach( (array) $function_group as $function => $args ) :
+				if( $function == 'join' ) :
+					if( isset($duplicated['join']) && in_array($args, $duplicated['join']) )
+						continue;
+
+					$duplicated['join'][] = $args;
+				endif;
+
 				switch (count($args)) {
 					case 0:
 						$this->_database->{$function}();

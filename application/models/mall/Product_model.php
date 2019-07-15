@@ -80,7 +80,7 @@ class Product_model extends MY_Model {
 			$_GET['order'] = $this->input->cookie('product_order');
 
 		if( $this->input->get('category') )
-			$this->product_model->where('pd_cate_id', $this->input->get('category'));
+			$this->product_model->like('pd_cate_id', $this->input->get('category'), 'after');
 
 		if( $this->input->get('search_text') )
 			$this->product_model->like('pd_name', $this->input->get('search_text'));

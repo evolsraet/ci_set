@@ -500,10 +500,14 @@
 						$menu_depth_1 = $this->uri->segment(2);
 						$menu_depth_2 = $this->uri->segment(3);
 
-						$new_order_count = $this->order_model->where('order_status', '100_ask')->count_by();
+						$ask_member_count = $this->members->ask_member_count();
+						$new_order_count = $this->order_model
+												->where('order_status', '100_ask')
+												->count_by();
 					?>
 					<ul class="site-menu">
-						<li class="site-menu-category">일반</li>
+						<!-- 사이트 관리 -->
+						<li class="site-menu-category">사이트 관리</li>
 						<? foreach ( $admin_nav as $nav_key => $nav_row ) : ?>
 							<? if ( count($admin_nav_sub[ $nav_key ]) > 1 ) : // 드롭다운 ifelse ?>
 								<li class="site-menu-item has-sub <?=is_active($menu_depth_1, $nav_key,'active open')?>">
@@ -515,6 +519,18 @@
 											<span class="badge badge-success">3</span>
 										</div>
 										 -->
+										<!-- 심사회원 뱃지 -->
+										<? if( $nav_key == 'member' && $ask_member_count ) : ?>
+											<div class="site-menu-badge"
+												data-toggle="tooltip"
+												title="심사 회원"
+												>
+												<span class="badge badge-info">
+													<?=$ask_member_count?>
+												</span>
+											</div>
+										<? endif; ?>
+										<!-- End Of 심사회원 뱃지 -->
 									</a>
 									<ul class="site-menu-sub">
 										<? foreach ( $admin_nav_sub[$nav_key] as $sub_key => $sub_row ) : ?>
@@ -533,17 +549,61 @@
 									<a href="<?=$base_path?>/<?=$nav_key?>/<?=@array_first($admin_nav_sub[$nav_key],'key')?>">
 										<i class="site-menu-icon  <?=$nav_row['icon']?> lh_inherit"></i>
 										<span class="site-menu-title"><?=$nav_row['text']?></span>
-										<!-- ifelse -->
-										<? if( $nav_key == 'order' && $new_order_count ) : ?>
-											<div class="site-menu-badge">
-												<span class="badge badge-info"><?=$new_order_count?></span>
-											</div>
-										<? endif; ?>
-										<!-- End Of ifelse -->
 									</a>
 								</li>
 							<? endif; // 드롭다운 ifelse ?>
 						<? endforeach; ?>
+						<!-- 쇼핑몰 -->
+						<?
+							$admin_mall_nav     = $this->config->item('admin_mall_nav');
+							$admin_mall_nav_sub = $this->config->item('admin_mall_nav_sub');
+						?>
+						<? if( count( (array)$admin_mall_nav ) ) : ?>
+							<li class="site-menu-category">쇼핑몰</li>
+							<? foreach ( (array)$admin_mall_nav as $nav_key => $nav_row ) : ?>
+								<? if ( count($admin_mall_nav_sub[ $nav_key ]) > 1 ) : // 드롭다운 ifelse ?>
+									<li class="site-menu-item has-sub <?=is_active($menu_depth_1, $nav_key,'active open')?>">
+										<a href="#">
+											<i class="site-menu-icon <?=$nav_row['icon']?> lh_inherit" aria-hidden="true"></i>
+											<span class="site-menu-title"><?=$nav_row['text']?></span>
+											<!--
+											<div class="site-menu-badge">
+												<span class="badge badge-success">3</span>
+											</div>
+											 -->
+										</a>
+										<ul class="site-menu-sub">
+											<? foreach ( $admin_mall_nav_sub[$nav_key] as $sub_key => $sub_row ) : ?>
+												<li class="site-menu-item <?=is_active($menu_depth_2, $sub_key)?>">
+													<a 	href="<?=$base_path?>/<?=$nav_key?>/<?=$sub_key?>"
+														class="animsition-link"
+														>
+														<span class="site-menu-title"><?=$sub_row?></span>
+													</a>
+												</li>
+											<? endforeach; ?>
+										</ul>
+									</li>
+								<? else : // 드롭다운 ifelse ?>
+									<li class="site-menu-item <?=is_active($menu_depth_1, $nav_key)?>">
+										<a href="<?=$base_path?>/<?=$nav_key?>/<?=@array_first($admin_mall_nav_sub[$nav_key],'key')?>">
+											<i class="site-menu-icon  <?=$nav_row['icon']?> lh_inherit"></i>
+											<span class="site-menu-title"><?=$nav_row['text']?></span>
+											<!-- 주문요청 뱃지 -->
+											<? if( $nav_key == 'order' && $new_order_count ) : ?>
+												<div class="site-menu-badge"
+													data-toggle="tooltip"
+													title="주문요청 주문서"
+													>
+													<span class="badge badge-info"><?=$new_order_count?></span>
+												</div>
+											<? endif; ?>
+											<!-- End Of 주문요청 뱃지 -->
+										</a>
+									</li>
+								<? endif; // 드롭다운 ifelse ?>
+							<? endforeach; ?>
+						<? endif; ?>
 					</ul>
 					<!--
 					<div class="site-menubar-section">

@@ -84,7 +84,7 @@ class File_model extends MY_Model {
 	}
 
 	public function after_delete( $data ) {
-		$this->kmh->log($data, '파일삭제');
+		// $this->kmh->log($data, '파일삭제');
 		foreach( fe( $data['data'] ) as $key => $file ) :
 			$this->file_delete( $file );
 		endforeach;

@@ -20,7 +20,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  *  4.	번들제작시 :: 해당 번들.확장자.log 에 한번이라도 불려진 CSS,JS는 파일에 기록되고 파일베이스로 모든 요소들 번들링
  *  	요소 제거시 bundle_reset
  *
- *	*	bundle_() 의 경우, 최종파일의 작성일을 기준으로 버전관리되므로, add_로 모은 요소가 빠진경우 다시 컴파일 필요
+ *	*	bundle_() 의 경우, 최종파일의 작성일을 기준으로 버전관리되므로, add_로 모은 요소가 빠진경우 다시 컴파일 됨
  *
  * 사용 라이브러리
  * + oyejorge/less.php
@@ -207,7 +207,9 @@ class Assets {
 
 					// $this->CI->console->log($web_folder_seperate);
 					// $this->CI->console->log($web_folder_count);
-
+					// echo FCPATH . "<br>";
+					// echo $folder_name . '<br>';
+					// echo $file_name . '<br>';
 					$row_contents = file_get_contents( $folder_name.$file_name );
 
 					// CSS 패스 수정 ( ./ -> path/ )
@@ -318,11 +320,13 @@ class Assets {
 		$file_name = substr(strrchr($url,"/"),1);
 		$folder_name = FCPATH.str_replace($file_name, '', $url);
 
+		$external = ( strpos($url, 'http')===false ) ? false : true;
+
 		$version = $this->get_asset_version($folder_name.$file_name); 		// 최종 수정시간
 
 		$return = '<link rel="stylesheet" href="';
-		// $return .= $url;
-		$return .= $url.'?v='.$version;
+		$return .= $url;
+		if( !$external ) $return .= '?v='.$version;
 		$return .= '" ';
 		// $return .= $pjax ? 'class="pjax_element"' : '';
 		$return .= '>';

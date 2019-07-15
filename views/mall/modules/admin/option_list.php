@@ -24,7 +24,9 @@
 
 <ul id="option_list_ul" class="list-unstyled">
 	<? foreach( (array) $options as $key => $row ) : ?>
-		<li class="form-inline">
+		<li class="form-inline"
+			data-temp_key="<?=$key?>"
+			>
 			<input type="text"
 				class="form-control ot_type"
 				placeholder="옵션 종류"
@@ -42,6 +44,14 @@
 				placeholder="추가 가격"
 				value="<?=$row->ot_price?>"
 			>
+			<span class="checkbox-custom checkbox-primary" data-toggle="tooltip" title="사용여부">
+				<input type="checkbox"
+					id="ot_use_<?=$key?>"
+					class="ot_use"
+					<?=($row->ot_use)?"checked":""?>
+					>
+				<label for="ot_use_<?=$key?>"></label>
+			</span>
 
 			<button type="button" class="btn_mod btn btn-sm btn-success" title="수정"><i class="fa fa-pencil"></i></button>
 			<button type="button" class="btn_del btn btn-sm btn-danger" title="삭제"><i class="fa fa-remove"></i></button>
@@ -51,8 +61,9 @@
 
 <script>
 	$(document).ready(function() {
+		// 수정
 		$("#option_list_ul li .btn_mod").click(function(event) {
-			var ot_id = $(this).closest('li').attr('data-ot_id');
+			var temp_key = $(this).closest('li').attr('data-temp_key');
 			if( !confirm("정말 수정하시겠습니까?") )	return false;
 
 			var data = {
@@ -60,15 +71,18 @@
 				ot_type: $(this).siblings('input.ot_type').val(),
 				ot_name: $(this).siblings('input.ot_name').val(),
 				ot_price: $(this).siblings('input.ot_price').val(),
+				ot_use: $('#ot_use_'+temp_key).prop('checked'),
 			};
 			$.post('/admin/option_update', data, function(data, textStatus, xhr) {
 				option_list();
 			});
-			console.log(ot_id);
+			// console.log(temp_key);
+			console.log(data);
 		});
 
+		// 삭제
 		$("#option_list_ul li .btn_del").click(function(event) {
-			var ot_id = $(this).closest('li').attr('data-ot_id');
+			// var temp_key = $(this).closest('li').attr('data-temp_key');
 			if( !confirm("삭제된 옵션은 복구 할 수 없습니다.\n정말 삭제하시겠습니까?") )	return false;
 			var data = {
 				ot_pd_id: $("#pd_id").val(),
@@ -79,7 +93,7 @@
 			$.post('/admin/option_delete/', data, function(data, textStatus, xhr) {
 				option_list();
 			});
-			console.log(ot_id);
+			// console.log(temp_key);
 		});
 	});
 </script>

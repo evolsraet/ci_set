@@ -48,20 +48,31 @@
 		<? foreach( (array) $list as $key => $item ) : ?>
 			<tr>
 				<td class="sortable text-center">
-					<?
-						$url = "/{$this->uri->segment(1)}/";
-						if( $this->members->is_admin() )
-							$url .=	'order_write/';
-						else
-							$url .=	'order/';
-						$url .=	$item->order_id;
-					?>
-					<a href="<?=$url?>">
+					<a href="<?=$this->mall_base_url?>/order/<?=$item->order_id?>">
 						#<?=$item->order_id?>
 					</a>
+
+					<!-- 관리자 -->
+					<? if( $this->members->is_admin() ) : ?>
+					<a href="<?=$this->mall_base_url?>/order_write/<?=$item->order_id?>"
+						class="btn btn-link"
+						>
+						<i class="fa fa-pencil"></i>
+					</a>
+					<? endif; ?>
+					<!-- End Of 관리자 -->
 				</td>
 				<td class="sortable text-center">
 					<? if( $item->order_mb_id) : ?>
+						<!-- 관리자 -->
+						<? if( $this->members->is_admin() && $item->mb_tid ) : ?>
+							<p>
+								<span class="label label-danger label-outline">
+									<?=$item->mb_tid?>
+								</span>
+							</p>
+						<? endif;?>
+						<!-- 관리자 -->						
 						<span class="label label-primary label-outline">
 							@<?=$item->{ $this->members->auth_field }?>
 						</span>

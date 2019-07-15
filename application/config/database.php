@@ -73,14 +73,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $active_group = 'default';
 $query_builder = TRUE;
 
+
 // 테섭 분기
-if( strpos($_SERVER['HTTP_HOST'], 'localhost')!==false || strpos($_SERVER['HTTP_HOST'], 'dev')!==false ) :
+if( strpos($_SERVER['HTTP_HOST'], 'localhost')!==false || strpos($_SERVER['HTTP_HOST'], 'dev.')!==false ) :
 	$db['default'] = array(
 		'dsn'	=> '',
-		'hostname' => 'localhost',
+		'hostname' => '127.0.0.1',
 		'username' => 'root',
 		'password' => 'autoset',
-		'database' => 'ydiy',
+		'database' => 'kmh_new_model',
 		'dbdriver' => 'mysqli',
 		'dbprefix' => 'kmh_',
 		'pconnect' => FALSE,
@@ -100,10 +101,10 @@ if( strpos($_SERVER['HTTP_HOST'], 'localhost')!==false || strpos($_SERVER['HTTP_
 else :
 	$db['default'] = array(
 		'dsn'	=> '',
-		'hostname' => 'localhost',
-		'username' => 'ydiy',
-		'password' => 'kimyd1124',
-		'database' => 'ydiy',
+		'hostname' => '127.0.0.1',
+		'username' => 'root',
+		'password' => 'autoset',
+		'database' => 'kmh_new_model',
 		'dbdriver' => 'mysqli',
 		'dbprefix' => 'kmh_',
 		'pconnect' => FALSE,
@@ -123,4 +124,5 @@ else :
 endif;
 // End of 테섭 분기
 
-
+// var_dump($_SERVER['HTTP_HOST']);
+// var_dump($db['default']);

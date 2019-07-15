@@ -10,16 +10,54 @@
 
 // 로그인 페이지
 .page_login, .page_join, .page_social_login {
-	// margin-top: 100px;
-	// background: #f1f1f1;
+	&:before {
+	    position: fixed;
+	    top: 0;
+	    left: 0;
+	    content: "";
+	    width: 100%;
+	    height: 100%;
+	    background-position: center top;
+	    -webkit-background-size: cover;
+	    background-size: cover;
+	    z-index: -1;
+		background-image: url('/assets/img/common/member.jpg');
+	}
+	&:after {
+	    position: fixed;
+	    top: 0;
+	    left: 0;
+	    content: "";
+	    width: 100%;
+	    height: 100%;
+	    background-color: rgba(38,50,56,.6);
+	    z-index: -1;
+	}
 	.wrapper {
-		background: url('/assets/img/common/member.jpg') no-repeat;
-		background-size: cover;
-		#main {
-			background-color: rgba(38,50,56,.6);
+		// vertical_align
+			font-size: 0;
+	    	vertical-align: middle;
+	    	position: relative;
+		    height: 100%;
+	    	text-align: center;
+	    	// box-shadow: 0 0 black;
+	    	&:before {
+				display: inline-block;
+				height: 100%;
+				vertical-align: middle;
+				content: "";
+	    	}
+    	// vertical_align
 
-			// display: table-cell;
-			vertical-align: middle;
+		#main {
+    		// vertical_align
+				vertical-align: middle;
+				display: inline-block;
+				max-width: 100%;
+				font-size: 1rem;
+				text-align: left;
+    		// vertical_align
+
 			#content_wrap {
 				padding: 40px 0;
 			}
@@ -47,7 +85,7 @@
 	// pre {
 		height: 200px;
 		padding: 20px;
-		border: 1px solid @gray;
+		border: 1px solid @gray-light;
 		overflow-y: scroll;
 	// }
 }

@@ -30,14 +30,15 @@ class Member_model extends MY_Model {
 
 
 	public function hash_password($data) {
+		if( $data ) $data = (object) $data;
+
 		if( isset($data->mb_mobile) )
 			$data->mb_mobile = only_number($data->mb_mobile);
 
 		if( empty($data->mb_password) ) :
 			unset( $data->mb_password );
 		else :
-			$this->load->library('encrypt');
-			$data->mb_password = $this->encrypt->encode($data->mb_password);
+			$data->mb_password = $this->encryption->encrypt($data->mb_password);
 		endif;
 
 		return $data;

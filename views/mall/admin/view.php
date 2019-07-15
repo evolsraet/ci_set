@@ -2,7 +2,7 @@
 	// 게시판 글쓰기용 폼 아디는 post_write_form 로 고정한다.
 	use Phpform\Phpform;
 	$form = new Phpform();
-	$categories = $this->category_model->where('cate_depth >', 0)->get_all();
+	$categories = $this->category_model->where('cate_depth', 2)->get_all();
 	$categories = as_simple_array($categories, 'cate_id', 'cate_fullname');
 ?>
 
@@ -181,7 +181,7 @@
 				},
 				success : function(response, status, request) {
 					if( response.status == 'ok' ) {
-						location.href = '/admin/product'
+						location.href = '/admin/product/list'
 					} else {
 						alert(response.msg);
 					}
