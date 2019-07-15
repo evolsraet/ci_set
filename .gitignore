@@ -24,3 +24,7 @@ application/logs/*
 
 /vendor/
 _session/ci_session0s4ssvj7sric5k27jprjnnopt6ijn3dq
+assets/lib/sweetalert-1
+assets/lib/noto-sans-korean
+assets/lib/less
+assets/lib/cleave.js
