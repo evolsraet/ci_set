@@ -55,9 +55,12 @@
  * NOTE: If you change these, also change the error_reporting() code below
  */
 
-if( strpos($_SERVER['HTTP_HOST'], 'localhost')!==false
-	OR strpos($_SERVER['HTTP_HOST'], 'dev')!==false
-	OR $_SERVER['REMOTE_ADDR'] == '1.217.88.66'
+if( !empty($_SERVER['HTTP_HOST'])
+	AND
+		(	strpos($_SERVER['HTTP_HOST'], 'localhost')!==false
+			OR strpos($_SERVER['HTTP_HOST'], 'dev')!==false
+			OR $_SERVER['REMOTE_ADDR'] == '1.217.88.66'
+		)
 	)
 	define('ENVIRONMENT', 'development');
 else

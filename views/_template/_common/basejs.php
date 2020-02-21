@@ -19,7 +19,27 @@
 	    $.ajaxSetup({
 	        data: {
 	        	csrf_token: csrf_hash
-	        }
+	        },
+	        error: function(x,e) {
+	        	var msg = '';
+
+				if(x.status==0){
+					msg = 'You are offline!!n Please Check Your Network.';
+				}else if(x.status==404){
+					msg = 'Requested URL not found.';
+				}else if(x.status==500){
+					msg = 'Internel Server Error.';
+				}else if(e=='parsererror'){
+					msg = 'Error.nParsing JSON Request failed.';
+				}else if(e=='timeout'){
+					msg = 'Request Time out.';
+				}else {
+					msg = '통신에러가 발생했습니다. 새로고침 후 다시 시작해주세요.';
+					console.log( x.responseText );
+				}
+
+				toastr.error( msg );
+			}	        
 	    });
 	} else {
 		console.log( 'Jquery Not Loaded' );

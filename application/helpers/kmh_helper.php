@@ -1,4 +1,4 @@
-<?
+<?php
 // 글로벌 헬퍼
 
 	// 클래스의 프로텍트 개체 조회
@@ -162,6 +162,16 @@
 	=            출력부            =
 	===========================*/
 
+		// 디버그 플러시
+		function debug_flush($msg) {
+			ob_end_clean();
+			echo $msg;
+			echo str_pad('',256);
+			// echo "<br>";
+			ob_flush();
+			flush();
+		}
+
 		// $nav_sub 페이지명
 		function page_title( $array, $page_title = null ) {
 			$CI =& get_instance();
@@ -169,8 +179,10 @@
 				return $page_title;
 			} elseif( $CI->uri->total_segments() >= 2 ) {
 				return $array[$CI->uri->segment(1)][$CI->uri->segment(2)];
-			} elseif( $CI->uri->total_segments() >= 1 ) {
+			} elseif( $CI->uri->total_segments() >= 1 && !is_array($array[$CI->uri->segment(1)]) ) {
 				return $array[$CI->uri->segment(1)];
+			} elseif( $CI->uri->total_segments() >= 1 ) {
+				return $array[$CI->uri->segment(1)]['index'];
 			} else {
 				return '페이지 타이틀이 없습니다.';
 			}
@@ -515,6 +527,11 @@
 	/*===========================
 	=            데이터            =
 	===========================*/
+		// LG 상점주문번호 만들기
+		function lgxpay_oid($prefix) {
+			return $prefix . '-' . date('YmdHis');
+		}
+	
 		// 36집법
 		function doublehex($num, $str_pad = null) {
 			if( !is_numeric($num) )	return false;
@@ -548,14 +565,29 @@
 		}
 
 		// 키와 값을 가진 배열로 변환
-		function as_simple_array( $data, $key_field=null, $val_field=null ) {
+		function as_simple_array( $data, $key_field=null, $val_field=null, $default=null ) {
 			$result = array();
+			if( $default != '' )
+				$result[] = $default;
+			
 			foreach( (array) $data as $key => $row ) :
-				if( $key_field == null && $val_field == null  ) :
+				if( $key_field == 'key' && $val_field == null  ) :
+					$result[ $key ] = $row;
+				elseif( $key_field == null && $val_field == null  ) :
 					$result[ $row ] = $row;
 				else :
 					$row = (object)$row;
-					$result[ $row->{$key_field} ] = $row->{$val_field};
+					if( strpos($val_field, '{') !== false ) :
+						$msg = $val_field;
+						preg_match_all('/{(.*?)}/', $msg, $matchs);
+						foreach ($matchs[1] as $match_key => $match_val) :
+							$msg = str_replace($matchs[0][$match_key], $row->{$match_val}, $msg);
+						endforeach;
+
+						$result[ $row->{$key_field} ] = $msg;
+					else :
+						$result[ $row->{$key_field} ] = $row->{$val_field};
+					endif;
 				endif;
 			endforeach;
 			return $result;
@@ -779,8 +811,12 @@
 	=            자바스크립트            =
 	===========================*/
 
-		function alert($txt) {
-			echo "<script>alert(\"{$txt}\");</script>";
+		function alert($txt, $redirect=null) {
+			echo "<script>";
+			echo 	"alert(\"{$txt}\");";
+			if( $redirect )
+				echo "location.href=\"{$redirect}\"";
+			echo "</script>";
 		}
 
 	    function go_back($txt = "정상적인 접근이 아니거나 존재하지않는 게시물입니다.") {

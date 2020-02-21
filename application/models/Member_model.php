@@ -32,6 +32,10 @@ class Member_model extends MY_Model {
 	public function hash_password($data) {
 		if( $data ) $data = (object) $data;
 
+		// email 이 필수가 아니면서 중복을 방지할때 (빈값은 null로)
+		// if( isset($data->mb_email) && trim($data->mb_email) == '' )
+		// 	$data->mb_email = null;
+
 		if( isset($data->mb_mobile) )
 			$data->mb_mobile = only_number($data->mb_mobile);
 

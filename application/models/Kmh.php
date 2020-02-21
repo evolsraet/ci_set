@@ -52,13 +52,25 @@ class Kmh extends CI_Model {
 			return $this;
 		}
 
-		public function as_select($id, $selected = null, $class='form-control', $default_text = '전체', $required = null) {
+		public function as_select($id, $selected = null, $class='form-control', $default_text = '전체', $required = null, $attr=null) {
 	        $active_init = $selected==''?"selected":"";
 
 	        if( !count($this->array) ) return false;
 
 	        $result = "";
-	        $result .= "<select class=\"{$class}\">".PHP_EOL;
+	        $result .= "<select id=\"{$id}\" class=\"{$class}\"";
+
+	        if( !(is_array($attr) && isset($attr['name'])) )
+	        	$result .= " name=\"{$id}\"";
+
+	        // 요소
+	        if( is_array($attr) && count($attr) ) :
+	        	foreach( (array) $attr as $key => $row ) :
+		        	$result .= " {$key}=\"{$row}\"";
+	        	endforeach;
+	        endif;
+	        // End of 요소
+	        $result .= ">".PHP_EOL;
 
 	        if( $default_text !== null ) :
 		        $result .= "    <option {$active_init}>".PHP_EOL;
@@ -67,7 +79,7 @@ class Kmh extends CI_Model {
 	        endif;
 
 	        foreach( $this->array as $key => $row ) :
-	            $active_row = $selected==$key?"active":"";
+	            $active_row = $selected==$key?"selected":"";
 
 	            $result .= "        <option {$active_row} value=\"{$key}\">".PHP_EOL;
 	            $result .= "            {$row}".PHP_EOL;

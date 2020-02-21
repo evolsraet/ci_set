@@ -52,6 +52,14 @@ class MY_Controller extends CI_Controller {
 		// 	);
 		// endif;
 
+		// IS_APP check
+		if( strpos($_SERVER['HTTP_USER_AGENT'] , $this->config->item('app_name'))!==false ) :
+			define(IS_APP, true);
+		else :
+			define(IS_APP, false);
+		endif;
+		// End of IS_APP check
+
 		// 관리자
 		if( $this->uri->segment(1)==='admin' ) {
 			$this->template = $this->config->item('admin_template');

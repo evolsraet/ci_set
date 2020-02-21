@@ -27,7 +27,7 @@
 									<a href="<?="/{$this->uri->segment(1)}/{$this->uri->segment(2)}"?>">
 										<?=$nav_sub[$this->uri->segment(1)][$this->uri->segment(2)]?>
 									</a>									
-								<? else : ?>
+								<? elseif( 0 ) : ?>
 									<a href="<?="/{$this->uri->segment(1)}/".array_first($nav_sub[$this->uri->segment(1)],'key')?>">
 										<?=array_first($nav_sub[$this->uri->segment(1)])?>
 									</a>									

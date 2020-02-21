@@ -88,6 +88,8 @@
 
 // 모바일 전용 모드 사용 (컨트롤러 혹은 레이아웃)
 	$config['mobile']     = false;
+	$config['app_name']	  = 'agentname';
+	$config['app_key_path'] = APPPATH . 'config/';
 
 // 파일 저장위치 (스마트에디터는 해당 파일에서 추가로 수정)
 	$config['file_path'] = '/uploads/';
@@ -100,11 +102,11 @@
 
 // reCAPTCHA 2 사용 ( recaptcha_sitekey == false 시 사용 중단 )
 	// 미사용
-		// $config['recaptcha_sitekey'] = false;
-		// $config['recaptcha_secretkey'] = false;
+		$config['recaptcha_sitekey'] = false;
+		$config['recaptcha_secretkey'] = false;
 	// 개발
-		$config['recaptcha_sitekey'] = '6LcHD2sUAAAAAHzFZX66gAxFj3AUgB0Ztm1JQNk2';
-		$config['recaptcha_secretkey'] = '6LcHD2sUAAAAADEW119E1XvpFeCIRncGE61YlEHE';
+		// $config['recaptcha_sitekey'] = 'testtest';
+		// $config['recaptcha_secretkey'] = 'testtest';
 	// 실제
 		// $config['recaptcha_sitekey'] = '';
 		// $config['recaptcha_secretkey'] = '';

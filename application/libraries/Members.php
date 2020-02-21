@@ -7,11 +7,23 @@ class Members {
     public $auth_field = "mb_email";            // 기본 로그인 항목
 
     public function __construct() {
-    	$this->CI =& get_instance();
+        $this->CI =& get_instance();
         if( $this->CI->config->item('auth_field')!='' )
             $this->auth_field = $this->CI->config->item('auth_field');
-    	// $this->CI->load->helper('file', 'kmh');
+        // $this->CI->load->helper('file', 'kmh');
         // $ci_session = $this->CI->session->userdata('member');
+    }
+
+    public function require_level($level, $msg = '권한이 없습니다.') {
+        if( $this->is_level($level) ) :
+            alert($msg, '/');
+            die();
+        endif;
+    }
+
+    public function require_login() {
+        if( !$this->is_login() )
+            redirect("/member/login?redirect={$_SERVER['REQUEST_URI']}");
     }
 
     public function update_login_info() {
@@ -39,7 +51,7 @@ class Members {
 
     public function is_level( $vs_level ) {
         $ci_session = $this->CI->session->userdata('member');
-       if( $vs_level == 0 ) return true;
+        if( $vs_level == 0 ) return true;
 
         if( $ci_session->mb_level >= $vs_level ) return true;
         else return false;

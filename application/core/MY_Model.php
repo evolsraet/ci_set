@@ -1068,7 +1068,7 @@ class MY_Model extends CI_Model
 	{
 		$this->_where_trashed();
 
-		if( $primary_key!==null )
+		if( $primary_value!==null )
 			$this->where( $this->primary_key, $primary_value );
 
 		$this->_qb_do();

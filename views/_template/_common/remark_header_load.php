@@ -114,6 +114,8 @@
 		<? $this->assets->add_js( LIB."remark/js/components/asspinner.js" ); ?>
 		<? $this->assets->add_js( LIB."remark/vendor/bootstrap-datepicker/bootstrap-datepicker.min.js" ); ?>
 		<? $this->assets->add_js( LIB."remark/js/components/bootstrap-datepicker.min.js" ); ?>		
+		<? $this->assets->add_js( JS."bootstrap-datepicker_setting.js" ); ?>		
+		
 		<!-- Framework Configs -->
 		<? $this->assets->add_js( LIB."remark/js/configs/config-colors.js" ); ?>
 		<? $this->assets->add_js( LIB."remark/_base/js/configs/config-tour.js" ); ?>

@@ -501,9 +501,6 @@
 						$menu_depth_2 = $this->uri->segment(3);
 
 						$ask_member_count = $this->members->ask_member_count();
-						$new_order_count = $this->order_model
-												->where('order_status', '100_ask')
-												->count_by();
 					?>
 					<ul class="site-menu">
 						<!-- 사이트 관리 -->

@@ -1,5 +1,6 @@
 <pre class="hidden">
 <?
+	/*
 	use Carbon\Carbon;
 
 	echo PHP_EOL;
@@ -11,6 +12,7 @@
 	echo $date->toDateTimeString() . PHP_EOL;
 	echo $date->addDays(5) . PHP_EOL;
 	kmh_print( Carbon::createFromDate(1981, 01, 01)->age );
+	*/
 
 ?>
 </pre>
@@ -92,7 +94,12 @@
 			$.post('/member/login_act', $(this).serialize() )
 				.done( function(res) {
 					if( res.status == 'ok' )	{
-						location.href = res.redirect;
+						<? if( IS_APP ) : ?>
+							console.log(res.app_scheme);
+							location.href = res.app_scheme;
+						<? else : ?>
+							location.href = res.redirect;
+						<? endif; ?>	
 					} else {
 						swal({
 							type: 'error',

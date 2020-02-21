@@ -53,12 +53,17 @@ $route['default_controller'] = 'home';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
+// $route['cron/test'] = 'cron/test';
+
 $route['cart/.+'] = 'mall/cart';
+
+// VUE
+$route['vue/.+']  = 'vue/index';
 
 // page 컨트롤러
 $route['page/.+']  = 'page/index';
 $route['admin/page/.+']  = 'page/index';
-$route['vue/.+']  = 'page/index';
+// $route['vue/.+']  = 'page/index';
 
 // match - board
 $route['board/.+']  = 'board/index';

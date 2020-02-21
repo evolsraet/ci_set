@@ -1,13 +1,13 @@
 # ************************************************************
 # Sequel Pro SQL dump
-# Version 4541
+# Version 5446
 #
-# http://www.sequelpro.com/
+# https://www.sequelpro.com/
 # https://github.com/sequelpro/sequelpro
 #
 # Host: 127.0.0.1 (MySQL 5.6.42)
 # Database: kmh_new_model
-# Generation Time: 2019-07-15 07:30:42 +0000
+# Generation Time: 2019-11-19 05:26:51 +0000
 # ************************************************************
 
 
@@ -15,6 +15,7 @@
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
+SET NAMES utf8mb4;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
@@ -548,7 +549,8 @@ VALUES
 	(505,'board','comment_delete','86',42,'댓글삭제 by 강민호(42)','2019-01-11 15:23:01','110.70.54.235'),
 	(506,'board','write_act','180',2,'새글작성 by 최고관리자(2)','2019-01-11 15:39:22','1.217.88.66'),
 	(507,'member','login_act','2',2,'로그인','2019-07-15 15:48:40','1.217.88.66'),
-	(508,'member','update_act','2',2,'업데이트','2019-07-15 15:48:53','1.217.88.66');
+	(508,'member','update_act','2',2,'업데이트','2019-07-15 15:48:53','1.217.88.66'),
+	(509,'member','login_act','2',2,'로그인','2019-09-18 17:33:34','1.217.88.66');
 
 /*!40000 ALTER TABLE `kmh_activity` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -606,6 +608,15 @@ CREATE TABLE `kmh_cart` (
   PRIMARY KEY (`cart_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `kmh_cart` WRITE;
+/*!40000 ALTER TABLE `kmh_cart` DISABLE KEYS */;
+
+INSERT INTO `kmh_cart` (`cart_id`, `cart_mb_id`, `cart_session_id`, `cart_item`, `cart_created_at`, `cart_updated_at`)
+VALUES
+	(1,NULL,'ae7p6erp56sfd091cugup6mkksijdeeu','{\"op_pd_id\":\"3\",\"op_count\":\"1\",\"op_options\":\"[]\",\"op_price_one\":\"1000\",\"op_price\":1000}','2019-09-18 17:39:14','2019-09-18 17:43:20');
+
+/*!40000 ALTER TABLE `kmh_cart` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table kmh_category
@@ -621,6 +632,15 @@ CREATE TABLE `kmh_category` (
   PRIMARY KEY (`cate_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `kmh_category` WRITE;
+/*!40000 ALTER TABLE `kmh_category` DISABLE KEYS */;
+
+INSERT INTO `kmh_category` (`cate_id`, `cate_depth`, `cate_name`, `cate_fullname`)
+VALUES
+	(100,1,'test','test');
+
+/*!40000 ALTER TABLE `kmh_category` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table kmh_chat
@@ -1202,7 +1222,7 @@ LOCK TABLES `kmh_post` WRITE;
 INSERT INTO `kmh_post` (`post_id`, `post_board_id`, `post_mb_id`, `post_category`, `post_writer`, `post_password`, `post_family`, `post_family_seq`, `post_parent`, `post_depth`, `post_title`, `post_content`, `post_hit`, `post_is_secret`, `post_is_notice`, `post_use_editor`, `post_created_at`, `post_updated_at`, `post_deleted_at`, `post_ip`, `post_ex1`, `post_ex2`, `post_ex3`, `post_ex4`, `post_ex5`, `post_ex6`, `post_ex7`, `post_ex8`, `post_ex9`, `post_ex10`, `post_ex_date1`, `post_ex_date2`)
 VALUES
 	(5,'notice_',2,NULL,NULL,NULL,46,0,NULL,0,'title','con',0,NULL,NULL,0,NULL,'2018-08-01 18:07:43',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
-	(7,'notice',2,NULL,NULL,NULL,46,0,NULL,0,'게시글 제목입니다. 폰트를 알아볼까요?','<p><img src=\"/uploads/editor/201811/b830fb72205ccca6146e888d5a77b611.jpg\"><br></p>',27,0,1,1,'2018-07-03 10:30:23','2019-01-11 09:04:32',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+	(7,'notice',2,NULL,NULL,NULL,46,0,NULL,0,'게시글 제목입니다. 폰트를 알아볼까요?','<p><img src=\"/uploads/editor/201811/b830fb72205ccca6146e888d5a77b611.jpg\"><br></p>',28,0,1,1,'2018-07-03 10:30:23','2019-01-11 09:04:32',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 	(8,'notice',NULL,NULL,'손님용','1234',46,0,NULL,1,'Francisca Torphy','Esse voluptas in earum ut sunt officiis. Velit alias delectus quod qui nihil rerum. Laudantium totam commodi sit.',5,1,NULL,0,'2018-07-02 10:30:23','2018-08-03 17:40:29',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 	(9,'notice',2,NULL,NULL,NULL,46,0,NULL,0,'Prof. Giuseppe McGlynn DVM Prof. Giuseppe McGlynn DVM Prof. Giuseppe McGlynn DVM Prof. Giuseppe McGlynn DVM Prof. Giuseppe McGlynn DVM Prof. Giuseppe McGlynn DVM Prof. Giuseppe McGlynn DVM Prof. Giuseppe McGlynn DVM Prof. Giuseppe McGlynn DVM','Delectus magni eum aut. Dolorem velit ut consectetur sit. Corporis incidunt quia neque officiis quasi. Eius asperiores ducimus dolore corrupti.',24,NULL,NULL,0,'2006-03-19 11:41:04','2019-01-11 09:00:58',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 	(10,'notice',2,NULL,NULL,NULL,46,0,NULL,0,'Mrs. Tessie Weimann PhD','Quam omnis nobis fugit ut doloribus veritatis vero. Recusandae ut aut modi ducimus ad. Sit cumque quod voluptatum consequatur nesciunt.',10,NULL,NULL,0,'2011-07-16 05:53:14','2019-01-11 12:30:15',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
@@ -1260,7 +1280,7 @@ VALUES
 	(174,'news',2,NULL,NULL,NULL,174,0,0,0,'test captcha','<p><br></p>',5,0,0,1,'2018-08-22 10:34:00','2018-11-28 10:12:53',NULL,'::1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 	(175,'news',2,NULL,NULL,NULL,175,0,0,0,'test','<p>test</p><p><img src=\"/uploads/editor/201808/500ec7095f4097f8b48ae6dcec3e514a.png\"></p>',11,0,0,1,'2018-08-22 11:38:17','2019-01-10 13:31:27',NULL,'::1',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 	(176,'notice',2,NULL,NULL,NULL,176,0,0,0,'test','<p>test</p>',5,0,0,1,'2018-11-28 11:57:44','2019-01-09 19:44:21',NULL,'1.217.88.66',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
-	(177,'notice',2,NULL,NULL,NULL,177,0,0,0,'게시글 새로올림','<p>이 책을 저희를 GNU/Linux, 그리고 오픈 소스의 세계로 이끌어주신 Kalyan Varma46, 그리고\r\nPESIT47의 다른 많은 분들께 바칩니다.\r\n</p><p>또한 좋은 친구이자 스승이 되어주셨던, <br>그리운 고 Atul Chitnis48를 기억하며 이 책을 바칩니다.</p><p>\r\n마지막으로 지금의 인터넷을 탄생시킨 주역들49에게 이 책을 바칩니다. <br>이 책은 2003년도에 처\r\n음으로 작성되었습니다만, 여전히 많이 읽히고 있습니다. </p><p>이것은 바로 이들이 개척해 왔던 지식\r\n의 공유 정신 덕분입니다.</p>',5,0,1,1,'2019-01-11 10:59:39','2019-01-12 10:33:17',NULL,'1.217.88.66',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+	(177,'notice',2,NULL,NULL,NULL,177,0,0,0,'게시글 새로올림','<p>이 책을 저희를 GNU/Linux, 그리고 오픈 소스의 세계로 이끌어주신 Kalyan Varma46, 그리고\r\nPESIT47의 다른 많은 분들께 바칩니다.\r\n</p><p>또한 좋은 친구이자 스승이 되어주셨던, <br>그리운 고 Atul Chitnis48를 기억하며 이 책을 바칩니다.</p><p>\r\n마지막으로 지금의 인터넷을 탄생시킨 주역들49에게 이 책을 바칩니다. <br>이 책은 2003년도에 처\r\n음으로 작성되었습니다만, 여전히 많이 읽히고 있습니다. </p><p>이것은 바로 이들이 개척해 왔던 지식\r\n의 공유 정신 덕분입니다.</p>',6,0,1,1,'2019-01-11 10:59:39','2019-01-12 10:33:17',NULL,'1.217.88.66',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 	(179,'notice',2,NULL,NULL,NULL,179,0,0,0,'모바일에서 작성','',1,0,0,1,'2019-01-11 14:20:42','2019-01-11 14:20:42',NULL,'110.70.54.235',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 	(180,'notice',2,NULL,NULL,NULL,180,0,0,0,'입력글','<p><img src=\"/uploads/editor/201901/df7aa6ab07a5a30af37193f7ef8b5eb7.png\" xss=removed><br></p>',1,0,0,1,'2019-01-11 15:39:22','2019-01-11 15:39:22',NULL,'1.217.88.66',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 
@@ -1291,6 +1311,15 @@ CREATE TABLE `kmh_product` (
   CONSTRAINT `fk_kmh_product_kmh_category1` FOREIGN KEY (`pd_cate_id`) REFERENCES `kmh_category` (`cate_id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `kmh_product` WRITE;
+/*!40000 ALTER TABLE `kmh_product` DISABLE KEYS */;
+
+INSERT INTO `kmh_product` (`pd_id`, `pd_name`, `pd_cate_id`, `pd_created_at`, `pd_updated_at`, `pd_deleted_at`, `pd_use`, `pd_price`, `pd_min`, `pd_detail`, `pd_order`)
+VALUES
+	(3,'test제품',100,'2019-09-18 17:38:05','2019-09-18 17:39:03',NULL,1,1000,1,NULL,0);
+
+/*!40000 ALTER TABLE `kmh_product` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table kmh_rating

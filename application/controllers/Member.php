@@ -27,6 +27,68 @@ class Member extends MY_Controller {
         $this->title = '회원 - ' . $this->title;
 	}
 
+	/*----------  API  ----------*/
+		public function app_update_token() {
+			if( !IS_APP ) die('APP ONLY');
+
+			$mb_id = $this->input->post('mb_id');
+
+			$data = new stdClass;
+			$data->mb_app_token = $this->input->post('mb_app_token');
+			$data->mb_app_os    = $this->input->post('mb_app_os');
+
+			$this->member_model->update($mb_id, $data);
+		}
+
+		public function app_auto_login() {
+			if( !IS_APP ) die('APP ONLY');
+
+			// $_POST['mb_id'] = 57;
+			// $_POST['mb_password'] = "ef52b949fba7bbc2055292b8347fe2530d7aac7a11968856beff593eb8d1274038001416f30fca4e861065a18dc2ab90aa65f5478e82c0f9aaa62e78b9b6be661ldcYVoY8Gr5JE%2FnN%2FGwOkemhjdmQnIEgrTxcNNL%2FjU%3D";
+
+			// $result['post'] = $this->input->post();	
+
+			$mb_id       = $this->input->post('mb_id');
+			$mb_password = $this->input->post('mb_password');
+
+			// $this->kmh->log( $mb_password );
+			// $this->kmh->log( urldecode($mb_password) );
+			// $this->kmh->log( $this->encryption->decrypt(($mb_password)) );
+			// $mb_password_enc = ($mb_password);
+			
+			// $mb_password = $this->encryption->decrypt( $mb_password );
+
+			$_POST['mb_password'] = $this->encryption->decrypt( $mb_password ) ;	// login_check 에서 활용
+
+			try {
+				// $result['post'] = $this->input->post();
+				$result['status'] = 'fail';
+				$result['msg'] = '에러가 발생했습니다.';
+				
+				if( !$mb_id OR !$mb_password )
+					throw new Exception("필수값이 누락되었습니다.", 1);
+
+				// 디비 확인
+				$db = $this->member_model
+							->where('mb_id', $mb_id)
+							->where('mb_password', $mb_password)
+							->get();
+				// 로그인 처리
+				$this->login_check($db);
+				// 액티비티 기록
+				$this->kmh->activity($db->mb_id, '로그인');
+				add_flashdata('page_notice', "{$this->logined->mb_display}님 로그인 되었습니다.");
+
+				$result['status'] = 'ok';
+				$result['msg'] = '정상 처리되었습니다.';
+			} catch (Exception $e) {
+				$result['status'] = 'fail';
+				$result['msg'] = $e->getMessage();
+			}
+
+			kmh_json( $result );
+		}
+	
 	/*----------  공용 / 기타  ----------*/
 
 		public function info( $id ) {
@@ -241,10 +303,30 @@ class Member extends MY_Controller {
 			if( strpos($redirect, 'member')!==FALSE )
 				$redirect = '/';
 
-			redirect( $redirect );
+			if( IS_APP ) :
+				echo "<script>";
+				echo "	location.href='app://{$this->config->item('app_name')}?control=logout';";
+				echo "</script>";				
+			else :
+				redirect( $redirect );
+			endif;
 		}
 
 	/*----------  실행부  ----------*/
+
+		private function login_check($db) {
+			// 에러 처리
+			if( $db->mb_id=='' )
+				throw new Exception("가입되지 않은 회원입니다.");
+			else if( $db->mb_status == 'ask' )
+				throw new Exception("심사중인 회원입니다.");
+			else if( $db->mb_status != 'ok' )
+				throw new Exception("정상회원이 아닙니다. 관리자에게 문의하세요.");
+			else if( $this->input->post('mb_password') != $this->encryption->decrypt( $db->mb_password ) )
+				throw new Exception("비밀번호가 일치하지 않습니다.");
+
+			$this->login_process( $db );
+		}
 
 		private function login_process( $mb_data = null ) {
 			$this->session->set_userdata('member', $mb_data);
@@ -259,23 +341,21 @@ class Member extends MY_Controller {
 
 			$result['data'] = $this->input->post();
 			$result['redirect'] = $this->input->get_post('redirect') ? $this->input->get_post('redirect') : '/';
+			if( strpos($result['redirect'], 'login') !== false )
+				$result['redirect'] = '/';
 
 			$db = $this->member_model->where(  $this->auth_field , $this->input->post( $this->auth_field ) )->get();
 			$result['qry'] = $this->db->last_query();
 
 			try {
-				// 에러 처리
-				if( $db->mb_id=='' )
-					throw new Exception("가입되지 않은 회원입니다.");
-				else if( $db->mb_status == 'ask' )
-					throw new Exception("심사중인 회원입니다.");
-				else if( $db->mb_status != 'ok' )
-					throw new Exception("정상회원이 아닙니다. 관리자에게 문의하세요.");
-				else if( $this->input->post('mb_password') != $this->encryption->decrypt( $db->mb_password ) )
-					throw new Exception("비밀번호가 일치하지 않습니다.");
+				$this->login_check($db);
+				
+				if( IS_APP )
+					$result['app_scheme'] = "app://{$this->config->item('app_name')}?control=login"
+						. "&mb_id={$db->mb_id}"
+						. "&mb_password=" . urlencode($db->mb_password)
+						. "&return_url={$result['redirect']}";
 
-				// 인증성공 : 비번확인
-				$this->login_process( $db );
 				$result['status'] = 'ok';
 				$result['msg'] = '정상 처리되었습니다.';
 
