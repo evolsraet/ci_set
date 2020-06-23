@@ -328,12 +328,16 @@ class MY_Model extends CI_Model
 	}
 
 	// after paging()
-	public function pagenation($base_url='') {
+	public function pagenation($base_url='', $num_links = 2) {
 		$this->load->library('pagination');
+		
+		$this->load->library('user_agent');
+		if( $this->agent->is_mobile() )	$num_links = 1;
 
 		$pagination_config['base_url']   = $base_url . querystring('page');
 		$pagination_config['total_rows'] = $this->total_rows;
 		$pagination_config['per_page']   = $this->rows_per_page;
+		$pagination_config['num_links']   = $num_links;
 
 		$this->pagination->initialize( $pagination_config );
 		return $this->pagination->create_links();
@@ -1174,7 +1178,10 @@ class MY_Model extends CI_Model
 				$this->where($this->deleted_at.' !=', null);
 			elseif( $this->_temporary_with_deleted !== TRUE )
 				$this->where($this->deleted_at, null);
-		}
+			
+			$this->_temporary_with_deleted = false;
+			$this->_temporary_only_deleted = false;						
+		}		
 	}
 
 	/* --------------------------------------------------------------
@@ -1321,8 +1328,8 @@ class MY_Model extends CI_Model
 	protected function _qb_reset( $force_reset = FALSE ) {
 		if( !$this->qb_cache || $force_reset ) {
 			$this->qb_functions = array();
-			$this->qb_cache = FALSE;
 		}
+		$this->qb_cache = FALSE;
 	}
 
 	/*
@@ -1393,6 +1400,27 @@ class MY_Model extends CI_Model
 			return $this;
 		}
 
+		public function or_group_start() {
+			$args = func_get_args();
+			if( !count($args) )	$args = array();
+			$this->qb_functions[] = array( __FUNCTION__ => $args );
+			return $this;
+		}
+
+		public function not_group_start() {
+			$args = func_get_args();
+			if( !count($args) )	$args = array();
+			$this->qb_functions[] = array( __FUNCTION__ => $args );
+			return $this;
+		}
+		
+		public function or_not_group_start() {
+			$args = func_get_args();
+			if( !count($args) )	$args = array();
+			$this->qb_functions[] = array( __FUNCTION__ => $args );
+			return $this;
+		}
+
 		public function group_end() {
 			$args = func_get_args();
 			if( !count($args) )	$args = array();
@@ -1405,6 +1433,18 @@ class MY_Model extends CI_Model
 			$this->qb_functions[] = array( __FUNCTION__ => $args );
 			return $this;
 		}
+
+		public function select_max() {
+			$args = func_get_args();
+			$this->qb_functions[] = array( __FUNCTION__ => $args );
+			return $this;
+		}
+
+		public function select_min() {
+			$args = func_get_args();
+			$this->qb_functions[] = array( __FUNCTION__ => $args );
+			return $this;
+		}		
 
 		public function set() {
 			$args = func_get_args();

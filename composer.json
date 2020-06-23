@@ -4,7 +4,7 @@
     "require": {
         "php": ">=5.4.0",
         "codeigniter/framework": "^3.0.4",
-        "evolsraet/phpform": "^0.2",
+        "evolsraet/phpform": "dev-master",
         "fzaninotto/faker": "^1.7",
         "oyejorge/less.php": "v1.7.0.14",
         "tajawal/lodash-php": "^1.0",
