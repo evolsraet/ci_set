@@ -324,6 +324,7 @@
 		function reCAPTCHA() {
 			$CI =& get_instance();
 			$sitekey = $CI->config->item('recaptcha_sitekey');
+			if( !$sitekey ) return false;
 
 			$result = '';
 			$result .= PHP_EOL.'<!-- reCAPTCHA -->';

@@ -54,9 +54,9 @@ class MY_Controller extends CI_Controller {
 
 		// IS_APP check
 		if( strpos($_SERVER['HTTP_USER_AGENT'] , $this->config->item('app_name'))!==false ) :
-			define(IS_APP, true);
+			define('IS_APP', true);
 		else :
-			define(IS_APP, false);
+			define('IS_APP', false);
 		endif;
 		// End of IS_APP check
 
