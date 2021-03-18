@@ -81,7 +81,7 @@ if( strpos($_SERVER['HTTP_HOST'], 'localhost')!==false || strpos($_SERVER['HTTP_
 		'hostname' => '127.0.0.1',
 		'username' => 'root',
 		'password' => 'autoset',
-		'database' => 'madang',
+		'database' => 'kmh_new_model',
 		'dbdriver' => 'mysqli',
 		'dbprefix' => 'kmh_',
 		'pconnect' => FALSE,
@@ -104,7 +104,7 @@ else :
 		'hostname' => '127.0.0.1',
 		'username' => 'root',
 		'password' => 'autoset',
-		'database' => 'madang',
+		'database' => 'kmh_new_model',
 		'dbdriver' => 'mysqli',
 		'dbprefix' => 'kmh_',
 		'pconnect' => FALSE,
@@ -123,6 +123,7 @@ else :
 	);
 endif;
 // End of 테섭 분기
+
 
 // var_dump($_SERVER['HTTP_HOST']);
 // var_dump($db['default']);

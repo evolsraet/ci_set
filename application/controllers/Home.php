@@ -33,6 +33,12 @@ class Home extends MY_Controller {
 		phpinfo();
 	}
 
+	public function mssql() {
+		kmh_print('IN');
+		$TB_DB = $this->load->database('tb_mssql', TRUE);
+		kmh_print('END');
+	}
+
 	public function goaccess() {
 		$this->load->helper('file');
 		$this->load->library('table');

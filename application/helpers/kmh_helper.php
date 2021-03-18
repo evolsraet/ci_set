@@ -176,16 +176,21 @@
 		function page_title( $array, $page_title = null ) {
 			$CI =& get_instance();
 			if( $page_title!='' ) {
-				return $page_title;
+				$title = $page_title;
 			} elseif( $CI->uri->total_segments() >= 2 ) {
-				return $array[$CI->uri->segment(1)][$CI->uri->segment(2)];
+				$title = $array[$CI->uri->segment(1)][$CI->uri->segment(2)];
 			} elseif( $CI->uri->total_segments() >= 1 && !is_array($array[$CI->uri->segment(1)]) ) {
-				return $array[$CI->uri->segment(1)];
+				$title = $array[$CI->uri->segment(1)];
 			} elseif( $CI->uri->total_segments() >= 1 ) {
-				return $array[$CI->uri->segment(1)]['index'];
+				$title = $array[$CI->uri->segment(1)]['index'];
 			} else {
-				return '페이지 타이틀이 없습니다.';
+				$title = '페이지 타이틀이 없습니다.';
 			}
+
+			if( $title == '' )
+				$title = $CI->config->item('site_title');
+
+			return $title;
 		}
 
 		// vue 템플릿 가져오기
@@ -343,7 +348,7 @@
 			$post_key   = $_POST['g-recaptcha-response'];
 
 			if( empty($secret_key) || empty($post_key) )
-				return false;
+				return true;
 
 			$url = 'https://www.google.com/recaptcha/api/siteverify';
 			$capacha_data = array(
