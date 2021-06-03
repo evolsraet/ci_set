@@ -86,6 +86,51 @@
 		// ]
 	);
 
+	// hybridauth 3
+	// $config['hybridauth'] = array(
+	// 	'base_url' => "{$protocol}{$_SERVER['HTTP_HOST']}/member/social_endpoint",
+
+		// 'providers' => [
+		// 	'Kakao' => [
+		// 		'enabled' => true,
+		// 		'keys' => [
+		// 			'id'  => '',
+		// 			'secret' => ''
+		// 		]
+		// 	],
+		// 	'Google'   => [
+		// 		'enabled' => true,
+		// 		'keys' => [
+		// 			'id'  => '',
+		// 			'secret' => ''
+		// 		]
+		// 	]			
+		// ],
+		// 'providers' => [
+		// 	'Twitter' => [
+		// 		'enabled' => true,
+		// 		'keys' => [
+		// 			'key'    => 'gYkw6AZtkabcetdQENwk35cGF',
+		// 			'secret' => 'dmmKBdAuonCe7wOM5Wrn3VCXNI3xuu0UyTnQaVSLpIkkcnSdPH'
+		// 		]
+		// 	],
+		// 	'Facebook' => [
+		// 		'enabled' => false,
+		// 		'keys' => [
+		// 			'id'  => '273286656096845',
+		// 			'secret' => '273286656096845|N0BYJldf0wXrXLYRNsZJgiQ1tWg'
+		// 		]
+		// 	],
+		// 	'Kakao' => [
+		// 		'enabled' => true,
+		// 		'keys' => [
+		// 			'id'  => '1042e8835c8218348b36930857dae298',
+		// 			'secret' => 'fg5OHIDTlqoDxyonGAB8iFsfxNTslwas'
+		// 		]
+		// 	]
+		// ]
+	// );
+
 // 모바일 전용 모드 사용 (컨트롤러 혹은 레이아웃)
 	$config['mobile']     = false;
 	$config['app_name']	  = 'agentname';
@@ -163,7 +208,7 @@
 	$config['admin_nav_sub']['setting']['config']      = '환경설정';
 	$config['admin_nav_sub']['setting']['popup']       = '팝업';
 	$config['admin_nav_sub']['setting']['board']       = '게시판';
-	$config['admin_nav_sub']['setting']['tab_chord']   = '코드';
+	$config['admin_nav_sub']['setting']['config']      = '설정관리';
 	$config['admin_nav_sub']['member']['member']       = '회원';
 	$config['admin_nav_sub']['member']['point']        = '포인트 관리';
 	$config['admin_nav_sub']['board']['notice']        = '공지사항';

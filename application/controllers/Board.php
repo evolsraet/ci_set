@@ -449,7 +449,7 @@ class Board extends MY_Controller {
 					$data->post_mb_id = $this->logined->mb_id;
 
 			// 비밀글 필수 게시판은 모든 글 시크릿 설정
-				if( $this->board_info->board_use_secret === 2 )
+				if( $this->board_info->board_use_secret == 2 )
 					$data->post_is_secret = 1;
 
 			// 에디터 사용여부
@@ -564,7 +564,7 @@ class Board extends MY_Controller {
 				$data->post_is_notice = oz( $this->input->post('post_is_notice') );
 
 			// 비밀글 필수 게시판은 모든 글 시크릿 설정
-				if( $this->board_info->board_use_secret === 2 )
+				if( $this->board_info->board_use_secret == 2 )
 					$data->post_is_secret = 1;
 
 			// 에디터 사용여부

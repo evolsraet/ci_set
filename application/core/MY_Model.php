@@ -316,10 +316,11 @@ class MY_Model extends CI_Model
 		if( $page_number < 1 ) $page_number = 1;
 
 		$offset = $rows_per_page * ($page_number-1);
-		$this->qb_functions[] = array(
+		if( $rows_per_page !== 0 ) {
+			$this->qb_functions[] = array(
 				'limit' => array($rows_per_page, $offset)
 			);
-
+		}
 		$this->rows_per_page = $rows_per_page;
 		$this->total_rows = $total_rows;
 		$this->page_number = $page_number;
@@ -1441,6 +1442,12 @@ class MY_Model extends CI_Model
 		}
 
 		public function select_min() {
+			$args = func_get_args();
+			$this->qb_functions[] = array( __FUNCTION__ => $args );
+			return $this;
+		}
+
+		public function select_sum() {
 			$args = func_get_args();
 			$this->qb_functions[] = array( __FUNCTION__ => $args );
 			return $this;

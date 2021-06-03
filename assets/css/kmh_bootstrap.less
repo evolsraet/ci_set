@@ -7,6 +7,10 @@
 // LESS 기본 로드
 @import url('/assets/css/less_load.less');
 
+html {
+	word-break: keep-all;
+}
+
 a, button {
 	outline: none !important;
 }
@@ -76,6 +80,14 @@ a, button {
 				vertical-align: middle !important;
 			}
 		}
+	}
+
+	.table_text_center {
+		thead, tbody, tfoot {
+			td, th {
+				text-align: center;
+			}
+		}		
 	}
 
 .card {

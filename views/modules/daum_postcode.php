@@ -6,7 +6,7 @@
 	// $postcode_addr2 = '';
 ?>
 
-<? $this->assets->load_js('http://dmaps.daum.net/map_js_init/postcode.v2.js', false); ?>
+<? $this->assets->load_js('//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js', false); ?>
 <div id="<?=$postcode_id?>_wrap" class="daum_postcode_wrap">
 	<img src="//t1.daumcdn.net/localimg/localimages/07/postcode/320/close.png"
 		class="foldDaumPostcode"

@@ -27,6 +27,47 @@
 	</div>
 	<!-- KMH common elements  -->
 
+	<!-- BS3 modal -->
+	<div id="kmh_modal" class="modal fade" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button"
+						class="close"
+						data-dismiss="modal"
+						aria-label="Close"
+						>
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title"></h4>
+				</div>
+				<div class="modal-body"></div>
+				<div class="modal-footer"></div>
+			</div>
+		</div>
+	</div>
+
+	<div id="kmh_modal_lg" class="modal fade" role="dialog">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<!-- 
+				<div class="modal-header">
+					<button type="button"
+						class="close"
+						data-dismiss="modal"
+						aria-label="Close"
+						>
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title"></h4>
+				</div>
+				<div class="modal-body"></div>
+				<div class="modal-footer"></div>
+				 -->
+			</div>
+		</div>
+	</div>	
+
 	<!-- 애널리틱스 -->
 	<? if( $this->uri->segment(1) != 'admin' && $this->config->item('google_analytics') ) : ?>
 		<script async src="https://www.googletagmanager.com/gtag/js?id=<?=$this->config->item('google_analytics')?>"></script>

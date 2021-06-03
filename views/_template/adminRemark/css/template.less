@@ -29,3 +29,41 @@ img {
 .table a {
 	text-decoration: none;
 }
+
+
+// 관리자 테이블
+.admin_table_search_form {
+	margin-bottom: 20px;
+}
+
+.admin_table {
+	&>thead>tr>th {
+	    border-bottom: 1px solid #eee;
+		background: @gray-lightest;
+		font-weight: bold;
+		color: #000 !important;
+		text-align: center;
+	}
+		
+	th[data-order_field] {
+		cursor: pointer;
+		position: relative;
+		&:after {
+			position: absolute;
+			top: 50%;
+			margin-top: -11px;
+			right: 6px;
+			display: block;
+			font-family: "FontAwesome";
+			opacity: .3;
+			content: '\f0d8';
+		}
+	}
+	th[data-order_value='ASC']:after {
+			opacity: 1;
+	}
+	th[data-order_value='DESC']:after {
+			content: '\f0d7';
+			opacity: 1;
+	}
+}

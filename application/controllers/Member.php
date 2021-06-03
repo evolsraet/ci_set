@@ -27,29 +27,119 @@ class Member extends MY_Controller {
         $this->title = '회원 - ' . $this->title;
 	}
 
+
 	/*----------  API  ----------*/
 		public function app_update_token() {
-			if( !IS_APP ) die('APP ONLY');
+			// if( !IS_APP ) die('APP ONLY agent: ' . $_SERVER['HTTP_USER_AGENT']);
+			// 안드로이드에서 잘 안된다함 - 충빈
 
-			$mb_id = $this->input->post('mb_id');
+			$this->kmh->log($_POST, "app_update_token {$mb_id}");
+			$mb_id = $this->member_model->decode_auth(
+						$this->input->post('authkey')
+					);
 
-			$data = new stdClass;
-			$data->mb_app_token = $this->input->post('mb_app_token');
-			$data->mb_app_os    = $this->input->post('mb_app_os');
+			if( $this->input->post('mb_app_token') != ''
+				OR $this->input->post('mb_app_uuid') != ''
+			) :
+				$data = new stdClass;
+				$data->dv_id    = $this->input->post('mb_app_token');
+				$data->dv_uuid  = $this->input->post('mb_app_uuid');
+				$data->dv_os    = $this->input->post('mb_app_os');
+				$data->dv_mb_id = $mb_id;
 
-			$this->member_model->update($mb_id, $data);
+
+				// 디바이스에서 uuid
+				$this->load->model('device_model');
+				$already = $this->device_model
+					->where('dv_uuid',$data->dv_uuid)
+					// ->where('dv_mb_id',$data->dv_mb_id)
+					->count_by();
+				if( $already ) :
+					$this->device_model
+						->where('dv_uuid',$data->dv_uuid)
+						// ->where('dv_mb_id',$data->dv_mb_id)
+						->update(null,$data);					
+				else :
+					$this->device_model
+						->insert($data);
+				endif;
+			endif;
+
+		}
+
+		public function app_logout() {
+			// if( !IS_APP ) die('APP ONLY agent: ' . $_SERVER['HTTP_USER_AGENT']);
+			// 안드로이드에서 잘 안된다함 - 충빈
+
+			$mb_id = $this->member_model->decode_auth(
+						$this->input->post('authkey')
+					);
+
+			if( $this->input->post('mb_app_uuid') != ''
+			) :
+				$data = new stdClass;
+				$data->mb_app_uuid = $this->input->post('mb_app_uuid');
+				$data->mb_app_token = $this->input->post('mb_app_token');
+				$data->mb_app_os    = $this->input->post('mb_app_os');
+
+				// 디바이스에서 uuid 제거
+				$this->load->model('device_model');
+				$this->device_model
+					->where('dv_mb_id', $mb_id)
+					->where('dv_uuid', $data->mb_app_uuid)
+					->delete();
+			endif;
+
+			$_SESSION['dv_uuid'] = $this->input->post('mb_app_uuid');
+
+			$this->kmh->log($_POST, "app_logout {$mb_id}");
+		}
+
+		public function app_push_toggle() {
+			// if( !IS_APP ) die('APP ONLY agent: ' . $_SERVER['HTTP_USER_AGENT']);
+			// 안드로이드에서 잘 안된다함 - 충빈
+
+			$mb_id = $this->member_model->decode_auth(
+						$this->input->post('authkey')
+					);
+
+			if( $this->input->post('mb_app_uuid') != '' ) :
+				$data = new stdClass;
+				$data->mb_app_uuid = $this->input->post('mb_app_uuid');
+
+				// 디바이스에서 uuid
+				$this->load->model('device_model');
+				$this->device_model
+					// ->where('dv_mb_id', $mb_id)
+					->where('dv_uuid', $data->mb_app_uuid)
+					->set('dv_push', 'dv_push XOR 1', false)
+					->update();
+			endif;
+
+			$this->kmh->log($_POST, "app_push_toggle {$mb_id}");
+		}		
+
+		public function app_toolbar() {
+			if( !APP_AUDIT ) :
+				echo 0;
+			else :
+				echo 1;
+			endif;
 		}
 
 		public function app_auto_login() {
-			if( !IS_APP ) die('APP ONLY');
+			// if( !IS_APP ) die('APP ONLY agent: ' . $_SERVER['HTTP_USER_AGENT']);
+			// 안드로이드에서 잘 안된다함 - 충빈
 
 			// $_POST['mb_id'] = 57;
 			// $_POST['mb_password'] = "ef52b949fba7bbc2055292b8347fe2530d7aac7a11968856beff593eb8d1274038001416f30fca4e861065a18dc2ab90aa65f5478e82c0f9aaa62e78b9b6be661ldcYVoY8Gr5JE%2FnN%2FGwOkemhjdmQnIEgrTxcNNL%2FjU%3D";
 
 			// $result['post'] = $this->input->post();	
 
-			$mb_id       = $this->input->post('mb_id');
-			$mb_password = $this->input->post('mb_password');
+			$mb_id = $this->member_model->decode_auth(
+						$this->input->post('authkey')
+					);
+			// $mb_password = $this->input->post('mb_password');
 
 			// $this->kmh->log( $mb_password );
 			// $this->kmh->log( urldecode($mb_password) );
@@ -58,26 +148,28 @@ class Member extends MY_Controller {
 			
 			// $mb_password = $this->encryption->decrypt( $mb_password );
 
-			$_POST['mb_password'] = $this->encryption->decrypt( $mb_password ) ;	// login_check 에서 활용
+			// $_POST['mb_password'] = $this->encryption->decrypt( $mb_password ) ;	// login_check 에서 활용
+
 
 			try {
 				// $result['post'] = $this->input->post();
 				$result['status'] = 'fail';
 				$result['msg'] = '에러가 발생했습니다.';
-				
-				if( !$mb_id OR !$mb_password )
-					throw new Exception("필수값이 누락되었습니다.", 1);
+				$result['mb_id'] = $mb_id;
+
+				if( !$mb_id )
+					throw new Exception("정상적인 authkey 가 아닙니다.", 1);
 
 				// 디비 확인
 				$db = $this->member_model
 							->where('mb_id', $mb_id)
-							->where('mb_password', $mb_password)
 							->get();
+							// ->where('mb_password', $mb_password)
+				$_POST['mb_password'] = $this->encryption->decrypt( $db->mb_password );
+
 				// 로그인 처리
-				$this->login_check($db);
-				// 액티비티 기록
-				$this->kmh->activity($db->mb_id, '로그인');
-				add_flashdata('page_notice', "{$this->logined->mb_display}님 로그인 되었습니다.");
+				$this->member_model->login_check($db);
+				$this->app_update_token();
 
 				$result['status'] = 'ok';
 				$result['msg'] = '정상 처리되었습니다.';
@@ -141,19 +233,23 @@ class Member extends MY_Controller {
 
 			switch ( $field ) {
 				case 'mb_display' :
-					if( !$this->members->is_admin() ) : 	// 관리자 분기
 						// 해당필드 일치항목이 디비에 없거나, 컨피그에 블랙리스트 확인
-						if ( empty($db) &&
-							 !in_array( $this->input->post($field), $this->config->item('deny_mb_nick') )
-							) :	// ifelse
+						if (
+							empty($db)
+							AND
+							(
+								$this->members->is_admin()
+								OR
+								!in_array(
+									$this->input->post($field),
+									$this->config->item('deny_mb_nick')
+								)
+							)
+						) :	// ifelse
 							$result = 'true';
 						else :	// ifelse
 							$result = 'false';
 						endif;	// ifelse
-					else :				// 관리자 분기
-						$result = 'true';
-					endif;				// 관리자 분기
-
 					break;
 				default:
 					if( $db->{ $field }!='' ) 		$result = 'false';
@@ -305,7 +401,8 @@ class Member extends MY_Controller {
 
 			if( IS_APP ) :
 				echo "<script>";
-				echo "	location.href='app://{$this->config->item('app_name')}?control=logout';";
+				// in2uapp://mobileapp?control=logout';
+				echo "	location.href='{$this->config->item('app_name')}://mobileapp?control=logout';";
 				echo "</script>";				
 			else :
 				redirect( $redirect );
@@ -313,25 +410,6 @@ class Member extends MY_Controller {
 		}
 
 	/*----------  실행부  ----------*/
-
-		private function login_check($db) {
-			// 에러 처리
-			if( $db->mb_id=='' )
-				throw new Exception("가입되지 않은 회원입니다.");
-			else if( $db->mb_status == 'ask' )
-				throw new Exception("심사중인 회원입니다.");
-			else if( $db->mb_status != 'ok' )
-				throw new Exception("정상회원이 아닙니다. 관리자에게 문의하세요.");
-			else if( $this->input->post('mb_password') != $this->encryption->decrypt( $db->mb_password ) )
-				throw new Exception("비밀번호가 일치하지 않습니다.");
-
-			$this->login_process( $db );
-		}
-
-		private function login_process( $mb_data = null ) {
-			$this->session->set_userdata('member', $mb_data);
-			$this->logined = $this->session->userdata('member');
-		}
 
 		public function login_act() {
 			if( !$this->input->is_ajax_request() ) exit;
@@ -348,12 +426,15 @@ class Member extends MY_Controller {
 			$result['qry'] = $this->db->last_query();
 
 			try {
-				$this->login_check($db);
+				$this->member_model->login_check($db);
 				
 				if( IS_APP )
-					$result['app_scheme'] = "app://{$this->config->item('app_name')}?control=login"
-						. "&mb_id={$db->mb_id}"
-						. "&mb_password=" . urlencode($db->mb_password)
+					$enc_mb_id = $this->member_model->encode_auth(
+								$db->mb_id
+							);
+
+					$result['app_scheme'] = "{$this->config->item('app_name')}://mobileapp?control=member&action=login"
+						. "&authkey={$enc_mb_id}"
 						. "&return_url={$result['redirect']}";
 
 				$result['status'] = 'ok';
@@ -361,7 +442,7 @@ class Member extends MY_Controller {
 
 				// 액티비티 기록
 				$this->kmh->activity($db->mb_id, '로그인');
-				add_flashdata('page_notice', "{$this->logined->mb_display}님 로그인 되었습니다.");
+				// add_flashdata('page_notice', "{$this->logined->mb_display}님 로그인 되었습니다.");
 
 			} catch (Exception $e) {
 				$result['msg'] = $e->getMessage();
@@ -411,7 +492,7 @@ class Member extends MY_Controller {
 						$already = $this->member_model->get($already->mb_id);
 
 						// 프로필 사진 및 기타 정보 업데이트?
-						$this->login_process($already);
+						$this->member_model->login_process($already);
 
 						// 액티비티 기록
 						$this->kmh->activity($already->mb_id, '소셜 로그인');
@@ -453,7 +534,7 @@ class Member extends MY_Controller {
 
 						// 로그인
 						$db = $this->member_model->get( $join_result->id );
-						$this->login_process($db);
+						$this->member_model->login_process($db);
 					endif;
 					// End of 기존 등록 여부
 
@@ -463,7 +544,16 @@ class Member extends MY_Controller {
 				endif;
 
 				$adapter->logout();
-				redirect('/');
+				if( IS_APP ) :
+					$result['app_scheme'] = "{$this->config->item('app_name')}://mobileapp?control=member&action=login"
+						. "&authkey=" . $this->member_model->encode_auth($db->mb_id);
+					echo "<script>";
+					echo "location.href='";
+					echo $result['app_scheme'];
+					echo "';</script>";
+				else :
+					redirect('/');
+				endif;
 
 				/*
 
@@ -561,7 +651,7 @@ class Member extends MY_Controller {
 
 					// 기존 등록 여부
 					if( $already->mb_id ) :
-						$this->login_process($already);
+						$this->member_model->login_process($already);
 					else :
 						// 데이터 가공
 						$i_data = array();
@@ -577,7 +667,7 @@ class Member extends MY_Controller {
 
 						// 로그인
 						$db = $this->member_model->get($mb_id);
-						$this->login_process($db);
+						$this->member_model->login_process($db);
 					endif;
 					// End of 기존 등록 여부
 
@@ -717,7 +807,7 @@ class Member extends MY_Controller {
 
 				// 세션 갱신
 				$db = $this->member_model->get( $this->logined->mb_id );
-				$this->login_process($db);
+				$this->member_model->login_process($db);
 			} catch (Exception $e) {
 				$result['status'] = 'fail';
 				$result['msg'] = $e->getMessage();

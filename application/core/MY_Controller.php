@@ -9,6 +9,7 @@ class MY_Controller extends CI_Controller {
 	protected $data = array();
 	public $template = FALSE;
 	public $page_name = NULL;	// 페이지 명 (메뉴명 노출) - 네비에서 기본으로 가져오고 특정한 경우만 설정
+	public $page_wrap = FALSE;	 // PANEL WRAP
 	public $has_nav = TRUE;
 	public $render_type = FALSE;
 	public $under_ie9_error = FALSE;

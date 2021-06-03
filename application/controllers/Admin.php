@@ -1,5 +1,9 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+/*
+	Admin 기본 기능 및 Grocery Crud 베이스 세팅
+ */
+
 use Carbon\Carbon;
 
 class Admin extends MY_Controller {

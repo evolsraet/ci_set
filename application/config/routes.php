@@ -102,6 +102,12 @@ $route['admin/option_list/(:any)']           = 'mall/option_list/(:any)';
 $route['admin/option_update']         = 'mall/option_update';
 $route['admin/option_delete']         = 'mall/option_delete';
 
+// CRUD
+
+$route['admin/setting/config']          = 'crud';
+$route['admin/setting/config/(.+)']     = 'crud/$1';
+$route['admin/member/member']          = 'crud';
+$route['admin/member/member/(.+)']     = 'crud/$1';
 
 // $route['admin/order/()']  = 'mall/$1/$2';
 
