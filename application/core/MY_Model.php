@@ -86,8 +86,8 @@ class MY_Model extends CI_Model
 	 * This model's default primary key or unique identifier.
 	 * Used by the get(), update() and delete() functions.
 	 */
-	protected $prefix = '';
-	protected $primary_key = 'id';
+	public $prefix = '';
+	public $primary_key = 'id';
 
 	/**
 	 * Support for soft deletes and this model's 'deleted' key
@@ -171,6 +171,7 @@ class MY_Model extends CI_Model
 	// 쿼리 펑션의 캐싱
 	public $qb_cache = FALSE; // TRUE 이면 리셋안됨
 
+	// public $order_where = array();
 
 	/* --------------------------------------------------------------
 	 * GENERIC METHODS
@@ -200,6 +201,96 @@ class MY_Model extends CI_Model
 		array_unshift($this->before_update, 'protect_attributes');
 
 		$this->_temporary_return_type = $this->return_type;
+	}
+
+	// FITSIG ADD
+	public function basic_order() {
+		$this->order_by("{$this->prefix}order");
+		return $this;
+	}
+
+	public function get_level($data) {
+		if( $data->{"{$this->prefix}_level"} )
+			$data->{"_{$this->prefix}_level"} = explode(',',$data->{"{$this->prefix}_level"});
+		return $data;
+	}
+
+	public function get_age($data) {
+		if( $data->{"{$this->prefix}_age"} )
+			$data->{"_{$this->prefix}_age"} = explode(',',$data->{"{$this->prefix}_age"});
+		return $data;
+	}
+
+	public function create_order_add($data) {
+		$data = (object) $data;
+		$order_field = "{$this->prefix}order";
+
+		// if( count($order_where) )
+		// 	$this->where($order_where);
+
+		$max = $this->select_max($order_field)->get_all();
+		$data->{$order_field} = $max[0]->{$order_field} + 1;
+		// kmh_print( $data );
+		return $data;
+	}
+
+	public function order_reset($result) {
+		$this->db->trans_start();
+			$list = $this->basic_order()->get_all();
+			$order_field = "{$this->prefix}order";
+
+			$order = 1;
+			foreach( (array) $list as $key => $row ) :
+				$tmp = new stdClass;
+				$this
+					->set("{$this->prefix}order", $order++)
+					->update($row->{"{$this->prefix}id"});
+			endforeach;
+		$this->db->trans_complete();
+
+		if ($this->db->trans_status() === FALSE) :
+			throw new Exception("순서작성 중 에러발생", 1);
+		endif;
+
+		return $result;
+	}
+
+	public function order_change($id, $order, $direction, $where = array()) {
+		$this->db->trans_start();
+			$order_field = "{$this->prefix}order";
+
+			if( count($order_where) )
+				$this->where($order_where);
+
+			if( $direction == 'up' ) {
+				$prev = $this->select($order_field)->where("{$order_field}<", $order)->order_by("{$order_field} DESC")->get();
+				if( !$prev ) return true;
+				$new_order = $prev->{$order_field};
+			}
+			else {
+				$next = $this->select($order_field)->where("{$order_field}>", $order)->order_by("{$order_field} ASC")->get();
+				if( !$next ) return true;
+				$new_order = $next->{$order_field};
+			}
+
+			// 기존 오더 아이템 -> 현재 오더로 변경
+			$this
+				->where($order_field, $new_order)
+				->update(
+				null,
+				(object) array($order_field => $order)
+			);
+
+			// 대상 -> 새 오더로
+			$this->update(
+				$id,
+				(object) array($order_field => $new_order)
+			);
+		$this->db->trans_complete();
+
+		if ($this->db->trans_status() === FALSE) :
+			throw new Exception("순서변경 중 에러발생", 1);
+		endif;
 	}
 
 	/* --------------------------------------------------------------
@@ -385,10 +476,12 @@ class MY_Model extends CI_Model
 		if ( $this->qb_set_count() )
 		{
 			$this->_qb_do();
-			$this->_database->insert($this->_table);
+			$insert_result = $this->_database->insert($this->_table);
 			$this->_qb_reset();
 
 			$insert_id = $this->_database->insert_id();
+			if( !$insert_id )
+				$insert_id = $insert_result;
 
 			$this->trigger('after_create', $insert_id );
 
@@ -441,7 +534,7 @@ class MY_Model extends CI_Model
 			$result = $this->_database->replace($this->_table);
 			$this->_qb_reset();
 
-			$insert_id = $this->_database->insert_id();
+			// $insert_id = $this->_database->insert_id();
 
 			$this->trigger('after_create', $insert_id );
 
@@ -1180,8 +1273,10 @@ class MY_Model extends CI_Model
 			elseif( $this->_temporary_with_deleted !== TRUE )
 				$this->where($this->deleted_at, null);
 			
-			$this->_temporary_with_deleted = false;
-			$this->_temporary_only_deleted = false;						
+			if( !$this->qb_cache ) {
+				$this->_temporary_with_deleted = false;
+				$this->_temporary_only_deleted = false;
+			}
 		}		
 	}
 
@@ -1328,6 +1423,8 @@ class MY_Model extends CI_Model
 
 	protected function _qb_reset( $force_reset = FALSE ) {
 		if( !$this->qb_cache || $force_reset ) {
+			// $this->_temporary_with_deleted = FALSE;
+			// $this->_temporary_only_deleted = FALSE;
 			$this->qb_functions = array();
 		}
 		$this->qb_cache = FALSE;
@@ -1448,6 +1545,12 @@ class MY_Model extends CI_Model
 		}
 
 		public function select_sum() {
+			$args = func_get_args();
+			$this->qb_functions[] = array( __FUNCTION__ => $args );
+			return $this;
+		}		
+
+		public function select_avg() {
 			$args = func_get_args();
 			$this->qb_functions[] = array( __FUNCTION__ => $args );
 			return $this;

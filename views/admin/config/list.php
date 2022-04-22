@@ -100,8 +100,8 @@
 	// 등록 폼 열기
 		$(".open_write_form").click(function(){
 			var url = '<?=$this->baseuri?>write_form/';
-			if( $(this).attr('data-wh_id') )
-				url += $(this).attr('data-wh_id');
+			if( $(this).attr('data-config_id') )
+				url += $(this).attr('data-config_id');
 
 			$("#kmh_modal_lg .modal-content").load(url, function(){
 				$("#kmh_modal_lg").modal();
@@ -117,7 +117,7 @@
 			var url = '<?=$this->baseuri?>delete_act/';
 
 			$(btn).button('loading')
-			$.post(url, {wh_id: $(btn).attr('data-wh_id')}, function(data, textStatus, xhr) {
+			$.post(url, {config_id: $(btn).attr('data-config_id')}, function(data, textStatus, xhr) {
 				// alert(data.msg);
 				$(btn).button('reset');
 				location.reload();

@@ -16,7 +16,7 @@ class Order_log_model extends MY_Model {
 	}
 
 	public function simple_add( $order_id, $order_status ) {
-		if( !$order_id || !order_status )
+		if( !$order_id || !$order_status )
 			throw new Exception("에러가 발생했습니다. simple_add", 1);
 
 		$data = new stdClass;

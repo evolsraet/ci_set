@@ -3,7 +3,7 @@
 	<!-- 상단 CSS -->
 		<!-- Bootstrap _ Common Style -->
 		<? // $this->assets->add_css( CSS."noto-sans-korean.css" ); ?>
-		<? $this->assets->add_css( "https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSans-kr.css" ); ?>
+		<? $this->assets->add_css( "https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css" ); ?>
 		<? $this->assets->add_css( "https://cdn.rawgit.com/hiun/NanumSquare/master/nanumsquare.css" ); ?>
 
 		<!-- Framework Core -->

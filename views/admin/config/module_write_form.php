@@ -23,26 +23,29 @@
 		// 	$this->files->make_tmp_code( 'biz' )
 		// );
 
-		if( $view->wh_id ) :
-			$form->input('wh_id','hidden', 'wh_id', $view->wh_id);
+		if( $view->config_id ) :
+			$form->input('config_id','hidden', 'config_id', $view->config_id);
 		else :
 		endif;
 
 		$form->input(
-			'아이피',
+			'항목',
 			'text',
-			'wh_ip',
-			$view->wh_ip,
-			array('required'=>'required')
+			'config_desc',
+			$view->config_desc,
+			array(
+				'disabled'=>'disabled',
+			)
 		);
 
 		$form->input(
-			'메모',
+			'값',
 			'text',
-			'wh_desc',
-			$view->wh_desc
+			'config_value',
+			$view->config_value,
+			array('required'=>'required')
 		);
-?>				
+?>
 
 </div>
 <div class="modal-footer">
@@ -69,6 +72,6 @@
 					$("[name='"+response.field+"']").focus();
 			}
 
-			$(btn).button('reset');			
-		}	
+			$(btn).button('reset');
+		}
 </script>

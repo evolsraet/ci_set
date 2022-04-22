@@ -12,8 +12,8 @@ $config['mailpath'] = '/usr/sbin/sendmail';
 // $config['protocol'] = 'smtp';
 // $config['smtp_crypto'] = 'ssl';
 // $config['smtp_host'] = 'smtp.daum.net';
-// $config['smtp_user'] = 'ks1995';
-// $config['smtp_pass'] = 'knIjes';
+// $config['smtp_user'] = '';
+// $config['smtp_pass'] = '';
 // $config['smtp_port'] = '465';
 
 

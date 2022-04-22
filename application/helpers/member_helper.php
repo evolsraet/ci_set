@@ -1,4 +1,4 @@
-<?
+<?php
 	function mb_status($val = null) {
 		$data = array();
 		$data['ask']  = '심사중';
